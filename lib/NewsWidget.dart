@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class NewsWidget extends StatefulWidget{
+class NewsWidget extends StatelessWidget{
   final String titleText;
   final String bodyText;
   final String botSource;
@@ -9,50 +9,40 @@ class NewsWidget extends StatefulWidget{
   const NewsWidget({Key key, this.titleText, this.bodyText, this.botSource, this.date}) : super(key: key);
 
   @override
-  _NewsWidgetState createState() => _NewsWidgetState(titleText, bodyText, botSource, date);
-}
-
-class _NewsWidgetState extends State<NewsWidget>{
-  final String titleText;
-  final String bodyText;
-  final String botSource;
-  final String date;
-
-  _NewsWidgetState(this.titleText, this.bodyText, this.botSource, this.date);
-
-  @override
   Widget build(BuildContext context) {
     return Container(
       margin: EdgeInsets.all(5),
       decoration: BoxDecoration(
-        color: Colors.lightBlue[50],
-        borderRadius: BorderRadius.circular(6),
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Colors.lightBlueAccent, Colors.lightBlue]
-        )
+          color: Colors.lightBlue[50],
+          borderRadius: BorderRadius.circular(6),
+          gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [Color.fromARGB(255, 195, 243, 208), Color.fromARGB(255, 73, 201, 224)]
+          )
       ),
       height: 100.0,
       child: Column(
         children: <Widget>[
           Container(
-            alignment: Alignment(-1.0, 0.0),
+            alignment: Alignment(-1.0, -1.0),
             child: Text(
-                titleText,
-                style: TextStyle(fontWeight: FontWeight.bold),
-                textAlign: TextAlign.start,
+              titleText,
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+              textAlign: TextAlign.start,
             ),
-            padding: EdgeInsets.fromLTRB(10, 2, 0, 0),
+            padding: EdgeInsets.fromLTRB(4, 4, 0, 0),
+            height: 30,
           ),
           Expanded(
             child: Container(
-              child: Text(
+                child: Text(
                   bodyText,
-                  maxLines: 3,
-              ),
-              alignment: Alignment.topLeft,
-              padding: EdgeInsets.all(4)
+                  maxLines: 2,
+                  style: TextStyle(fontSize: 11),
+                ),
+                alignment: Alignment.topLeft,
+                padding: EdgeInsets.all(4)
             ),
 
           ),
@@ -61,9 +51,15 @@ class _NewsWidgetState extends State<NewsWidget>{
             child: Row(
               children: <Widget>[
                 Expanded(
-                  child: Text(botSource),
+                  child: Text(
+                    botSource,
+                    style: TextStyle(fontSize: 11),
+                  ),
                 ),
-                Text(date)
+                Text(
+                    date,
+                    style: TextStyle(fontSize: 11)
+                )
               ],
             ),
           ),
@@ -71,5 +67,4 @@ class _NewsWidgetState extends State<NewsWidget>{
       ),
     );
   }
-
 }
