@@ -27,17 +27,23 @@ class _NewsWidgetState extends State<NewsWidget>{
       decoration: BoxDecoration(
         color: Colors.lightBlue[50],
         borderRadius: BorderRadius.circular(6),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Colors.lightBlueAccent, Colors.lightBlue]
+        )
       ),
       height: 100.0,
       child: Column(
         children: <Widget>[
           Container(
+            alignment: Alignment(-1.0, 0.0),
             child: Text(
                 titleText,
                 style: TextStyle(fontWeight: FontWeight.bold),
-                textAlign: TextAlign.left
+                textAlign: TextAlign.start,
             ),
-            padding: EdgeInsets.all(2),
+            padding: EdgeInsets.fromLTRB(10, 2, 0, 0),
           ),
           Expanded(
             child: Container(
@@ -46,7 +52,7 @@ class _NewsWidgetState extends State<NewsWidget>{
                   maxLines: 3,
               ),
               alignment: Alignment.topLeft,
-              padding: EdgeInsets.all(4),
+              padding: EdgeInsets.all(4)
             ),
 
           ),

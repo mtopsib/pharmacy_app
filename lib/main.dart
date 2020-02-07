@@ -11,6 +11,8 @@ class MainPage extends StatelessWidget {
 }
 
 class MyMaterialApp extends StatelessWidget{
+  int _selectedIndex = 0;
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -29,45 +31,86 @@ class MyMaterialApp extends StatelessWidget{
                   ),
                 ),
               )
-
-
           ),
 
-          body: Container(
-            child: Column(
-              children: <Widget>[
-                NewsWidget(
-                  titleText: 'Bla Bla Bla',
-                  bodyText: 'sdgaklbgsdbghdsglsdgsdfklk lsahfjklsahfl kjfhds flkj sdajkf dalkjshf jlkdhs ajlkfh sadlkjf lkjafhsadkjl hfkjlasd fsdfa kjbhl sdgaklbgsdbghdsglsdgsdfklk lsahfjklsahfl kjfhds flkj sdajkf dalkjshf jlkdhs ajlkfh sadlkjf lkjafhsadkjl hfkjlasd fsdfa kjbhl sdgaklbgsdbghdsglsdgsdfklk lsahfjklsahfl kjfhds flkj sdajkf dalkjshf jlkdhs ajlkfh sadlkjf lkjafhsadkjl hfkjlasd fsdfa kjbhl',
-                  botSource: 'source NBC',
-                  date: '13.02.1999',
-                ),
+          body: _bodyWidget(),
 
+          bottomNavigationBar: BottomNavigationBar(
+            items: const <BottomNavigationBarItem>[
+              BottomNavigationBarItem(
+                icon: Icon(Icons.home),
+                title: Text('Home'),
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.business),
+                title: Text('Business'),
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.school),
+                title: Text('School'),
+              ),
+            ],
+            currentIndex: _selectedIndex,
+            selectedItemColor: Colors.amber[800],
+            onTap: _onItemTapped,
+          ),
+      ),
+    );
+  }
+
+  void _onItemTapped(int index){
+      _selectedIndex = index;
+      print(_selectedIndex);
+  }
+
+  Widget _bodyWidget(){
+    return Container(
+      child: Column(
+        children: <Widget>[
+          Container(
+            child: Row(
+              children: <Widget>[
+                Container(
+                  margin: EdgeInsets.only(left: 10, right: 10),
+                  child: Chip(
+                      label: Text('Все'),
+                    autofocus: true,
+                  ),
+                ),
+                Container(
+                  margin: EdgeInsets.only(right: 10),
+                  child: Chip(
+                      label: Text('Новости')
+                  ),
+                ),
+                Container(
+                  child: Chip(
+                      label: Text('Рецепты')
+                  ),
+                ),
               ],
             ),
           ),
-
-          bottomNavigationBar: BottomAppBar(
-            shape: const CircularNotchedRectangle(),
-            child: Container(
-              height: 60.0,
-              margin: EdgeInsets.all(3),
-              decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.centerLeft,
-                    end: Alignment.centerRight,
-                    colors: [Colors.black45, Colors.black54],
-                    tileMode: TileMode.mirror,
-                  ),
-                  borderRadius: BorderRadius.circular(5.0)
-              ),
-              child: Row(
-                children: <Widget>[
-                ],
-              ),
-            ),
-          )
+          Container(
+            child: Expanded(
+              child: _buildNewsList(),
+            )
+          ),
+        ],
       ),
+    );
+  }
+
+  Widget _buildNewsList(){
+    return ListView.builder(
+      itemBuilder: (context, position) {
+        return NewsWidget(
+          titleText: 'interesting news',
+          bodyText: 'sff;saknf ;saf n;dsa f;sad fsda foyewaf ksadbf pqwiuf jksd bf spaufkjdsa; fwe ;ipfu gbsafkj ',
+          botSource: "BBC",
+          date: '13.02.1999',
+        );
+      },
     );
   }
 
