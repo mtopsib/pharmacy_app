@@ -25,7 +25,7 @@ class RecipeCard extends StatelessWidget{
       decoration: BoxDecoration(
           color: Colors.lightBlue[50],
           borderRadius: BorderRadius.circular(6),
-          border: Border.all(),
+          border: Border.all(color: Colors.grey),
           gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
@@ -63,15 +63,30 @@ class RecipeCard extends StatelessWidget{
                      child: Row(
                        mainAxisAlignment: MainAxisAlignment.end,
                        children: <Widget>[
-                         Icon(Icons.shopping_cart),
-                         Icon(Icons.star)
+                         ColoredIcon(
+                           icon: Icons.shopping_cart,
+                           color: Colors.black,
+                           activeColor: Colors.red[800],
+                         ),
+                         ColoredIcon(
+                           icon: Icons.star,
+                           color: Colors.black,
+                           activeColor: Colors.yellow,
+                         )
                        ],
                      ),
                    ),
                  ),
-                 Align(alignment: Alignment.centerRight, child: Text("Пациент", style: TextStyle(fontSize: 10, color: Colors.black45))),
-                 Align(alignment: Alignment.centerRight, child: Text(personName, style: textStyle)),
-                 Align(alignment: Alignment.centerRight, child: Text('Дата: $date', style: TextStyle(fontSize: 10, color: Colors.black45)))
+                 Container(
+                   padding: EdgeInsets.only(right: 4, bottom: 2),
+                   child: Column(
+                     children: <Widget>[
+                       Align(alignment: Alignment.centerRight, child: Text("Пациент", style: TextStyle(fontSize: 10, color: Colors.black45))),
+                       Align(alignment: Alignment.centerRight, child: Text(personName, style: textStyle)),
+                       Align(alignment: Alignment.centerRight, child: Text('Дата: $date', style: TextStyle(fontSize: 10, color: Colors.black45)))
+                     ],
+                   ),
+                 )
                ],
              ),
            )
@@ -86,6 +101,40 @@ class RecipeCard extends StatelessWidget{
 
 }
 
-class MyIconButton extends GestureDetector{
+class ColoredIcon extends StatefulWidget{
+  final IconData icon;
+  final Color activeColor;
+  final Color color;
 
+  const ColoredIcon({Key key, this.icon, this.activeColor, this.color}) : super(key: key);
+
+  @override
+  ColorIconState createState(){
+    return ColorIconState();
+  }
+}
+
+class ColorIconState extends State<ColoredIcon>{
+  IconData icon;
+  Color color;
+  bool isActive = false;
+
+  @override initState(){
+    color = widget.color;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: changeIconColor,
+      child: Icon(widget.icon, color: color),
+    );
+  }
+
+  changeIconColor(){
+    setState(() {
+      isActive = !isActive;
+      color = isActive == true ? widget.activeColor : widget.color;
+    });
+  }
 }

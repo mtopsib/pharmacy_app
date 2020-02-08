@@ -13,7 +13,6 @@ class NewsCard extends StatelessWidget{
     return Container(
       margin: EdgeInsets.all(5),
       decoration: BoxDecoration(
-          color: Colors.lightBlue[50],
           borderRadius: BorderRadius.circular(6),
           gradient: LinearGradient(
               begin: Alignment.topLeft,
