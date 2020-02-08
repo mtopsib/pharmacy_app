@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:pharmacy_app/NewsCardWidget.dart';
 import 'package:pharmacy_app/NewsWidget.dart';
-import 'package:pharmacy_app/RecipesWidget.dart';
+import 'package:pharmacy_app/RecipesCardWidget.dart';
 
 class Home extends StatefulWidget{
   _HomeState createState(){
@@ -10,14 +11,37 @@ class Home extends StatefulWidget{
 
 class _HomeState extends State<Home>{
   int _selectedIndex = 0;
-  List<Widget> _children = [PlaceHolderWidget(color: Colors.red,), PlaceHolderWidget(color: Colors.black45,), PlaceHolderWidget(color: Colors.green,), PlaceHolderWidget(color: Colors.yellow,)];
+
+  Widget recipeWidget = RecipeCard(
+    recipeName: '32ЛП000001-000001',
+    tradeName: "Анальгин",
+    mnn: "Метамизол натрия (Metamizole sodium)",
+    dosage: "0.003",
+    form: "тюб",
+    standartCount: 1.toString(),
+    duration: 20.toString(),
+    tabletsPerDay: 2.toString(),
+    source: 'НКГБ №1',
+    personName: 'Иванов Иван Иванович',
+    date: '01 нваря 2020',
+  );
+  List<String> _titleTexts = ['Главная', 'Рецепты', 'Главная - новость', 'профиль'];
+  List<Widget> _homeWidgets = [PlaceHolderWidget(color: Colors.red,), PlaceHolderWidget(color: Colors.black45,), PlaceHolderWidget(color: Colors.green,), PlaceHolderWidget(color: Colors.yellow,)];
 
   @override
   Widget build(BuildContext context) {
-    _children[0] = _homeWidget();
+    _homeWidgets[0] = _homeWidget();
+    _homeWidgets[1] = recipeWidget;
+    _homeWidgets[2] = NewsWidget(
+      titleText: 'Мишустин назначил Александра Грибова замглавы аппарата правительства РФ',
+      date: '15 января 2020 в 19:45',
+      source: 'Источник: Правительство РФ',
+      bodyText: 'Советский и российский актёр театра и кино Андрей Ургант прокомментировал журналистам скандал, развернувшийся вокруг его сына, известного телеведущего Ивана Урганта. Ранее СМИ сообщали, что православные активисты собирают подписи под требованием лишить телеведущего российского гражданства из-за недавнего эфира, в котором они усмотрели признаки оскорбления веруюших. Кроме этого православные активисты пожелали Ивану Урганту "заболеть раком".Андрей Ургант отметил, что ничего не знает об этой ситуации."Мне совершенно все равно, что думают активисты, и поэтому я к этому никак не отношусь", - передает издание "Собеседник" слова актера.Андрей Ургант добавил, что если эти люди правомочны лишать актера гражданства за его выступление, тогда вообще непонятно что происходит в стране."Кстати, несколько лет назад подобные организации в Украине предлагали тому, кто отрежет голову Ивану, десять тысяч долларов", - также рассказал актер телеведущего.Речь тогда шла о высказывании Ивана Урганта в программе "Смак". Он неудачно пошутил, что порубил зелень, как "красный комиссар жителей украинской деревни".Андрей Ургант также не исключил, что завтра еще кто-то что-то предложит. Советский и российский актёр театра и кино Андрей Ургант прокомментировал журналистам скандал, развернувшийся вокруг его сына, известного телеведущего Ивана Урганта. Ранее СМИ сообщали, что православные активисты собирают подписи под требованием лишить телеведущего российского гражданства из-за недавнего эфира, в котором они усмотрели признаки оскорбления веруюших. Кроме этого православные активисты пожелали Ивану Урганту "заболеть раком".Андрей Ургант отметил, что ничего не знает об этой ситуации."Мне совершенно все равно, что думают активисты, и поэтому я к этому никак не отношусь", - передает издание "Собеседник" слова актера.Андрей Ургант добавил, что если эти люди правомочны лишать актера гражданства за его выступление, тогда вообще непонятно что происходит в стране."Кстати, несколько лет назад подобные организации в Украине предлагали тому, кто отрежет голову Ивану, десять тысяч долларов", - также рассказал актер телеведущего.Речь тогда шла о высказывании Ивана Урганта в программе "Смак". Он неудачно пошутил, что порубил зелень, как "красный комиссар жителей украинской деревни".Андрей Ургант также не исключил, что завтра еще кто-то что-то предложит.',
+      url: 'https://google.com'
+    );
     return Scaffold(
       appBar: AppBar(
-          title: Text('Главная'),
+          title: Text(_titleTexts[_selectedIndex]),
           leading: Container(
             margin: EdgeInsets.fromLTRB(8, 4, 4, 4),
             decoration: BoxDecoration(
@@ -29,7 +53,7 @@ class _HomeState extends State<Home>{
           )
       ),
 
-      body: _children[_selectedIndex],
+      body: _homeWidgets[_selectedIndex],
 
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
@@ -82,15 +106,12 @@ class _HomeState extends State<Home>{
   Widget _buildNewsList(){
     return ListView.builder(
       itemBuilder: (context, position) {
-        return RecipeWidget(
-
-        );
-        /*NewsWidget(
+        return NewsCard(
           titleText: 'Новое приложение для электронных рецептов',
           bodyText: 'Сегодня на аппаратном совещании о развитии региональных авиаперевозок доложили гендиректор ООО «Международный Аэропорт Кемерово имени ...',
           botSource: "Источние РИА НОВОСТИ",
           date: 'Дата: 01 января 2020',
-        );*/
+        );
       },
     );
   }
