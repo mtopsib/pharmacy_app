@@ -120,6 +120,7 @@ class ColorIconState extends State<ColoredIcon>{
   bool isActive = false;
 
   @override initState(){
+    super.initState();
     color = widget.color;
   }
 
