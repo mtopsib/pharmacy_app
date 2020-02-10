@@ -175,7 +175,7 @@ class MyProfileState extends State<MyProfile>{
             child: FlatButton(
               color: Colors.blueAccent,
               child: Text("Заполнить профиль"),
-              onPressed: () => Navigator.of(context).pushNamed('/EditProfile'),
+              onPressed: () => Navigator.of(context).pushNamed('/EditProfile')
             ),
           )
         ],
@@ -306,7 +306,7 @@ class ProfileEditState extends State<ProfileEdit>{
                 margin: EdgeInsets.symmetric(vertical: 10),
                 child: TextFormField(
                     validator: (value) {if (value.isEmpty){return 'Введите номер';}
-                    else if (value.length < 16){
+                    else if (value.length < 17){
                       return null;
                     }
                     else {
@@ -314,7 +314,7 @@ class ProfileEditState extends State<ProfileEdit>{
                     },
                   onSaved: (value) => number = value,
                   inputFormatters: [phoneMask],
-                  maxLength: 14,
+                  maxLength: 17,
                   keyboardType: TextInputType.numberWithOptions(),
                     decoration: InputDecoration(
                       hintText: "+7(999) 999-99-99",
@@ -349,7 +349,7 @@ class ProfileEditState extends State<ProfileEdit>{
                       SharedPreferencesWrap.setPersonData(this.surname, this.name, this.patronymic,
                       this.date, this.town, this.snils, this.number, this.mail).then((_)
                       {
-                        Navigator.of(context).pushNamed('/MyProfile');
+                        Navigator.of(context).pushNamedAndRemoveUntil('/MyProfile', ModalRoute.withName('/'));
                       }
                       );
                     }

@@ -14,7 +14,7 @@ class Home extends StatefulWidget{
 }
 
 class _HomeState extends State<Home>{
-  Widget startPage;
+  Widget startPage = SplashScreen();
 
   @override
   void initState() {
@@ -22,7 +22,6 @@ class _HomeState extends State<Home>{
     SharedPreferencesWrap.getLogginInfo().then((logState) {
       startPage = logState == false ? LoginWidget() : HomeLogged();
       setState(() {
-
       });
     });
   }
