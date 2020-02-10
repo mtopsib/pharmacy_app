@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
+import 'package:pharmacy_app/shared_preferences_wrapper.dart';
+import 'dart:async';
 
 class ProfileMain extends StatelessWidget{
   var textStyle = TextStyle(fontSize: 18);
@@ -42,30 +44,53 @@ class ProfileMain extends StatelessWidget{
   }
 }
 
-class ProfileMyProfile extends StatelessWidget{
-  final String surname;
+class MyProfile extends StatefulWidget{
+  /*final String surname;
   final String name;
   final String patronymic;
   final String date;
   final String town;
   final String snils;
   final String number;
-  final String mail;
+  final String mail*/
 
-  /*String surname;
+  //const MyProfile({Key key, this.surname, this.name, this.patronymic, this.date, this.town, this.snils, this.number, this.mail}) : super(key: key);
+
+  MyProfileState createState() => MyProfileState();
+}
+
+class MyProfileState extends State<MyProfile>{
+  final upTextStyle = const TextStyle(fontSize: 18, fontWeight: FontWeight.bold);
+  final botTextStyle = const TextStyle(fontSize: 14);
+  final topTextPadding = const EdgeInsets.only(bottom: 8);
+
+  String surname;
   String name;
   String patronymic;
   String date;
   String town;
   String snils;
   String number;
-  String mail; */
+  String mail;
 
-  final upTextStyle = const TextStyle(fontSize: 18, fontWeight: FontWeight.bold);
-  final botTextStyle = const TextStyle(fontSize: 14);
-  final topTextPadding = const EdgeInsets.only(bottom: 8);
+  @override
+  void initState() {
+    super.initState();
+    SharedPreferencesWrap.getPersonData().then((data){
+      surname = data[0];
+      name = data[1];
+      patronymic = data[2];
+      date = data[3];
+      town = data[4];
+      snils = data[5];
+      number = data[6];
+      mail = data[7];
+      setState(() {
 
-  const ProfileMyProfile({Key key, this.surname, this.name, this.patronymic, this.date, this.town, this.snils, this.number, this.mail}) : super(key: key);
+      });
+    });
+
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -157,6 +182,7 @@ class ProfileMyProfile extends StatelessWidget{
       ),
     );
   }
+
 }
 
 class ProfileEdit extends StatefulWidget{
@@ -166,11 +192,20 @@ class ProfileEdit extends StatefulWidget{
 class ProfileEditState extends State<ProfileEdit>{
   final topTextPadding = const EdgeInsets.only(bottom: 8);
   final upTextStyle = const TextStyle(fontSize: 18, fontWeight: FontWeight.bold);
-  final key = GlobalKey();
+  final _key = GlobalKey<FormState>();
 
   var snilsMask = MaskTextInputFormatter(mask: '###-###-###-##', filter: {"#": RegExp(r'[0-9]')});
-  var phoneMask = MaskTextInputFormatter(mask: '(###) ### ##-##', filter: {'#': RegExp(r'[0-9]')});
+  var phoneMask = MaskTextInputFormatter(mask: '+7(###) ### ##-##', filter: {'#': RegExp(r'[0-9]')});
   var dateMask = MaskTextInputFormatter(mask: '##/##/####', filter: {'#': RegExp(r'[0-9]')});
+
+  String surname;
+  String name;
+  String patronymic;
+  String date;
+  String town;
+  String snils;
+  String number;
+  String mail;
 
   @override
   Widget build(BuildContext context) {
@@ -179,13 +214,17 @@ class ProfileEditState extends State<ProfileEdit>{
       child: ListView(
         children: [
           Form(
-          key: this.key,
+          key: _key,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               Container(
                 margin: EdgeInsets.symmetric(vertical: 10),
                 child: TextFormField(
+                  validator: (value) {if (value.isEmpty){return 'Введите фамилию';} else {
+                  return null;}
+                  },
+                  onSaved: (value) => surname = toUpFirstLetter(value),
                     decoration: InputDecoration(
                         hintText: "Ваша фамилия",
                         border: OutlineInputBorder(),
@@ -193,10 +232,14 @@ class ProfileEditState extends State<ProfileEdit>{
                         labelText: "Фамилия"
                     )
                 ),
-              ),
+              ), //surname
               Container(
                 margin: EdgeInsets.symmetric(vertical: 10),
                 child: TextFormField(
+                    validator: (value) {if (value.isEmpty){return 'Введите имя';} else {
+                      return null;}
+                    },
+                    onSaved: (value) => name = toUpFirstLetter(value),
                     decoration: InputDecoration(
                         hintText: "Ваше имя",
                         border: OutlineInputBorder(),
@@ -204,10 +247,30 @@ class ProfileEditState extends State<ProfileEdit>{
                         labelText: "Имя"
                     )
                 ),
+              ), //name
+              Container(
+                margin: EdgeInsets.symmetric(vertical: 10),
+                child: TextFormField(
+                    validator: (value) {if (value.isEmpty){return 'Введите отчество';} else {
+                      return null;}
+                    },
+                    onSaved: (value) => patronymic = toUpFirstLetter(value),
+                    decoration: InputDecoration(
+                        hintText: "Ваше отчество",
+                        border: OutlineInputBorder(),
+                        suffixIcon: Icon(Icons.person),
+                        labelText: "Отчество"
+                    )
+                ),
               ),
               Container(
                 margin: EdgeInsets.symmetric(vertical: 10),
                 child: TextFormField(
+                    validator: (value) {if (value.isEmpty){return 'Введите дату рождения';} else if (value.length < 10){return null;} else {
+                      return null;}
+                    },
+                  maxLength: 10,
+                  onSaved: (value) => date = value,
                     keyboardType: TextInputType.numberWithOptions(),
                     inputFormatters: [dateMask],
                     decoration: InputDecoration(
@@ -221,6 +284,13 @@ class ProfileEditState extends State<ProfileEdit>{
               Container(
                 margin: EdgeInsets.symmetric(vertical: 10),
                 child: TextFormField(
+                    validator: (value) {if (value.isEmpty)
+                    {return 'Введите СНИЛС';}
+                    else if (value.length < 14) {return null;}
+                    else {
+                      return null;}
+                    },
+                    onSaved: (value) {snils = value; print(value);},
                     keyboardType: TextInputType.numberWithOptions(),
                     maxLength: 14,
                     inputFormatters: [snilsMask],
@@ -235,12 +305,19 @@ class ProfileEditState extends State<ProfileEdit>{
               Container(
                 margin: EdgeInsets.symmetric(vertical: 10),
                 child: TextFormField(
+                    validator: (value) {if (value.isEmpty){return 'Введите номер';}
+                    else if (value.length < 14){
+                      return null;
+                    }
+                    else {
+                      return null;}
+                    },
+                  onSaved: (value) => number = value,
                   inputFormatters: [phoneMask],
                   maxLength: 14,
                   keyboardType: TextInputType.numberWithOptions(),
                     decoration: InputDecoration(
-                      prefixText: '+7 ',
-                      hintText: "(999) 999-99-99",
+                      hintText: "+7(999) 999-99-99",
                       border: OutlineInputBorder(),
                       suffixIcon: Icon(Icons.phone_android),
                       labelText: "Номер телефона"
@@ -250,6 +327,7 @@ class ProfileEditState extends State<ProfileEdit>{
               Container(
                 margin: EdgeInsets.symmetric(vertical: 10),
                 child: TextFormField(
+                    onSaved: (value) => mail = value,
                     decoration: InputDecoration(
                         hintText: "example@mail.ru",
                         border: OutlineInputBorder(),
@@ -265,7 +343,17 @@ class ProfileEditState extends State<ProfileEdit>{
                 child: FlatButton(
                   color: Color.fromARGB(255, 68, 156, 202),
                   child: Text("Сохранить", style: TextStyle(fontSize: 18, color: Colors.grey[900]), textAlign: TextAlign.center),
-                  onPressed: () {},
+                  onPressed: () async {
+                    if (_key.currentState.validate()){
+                      _key.currentState.save();
+                      SharedPreferencesWrap.setPersonData(this.surname, this.name, this.patronymic,
+                      this.date, this.town, this.snils, this.number, this.mail).then((_)
+                      {
+                        Navigator.of(context).pushNamed('/MyProfile');
+                      }
+                      );
+                    }
+                  },
                 ),
               ),
               ],
@@ -274,5 +362,15 @@ class ProfileEditState extends State<ProfileEdit>{
         ]
       ),
     );
+  }
+
+  static String toUpFirstLetter(String input) {
+    if (input == null) {
+      throw new ArgumentError("string: $input");
+    }
+    if (input.length == 0) {
+      return input;
+    }
+    return input[0].toUpperCase() + input.substring(1);
   }
 }

@@ -14,7 +14,7 @@ class RouteGenerator{
         return MaterialPageRoute(builder: (_) {
           return Scaffold(
             appBar: AppBar(title: Text('Мой профиль')),
-            body: ProfileMyProfile(),
+            body: MyProfile(),
           );
         });
       case '/EditProfile':

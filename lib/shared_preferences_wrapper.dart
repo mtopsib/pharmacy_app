@@ -3,14 +3,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 class SharedPreferencesWrap{
   static Future<List<String>> getPersonData() async {
     final prefs = await SharedPreferences.getInstance();
-    final String surname = prefs.get("person.surname") ?? "";
-    final String name = prefs.get("person.name") ?? "";
-    final String patronymic = prefs.get('person.patronymic') ?? "";
-    final String date = prefs.get('person.date') ?? "";
-    final String town = prefs.get('person.town') ?? "";
-    final String snils = prefs.get('person.snils') ?? "";
-    final String number = prefs.get('person.number') ?? "";
-    final String mail = prefs.get('person.mail') ?? "";
+    final String surname = prefs.get("person.surname") ?? "Иванов";
+    final String name = prefs.get("person.name") ?? "Иван";
+    final String patronymic = prefs.get('person.patronymic') ?? "Иванович";
+    final String date = prefs.get('person.date') ?? "01.01.2001";
+    final String town = prefs.get('person.town') ?? "Москва";
+    final String snils = prefs.get('person.snils') ?? "123-456-789-10";
+    final String number = prefs.get('person.number') ?? "+7 (999)999-99-99";
+    final String mail = prefs.get('person.mail') ?? "example@mail.com";
     return [surname, name, patronymic, date, town, snils, number, mail];
   }
 

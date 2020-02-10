@@ -45,7 +45,7 @@ class _HomeState extends State<Home>{
     source: 'Источник: Правительство РФ ',
     url: 'https://google.com',
   );
-  Widget myProfile = ProfileMyProfile(surname: "Рыжов", name: "Станислав", patronymic: "Витальевич", date: "13.02.1999", town: "Санкт-Петербург", snils: "1241-4124-4124-5436", number: "+7 (917) 218-21-97", mail: "99rsw99@mail.ru");
+  //Widget myProfile = MyProfile(surname: "Рыжов", name: "Станислав", patronymic: "Витальевич", date: "13.02.1999", town: "Санкт-Петербург", snils: "1241-4124-4124-5436", number: "+7 (917) 218-21-97", mail: "99rsw99@mail.ru");
 
   List<String> _titleTexts = ['Главная', 'Рецепты', 'Главная - новость', 'профиль'];
   List<Widget> _homeWidgets;
