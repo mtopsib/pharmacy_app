@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pharmacy_app/NewsWidget.dart';
+import 'package:pharmacy_app/news_widget.dart';
 
 class NewsCard extends StatelessWidget{
   final String titleText;

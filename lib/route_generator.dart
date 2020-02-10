@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:pharmacy_app/Home.dart';
-import 'package:pharmacy_app/Profile.dart';
+import 'package:pharmacy_app/home_widget.dart';
+import 'package:pharmacy_app/profile.dart';
 import 'package:pharmacy_app/main.dart';
 
 class RouteGenerator{

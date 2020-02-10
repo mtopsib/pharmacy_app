@@ -194,9 +194,9 @@ class ProfileEditState extends State<ProfileEdit>{
   final upTextStyle = const TextStyle(fontSize: 18, fontWeight: FontWeight.bold);
   final _key = GlobalKey<FormState>();
 
-  var snilsMask = MaskTextInputFormatter(mask: '###-###-###-##', filter: {"#": RegExp(r'[0-9]')});
-  var phoneMask = MaskTextInputFormatter(mask: '+7(###) ### ##-##', filter: {'#': RegExp(r'[0-9]')});
-  var dateMask = MaskTextInputFormatter(mask: '##/##/####', filter: {'#': RegExp(r'[0-9]')});
+  final snilsMask = MaskTextInputFormatter(mask: '###-###-###-##', filter: {"#": RegExp(r'[0-9]')});
+  final phoneMask = MaskTextInputFormatter(mask: '+7(###) ### ##-##', filter: {'#': RegExp(r'[0-9]')});
+  final dateMask = MaskTextInputFormatter(mask: '##/##/####', filter: {'#': RegExp(r'[0-9]')});
 
   String surname;
   String name;
@@ -271,7 +271,7 @@ class ProfileEditState extends State<ProfileEdit>{
                     },
                   maxLength: 10,
                   onSaved: (value) => date = value,
-                    keyboardType: TextInputType.numberWithOptions(),
+                    keyboardType: TextInputType.datetime,
                     inputFormatters: [dateMask],
                     decoration: InputDecoration(
                         hintText: "дд/мм/гггг",
@@ -306,7 +306,7 @@ class ProfileEditState extends State<ProfileEdit>{
                 margin: EdgeInsets.symmetric(vertical: 10),
                 child: TextFormField(
                     validator: (value) {if (value.isEmpty){return 'Введите номер';}
-                    else if (value.length < 14){
+                    else if (value.length < 16){
                       return null;
                     }
                     else {

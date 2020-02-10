@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:pharmacy_app/Home.dart';
-import 'package:pharmacy_app/RouteGenerator.dart';
+import 'package:pharmacy_app/home_widget.dart';
+import 'package:pharmacy_app/route_generator.dart';
 
 void main() => runApp(MainPage());
 
@@ -11,19 +11,21 @@ class MainPage extends StatelessWidget {
   }
 }
 
-class MyMaterialApp extends StatelessWidget{
 
+
+class MyMaterialApp extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: "mainPage",
-      theme: ThemeData.light(),
-      onGenerateRoute: RouteGenerator.generateRoute,
-      debugShowCheckedModeBanner: false,
+        title: "mainPage",
+        theme: ThemeData.light(),
+        onGenerateRoute: RouteGenerator.generateRoute,
+        debugShowCheckedModeBanner: false,
         initialRoute: '/',
-      home: Home()
+        home: Home()
     );
   }
 }
+
 
 

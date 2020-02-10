@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:pharmacy_app/NewsCardWidget.dart';
-import 'package:pharmacy_app/NewsWidget.dart';
-import 'package:pharmacy_app/RecipesCardWidget.dart';
+import 'package:pharmacy_app/login_widget.dart';
+import 'package:pharmacy_app/news_card_widget.dart';
+import 'package:pharmacy_app/news_widget.dart';
+import 'package:pharmacy_app/recipe_card_widget.dart';
 import 'dart:math';
-import 'package:pharmacy_app/Profile.dart';
+import 'package:pharmacy_app/profile.dart';
+import 'package:pharmacy_app/shared_preferences_wrapper.dart';
 
 class Home extends StatefulWidget{
   _HomeState createState(){
@@ -12,6 +14,30 @@ class Home extends StatefulWidget{
 }
 
 class _HomeState extends State<Home>{
+  Widget startPage;
+
+  @override
+  void initState() {
+    super.initState();
+    SharedPreferencesWrap.getLogginInfo().then((logState) {
+      startPage = logState == false ? LoginWidget() : HomeLogged();
+      setState(() {
+
+      });
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return startPage;
+  }
+}
+
+class HomeLogged extends StatefulWidget{
+  _HomeLoggedState createState() => _HomeLoggedState();
+}
+
+class _HomeLoggedState extends State<HomeLogged>{
   int _selectedIndex = 0;
 
   Widget newsWidget = new NewsWidget(
@@ -53,7 +79,7 @@ class _HomeState extends State<Home>{
   @override
   void initState(){
     super.initState();
-    _homeWidgets = [HomePageWidget(), PlaceHolderWidget(color: Colors.green,), newsWidget, ProfileMain()];
+    _homeWidgets = [HomePageWidget(), PlaceHolderWidget(color: Colors.red,), newsWidget, ProfileMain()];
   }
 
   @override
@@ -64,12 +90,12 @@ class _HomeState extends State<Home>{
           leading: Container(
             margin: EdgeInsets.all(3),
             decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(color: Colors.grey),
-              image: DecorationImage(
-                fit: BoxFit.fill,
-                image: NetworkImage('https://sun9-34.userapi.com/c851528/v851528050/18be99/nCNut-hmPpI.jpg')
-              )
+                shape: BoxShape.circle,
+                border: Border.all(color: Colors.grey),
+                image: DecorationImage(
+                    fit: BoxFit.fill,
+                    image: NetworkImage('https://sun9-34.userapi.com/c851528/v851528050/18be99/nCNut-hmPpI.jpg')
+                )
             ),
           )
       ),
@@ -107,8 +133,7 @@ class _HomeState extends State<Home>{
     setState((){
       _selectedIndex = index;
     });
-  } //BottomNavBar item chang
-
+  }
 }
 
 class PlaceHolderWidget extends StatelessWidget{
@@ -142,7 +167,6 @@ class HomeListView extends StatelessWidget{
   }
 
 }
-
 
 class HomePageWidget extends StatefulWidget{
   _HomePageWidgetState createState() => _HomePageWidgetState();

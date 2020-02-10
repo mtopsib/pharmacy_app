@@ -26,4 +26,14 @@ class SharedPreferencesWrap{
     prefs.setString('person.number', number);
     prefs.setString('person.mail', mail);
   }
+
+  static Future<bool> getLogginInfo() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool("logged") ?? false;
+  }
+
+  static Future<void> setLogginInfo(bool logginState) async{
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.setBool('logged', logginState);
+  }
 }
