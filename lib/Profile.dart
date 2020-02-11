@@ -35,7 +35,7 @@ class ProfileMain extends StatelessWidget{
             height: 50,
             child: FlatButton(
               child: Text('Тех. поддержка', style: textStyle,),
-              onPressed: () {},
+              onPressed: () => Navigator.of(context).pushNamed('/TechSupport'),
             ),
           )
         ],

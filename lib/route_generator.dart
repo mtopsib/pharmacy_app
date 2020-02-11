@@ -4,6 +4,7 @@ import 'package:pharmacy_app/login_widget.dart';
 import 'package:pharmacy_app/profile.dart';
 import 'package:pharmacy_app/main.dart';
 import 'package:pharmacy_app/shared_preferences_wrapper.dart';
+import 'package:pharmacy_app/tech_support_widget.dart';
 
 class RouteGenerator{
   static Route<dynamic> generateRoute(RouteSettings settings){
@@ -12,6 +13,8 @@ class RouteGenerator{
     switch (settings.name){
       case '/':
         return MaterialPageRoute(builder: (_) => Home());
+      case '/TechSupport':
+        return MaterialPageRoute(builder: (_) => TechSupportWidget());
       case '/MyProfile':
         return MaterialPageRoute(builder: (_) {
           return Scaffold(
