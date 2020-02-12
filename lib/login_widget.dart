@@ -1,12 +1,11 @@
 import 'dart:convert';
-
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:pharmacy_app/shared_preferences_wrapper.dart';
 import 'package:http/http.dart';
 import 'package:pharmacy_app/news_card_widget.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class LoginWidget extends StatefulWidget{
   _LoginWidgetState createState() => _LoginWidgetState();
@@ -27,6 +26,7 @@ class _LoginWidgetState extends State<LoginWidget>{
     _getNews();
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,6 +44,7 @@ class _LoginWidgetState extends State<LoginWidget>{
                 child: Form(
                   key: formKey,
                   child: TextFormField(
+                    autofocus: true,
                     validator: (value) {
                       if (value.isEmpty){
                         return 'Введите номер';
@@ -55,14 +56,13 @@ class _LoginWidgetState extends State<LoginWidget>{
                     },
                     inputFormatters: [phoneMask],
                     keyboardType: TextInputType.numberWithOptions(),
-                    textAlign: TextAlign.center,
+                    textAlign: TextAlign.start,
                     onSaved: (value) => phoneNumber = value,
-                    style: TextStyle(fontSize: 20),
+                    style: TextStyle(fontSize: 20, letterSpacing: 1),
                     decoration: InputDecoration(
-                      contentPadding: EdgeInsets.all(0),
-                      alignLabelWithHint: true,
+                      contentPadding: EdgeInsets.only(left: 85),
                       hintText: '8-___-___-__-__',
-                      border: InputBorder.none
+                      border: OutlineInputBorder(),
                     ),
                   ),
                 ),
@@ -139,8 +139,7 @@ class _LoginWidgetState extends State<LoginWidget>{
   }
 
   void _getNews() async {
-    final String url = 'https://es.svodnik.pro:55443/es_test/ru_RU/hs/recipe/MainPage?Count=' + newsCount.toString();
-    String page;
+    String page = "Profile";
     String From;
     String onlyNew;
     String accessToken;
@@ -148,6 +147,9 @@ class _LoginWidgetState extends State<LoginWidget>{
     String appID = 'ea1f1bc1-c552-4787-8d99-9cac5b5b377d';
     String instanceID = '41bf1a67-0653-4aac-8941-89c7b4016792';
     String basic = 'Basic UmVjaXBlOip3c2VXU0U1NSo=';
+
+    final String url = 'https://es.svodnik.pro:55443/es_test/ru_RU/hs/recipe/MainPage?Count=' + newsCount.toString() + "&Page=$page";
+
     Map<String, String> headers = {"DeviceID" : deviceID, 'AppID': appID,  'InstanceID': instanceID, 'Authorization': basic, 'accept': 'application/json'};
     Response response = await get(url, headers: headers);
     if (response.statusCode == 200){
@@ -320,7 +322,7 @@ class _LoginCheckNumberWidgetState extends State<LoginCheckNumberWidget>{
       Response response = await put(url, headers: headers);
       if (response.statusCode == 200){
         await SharedPreferencesWrap.setLogginInfo(true);
-        Navigator.of(context).pushNamed('/');
+        Navigator.of(context).pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
       } else {
         print(response.statusCode);
       }
@@ -341,7 +343,7 @@ class SplashScreen extends StatelessWidget{
               child: Text("009. Электронные рецепты", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
             ),
             Expanded(
-              child: SvgPicture.asset('assets/logo.svg'),
+              child: Image.asset('assets/logo.png', width: 300,),
             ),
             Expanded(
               child: Container(

@@ -6,6 +6,16 @@ class TechSupportWidget extends StatefulWidget{
 
 class _TechSupportWidgetState extends State<TechSupportWidget>{
   final formKey = GlobalKey<FormState>();
+  
+  List<Widget> messages = List<Widget>();
+  String newMessage;
+  
+  @override
+  void initState() {
+    super.initState();
+    messages.add(TechSupportAnswer(text: 'Добрый день, чем мы можем помочь?', date: '01.01.2020',));
+    messages.add(TechSupportQuestion(text: 'Здравствуйте, как можно вам позвонить?', date: '01.01.2020',));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,18 +28,28 @@ class _TechSupportWidgetState extends State<TechSupportWidget>{
         child: Column(
           children: <Widget>[
             Expanded(
-              child: ListView(
-                children: <Widget>[
-                  TechSupportAnswer(text: 'Добрый день, чем мы можем помочь?', date: '01.01.2020',),
-                  TechSupportQuestion(text: 'Здравствуйте, как можно вам позвонить?', date: '01.01.2020',)
-                ],
+              flex: 3,
+              child: ListView.builder(
+                itemCount: messages.length,
+                itemBuilder: (context, index){
+                  return messages[index];
+                },
               ),
             ),
             Container(
-              margin: EdgeInsets.symmetric(vertical: 20),
+              margin: EdgeInsets.symmetric(vertical: 10),
               child: Form(
                 key: formKey,
                 child: TextFormField(
+                  onSaved: (value) {newMessage = value;},
+                  validator: (value){
+                    if (value.isEmpty){
+                      return 'Введите сообщение';
+                    } else {
+                      return null;
+                    }
+                  },
+                  maxLines: 3,
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: 'Введите текст сообщения'
@@ -39,7 +59,7 @@ class _TechSupportWidgetState extends State<TechSupportWidget>{
             ),
             Container(
               child: FlatButton(
-                onPressed: () {},
+                onPressed: _sendMessage,
                 color: Colors.blue,
                 child: Text('Отправить сообщение'),
               ),
@@ -49,6 +69,16 @@ class _TechSupportWidgetState extends State<TechSupportWidget>{
       ),
     );
   }
+
+  void _sendMessage(){
+    if (formKey.currentState.validate()){
+      formKey.currentState.save();
+      messages.add(TechSupportQuestion(text: newMessage, date: "12.02.2020",));
+      setState(() {
+      });
+    }
+  }
+
 }
 
 class TechSupportAnswer extends StatelessWidget{
@@ -59,6 +89,7 @@ class TechSupportAnswer extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     return Container(
+      margin: EdgeInsets.symmetric(vertical: 10),
       child: Column(
         children: <Widget>[
           Padding(
@@ -66,9 +97,8 @@ class TechSupportAnswer extends StatelessWidget{
             child: Row(
               children: <Widget>[
                 Text(date),
-                Container(
-                    child: Text('Тех поддержка:', textAlign: TextAlign.right,),
-                    alignment: Alignment.centerRight, color: Colors.red,
+                Expanded(
+                  child: Text('Тех поддержка:', textAlign: TextAlign.right,)
                 )
               ],
             ),
@@ -90,15 +120,20 @@ class TechSupportQuestion extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     return Container(
+      margin: EdgeInsets.symmetric(vertical: 10),
       child: Column(
         children: <Widget>[
-          Row(
-            children: <Widget>[
-              Text('Я', style: TextStyle(fontWeight: FontWeight.bold),),
-              Text(date)
-            ],
+          Padding(
+            padding: const EdgeInsets.only(bottom: 10),
+            child: Row(
+              children: <Widget>[
+                Text('Я', style: TextStyle(fontWeight: FontWeight.bold),),
+                Expanded(child: Text(date, textAlign: TextAlign.right,))
+              ],
+            ),
           ),
-          Text(text)
+          Text(text, textAlign: TextAlign.left,),
+          Divider(color: Colors.black,)
         ],
       ),
     );

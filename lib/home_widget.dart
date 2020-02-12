@@ -197,6 +197,8 @@ class _HomePageWidgetState extends State<HomePageWidget>{
     date: '01 нваря 2020',
   );
 
+  int _selectedValue = 0;
+
   @override
   void initState() {
     super.initState();
@@ -214,22 +216,34 @@ class _HomePageWidgetState extends State<HomePageWidget>{
               children: <Widget>[
                 Container(
                     margin: EdgeInsets.only(left: 10, right: 10),
-                    child: ActionChip(
+                    child: ChoiceChip(
                       label: Text('Все'),
-                      onPressed: _onTapAllChip,
+                      selected: 0 == _selectedValue,
+                      onSelected: (selecet) => setState(() {
+                        _selectedValue = 0;
+                        _onTapAllChip();
+                      }),
                     )
                 ),
                 Container(
                   margin: EdgeInsets.only(right: 10),
-                  child: ActionChip(
+                  child: ChoiceChip(
+                    selected: 1 == _selectedValue,
                     label: Text('Новости'),
-                    onPressed: _onTapNewsChip,
+                    onSelected: (select) => setState((){
+                      _selectedValue = 1;
+                      _onTapNewsChip();
+                    }),
                   ),
                 ),
                 Container(
-                  child: ActionChip(
+                  child: ChoiceChip(
+                    selected: 2 == _selectedValue,
                     label: Text('Рецепты'),
-                    onPressed: _onTapRecipeChip,
+                    onSelected: (select) => setState((){
+                      _selectedValue = 2;
+                      _onTapRecipeChip();
+                    }),
                   ),
                 ),
               ],
