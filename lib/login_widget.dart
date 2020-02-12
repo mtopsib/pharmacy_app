@@ -1,8 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:pharmacy_app/shared_preferences_wrapper.dart';
+import 'package:http/http.dart';
+import 'package:pharmacy_app/news_card_widget.dart';
 
 class LoginWidget extends StatefulWidget{
   _LoginWidgetState createState() => _LoginWidgetState();
@@ -10,30 +14,54 @@ class LoginWidget extends StatefulWidget{
 
 class _LoginWidgetState extends State<LoginWidget>{
   final formKey = GlobalKey<FormState>();
-  final phoneMask = MaskTextInputFormatter(mask: '+7-###-###-##-##', filter: {'#': RegExp(r'[0-9]')});
+  final phoneMask = MaskTextInputFormatter(mask: '8-###-###-##-##', filter: {'#': RegExp(r'[0-9]')});
+
+  String phoneNumber;
+  int newsCount = 20;
+
+  List<Widget> newsCardWidget = List<Widget>();
+
+  @override
+  void initState() {
+    super.initState();
+    _getNews();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        margin: EdgeInsets.symmetric(vertical: 40),
+        margin: EdgeInsets.only(left: 20, top: 40, right: 20, bottom: 10),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
               Text('009. Электронные рецепты', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
-              SvgPicture.asset('assets/Farmacia2.svg', width: 200,),
-              Text('Введите номер телефона'),
+              SvgPicture.asset('assets/logo.svg', width: 180),
+              Text('Введите номер телефона', style: TextStyle(fontSize: 16),),
               Container(
                 alignment: Alignment.center,
                 margin: EdgeInsets.symmetric(vertical: 10),
                 child: Form(
                   key: formKey,
                   child: TextFormField(
+                    validator: (value) {
+                      if (value.isEmpty){
+                        return 'Введите номер';
+                      } else if (value.length < 15){
+                        return 'Введите корректный номер телефона';
+                      } else {
+                        return null;
+                      }
+                    },
                     inputFormatters: [phoneMask],
                     keyboardType: TextInputType.numberWithOptions(),
                     textAlign: TextAlign.center,
+                    onSaved: (value) => phoneNumber = value,
+                    style: TextStyle(fontSize: 20),
                     decoration: InputDecoration(
-                      hintText: '+7-___-___-__-__',
+                      contentPadding: EdgeInsets.all(0),
+                      alignLabelWithHint: true,
+                      hintText: '8-___-___-__-__',
                       border: InputBorder.none
                     ),
                   ),
@@ -69,21 +97,77 @@ class _LoginWidgetState extends State<LoginWidget>{
                   color: Color.fromARGB(255, 68, 156, 202),
                   textColor: Colors.black,
                   child: Text("Далее"),
-                  onPressed: () {
-                    SharedPreferencesWrap.setLogginInfo(true).then((_) => Navigator.of(context).pushNamed('/LoginCheckNumber'));
-                  }
+                  onPressed: _tapNextButton
                 ),
               ),
               Expanded(
-                child: Container(
-                  alignment: Alignment.bottomCenter,
-                  child: Text('Версия 0.8.0'),
-                ),
-              )
+                child: ListView.builder(
+                    itemCount: newsCardWidget.length,
+                    itemBuilder: (context, index){
+                      return newsCardWidget[index];
+                    }
+                )
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 5),
+                child: Text('Версия 0.8.0'),
+              ),
             ],
           )
         ),
     );
+  }
+
+  void _tapNextButton() async {
+    if (formKey.currentState.validate()){
+      formKey.currentState.save();
+    }
+    String url = 'https://es.svodnik.pro:55443/es_test/ru_RU/hs/oauth/Phone/Login?Phone=' + phoneNumber;
+    String deviceID = '41bf1a6712334';
+    String appID = 'ea1f1bc1-c552-4787-8d99-9cac5b5b377d';
+    String instanceID = '41bf1a67-0653-4aac-8941-89c7b4016792';
+    String basic = 'Basic UmVjaXBlOip3c2VXU0U1NSo=';
+    Map<String, String> headers = {"DeviceID" : deviceID, 'AppID': appID,  'InstanceID': instanceID, 'Authorization': basic, 'accept': 'application/json'};
+    Response response = await post(url, headers: headers);
+    if (response.statusCode == 200)
+      {
+        String token = jsonDecode(response.body);
+        await SharedPreferencesWrap.setConfirmationToken(token);
+        print(response.body);
+        Navigator.of(context).pushNamed('/LoginCheckNumber');
+      }
+  }
+
+  void _getNews() async {
+    final String url = 'https://es.svodnik.pro:55443/es_test/ru_RU/hs/recipe/MainPage?Count=' + newsCount.toString();
+    String page;
+    String From;
+    String onlyNew;
+    String accessToken;
+    String deviceID = '41bf1a6712334';
+    String appID = 'ea1f1bc1-c552-4787-8d99-9cac5b5b377d';
+    String instanceID = '41bf1a67-0653-4aac-8941-89c7b4016792';
+    String basic = 'Basic UmVjaXBlOip3c2VXU0U1NSo=';
+    Map<String, String> headers = {"DeviceID" : deviceID, 'AppID': appID,  'InstanceID': instanceID, 'Authorization': basic, 'accept': 'application/json'};
+    Response response = await get(url, headers: headers);
+    if (response.statusCode == 200){
+      List<dynamic> news = jsonDecode(response.body)['Records'];
+      //print(news[0]['Data']);
+      for(int i = 0; i < news.length; i++){
+        Map<String, dynamic> data = news[i]['Data'];
+        newsCardWidget.add(new NewsCard(
+          titleText: data['Header'].toString(),
+          bodyText: data['Body'].toString(),
+          botSource: data['Source'].toString(),
+          date: data['Date'].toString().replaceAll("T", ' '),
+          )
+        );
+      }
+      print(newsCardWidget.length);
+      setState(() {
+
+      });
+    }
   }
 
 }
@@ -94,7 +178,16 @@ class LoginCheckNumberWidget extends StatefulWidget{
 
 class _LoginCheckNumberWidgetState extends State<LoginCheckNumberWidget>{
   final formKey = new GlobalKey<FormState>();
+
+  List<Widget> newsCardWidget = List<Widget>();
   String sms;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _getNews();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -149,16 +242,11 @@ class _LoginCheckNumberWidgetState extends State<LoginCheckNumberWidget>{
                     color: Color.fromARGB(255, 68, 156, 202),
                     textColor: Colors.black,
                     child: Text("Продолжить"),
-                    onPressed: () async {
-                      if (formKey.currentState.validate()){
-                        formKey.currentState.save();
-                        Navigator.of(context).pushNamed('/');
-                    }
-                  },
+                    onPressed: _onPressedNext,
                 ),
               ),
               Container(
-                height: 50,
+                height: 20,
               ),
               Text('Если СМС не пришло, проверьте правильность введеного Вами номера телефона и повторите запрос'),
               Container(
@@ -171,10 +259,72 @@ class _LoginCheckNumberWidgetState extends State<LoginCheckNumberWidget>{
                     onPressed: () => Navigator.pop(context)
                 ),
               ),
+              Expanded(
+                child: ListView.builder(
+                    itemCount: newsCardWidget.length,
+                    itemBuilder: (context, index) {
+                      return newsCardWidget[index];
+                      }
+                    ),
+              ),
+              Text('Версия 0.8.0')
             ],
           )
       ),
     );
+  }
+
+  void _getNews() async {
+    final String url = 'https://es.svodnik.pro:55443/es_test/ru_RU/hs/recipe/MainPage?Count=20';
+    String page;
+    String From;
+    String onlyNew;
+    String accessToken;
+    String deviceID = '41bf1a6712334';
+    String appID = 'ea1f1bc1-c552-4787-8d99-9cac5b5b377d';
+    String instanceID = '41bf1a67-0653-4aac-8941-89c7b4016792';
+    String basic = 'Basic UmVjaXBlOip3c2VXU0U1NSo=';
+    Map<String, String> headers = {"DeviceID" : deviceID, 'AppID': appID,  'InstanceID': instanceID, 'Authorization': basic, 'accept': 'application/json'};
+    Response response = await get(url, headers: headers);
+    if (response.statusCode == 200){
+      List<dynamic> news = jsonDecode(response.body)['Records'];
+      //print(news[0]['Data']);
+      for(int i = 0; i < news.length; i++){
+        Map<String, dynamic> data = news[i]['Data'];
+        newsCardWidget.add(new NewsCard(
+          titleText: data['Header'].toString(),
+          bodyText: data['Body'].toString(),
+          botSource: data['Source'].toString(),
+          date: data['Date'].toString().replaceAll("T", ' '),
+        )
+        );
+      }
+      setState(() {
+
+      });
+    }
+  }
+
+  void _onPressedNext() async {
+
+    if (formKey.currentState.validate()){
+      formKey.currentState.save();
+
+      final String token = await SharedPreferencesWrap.getConfirmationToken();
+      final String deviceID = '41bf1a6712334';
+      final String appID = 'ea1f1bc1-c552-4787-8d99-9cac5b5b377d';
+      final String instanceID = '41bf1a67-0653-4aac-8941-89c7b4016792';
+      final url = "https://es.svodnik.pro:55443/es_test/ru_RU/hs/oauth/Phone/Login?ConfirmationCode=$sms&ConfirmationToken=$token";//+token.replaceAll('"', '');
+      print(url);
+      Map<String, String> headers = {"DeviceID": deviceID, "AppID": appID, "InstanceID": instanceID, "Authorization": 'Basic UmVjaXBlOip3c2VXU0U1NSo='};
+      Response response = await put(url, headers: headers);
+      if (response.statusCode == 200){
+        await SharedPreferencesWrap.setLogginInfo(true);
+        Navigator.of(context).pushNamed('/');
+      } else {
+        print(response.statusCode);
+      }
+    }
   }
 
 }
@@ -191,7 +341,7 @@ class SplashScreen extends StatelessWidget{
               child: Text("009. Электронные рецепты", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
             ),
             Expanded(
-              child: SvgPicture.asset('assets/Farmacia2.svg'),
+              child: SvgPicture.asset('assets/logo.svg'),
             ),
             Expanded(
               child: Container(

@@ -36,4 +36,13 @@ class SharedPreferencesWrap{
     final prefs = await SharedPreferences.getInstance();
     return prefs.setBool('logged', logginState);
   }
+
+  static Future<void> setConfirmationToken(String token) async{
+    await SharedPreferences.getInstance()..setString('ConfirmationToken', token);
+  }
+
+  static Future<String> getConfirmationToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('ConfirmationToken');
+  }
 }

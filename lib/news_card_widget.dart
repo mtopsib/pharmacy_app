@@ -72,6 +72,7 @@ class NewsCard extends StatelessWidget{
                   titleText,
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                   textAlign: TextAlign.start,
+                  maxLines: 1,
                 ),
                 padding: EdgeInsets.fromLTRB(4, 4, 0, 0),
                 height: 30,
