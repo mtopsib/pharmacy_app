@@ -1,4 +1,7 @@
+import 'package:flutter_udid/flutter_udid.dart';
+import 'package:pharmacy_app/login_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:uuid/uuid.dart';
 
 class SharedPreferencesWrap{
   static Future<List<String>> getPersonData() async {
@@ -27,14 +30,23 @@ class SharedPreferencesWrap{
     prefs.setString('person.mail', mail);
   }
 
-  static Future<bool> getLogginInfo() async {
+  static Future<bool> getLoginInfo() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getBool("logged") ?? false;
   }
 
-  static Future<void> setLogginInfo(bool logginState) async{
+  static Future<void> setLoginInfo(bool logginState) async{
     final prefs = await SharedPreferences.getInstance();
     return prefs.setBool('logged', logginState);
+  }
+
+  static Future<void> firstOpen() async {
+    final prefs = await SharedPreferences.getInstance();
+    bool first = prefs.getBool("First") ?? true;
+    if (first == true){
+      _initDeviceInfo();
+      prefs.setBool("First", false);
+    }
   }
 
   static Future<void> setConfirmationToken(String token) async{
@@ -44,5 +56,27 @@ class SharedPreferencesWrap{
   static Future<String> getConfirmationToken() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('ConfirmationToken');
+  }
+  
+  static Future<void> setDeviceInfo(Map<String, String> info) async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString("DeviceID", info["deviceID"]);
+    prefs.setString("InstanceID", info["instanceID"]);
+  }
+
+  static Future<Map<String, String>> getDeviceInfo() async {
+    final prefs = await SharedPreferences.getInstance();
+    var deviceID = prefs.getString("DeviceID") ?? "";
+    var instanceID = prefs.getString("InstanceID") ?? "";
+    Map<String, String> info = {"deviceID": deviceID, "instanceID": instanceID, "basic": "Basic UmVjaXBlOip3c2VXU0U1NSo=", "appID": "ea1f1bc1-c552-4787-8d99-9cac5b5b377d"};
+    return info;
+  }
+
+  static void _initDeviceInfo() async {
+    var uuid = Uuid().v1();
+    var udid = await FlutterUdid.consistentUdid;
+    //print("InstanceID " + uuid + "DeviceID " + udid);
+    Map<String, String> info = {"deviceID": udid, "instanceID": uuid};
+    await SharedPreferencesWrap.setDeviceInfo(info);
   }
 }

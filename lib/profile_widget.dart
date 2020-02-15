@@ -4,7 +4,7 @@ import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:pharmacy_app/shared_preferences_wrapper.dart';
 import 'dart:async';
 
-class ProfileMain extends StatelessWidget{
+class MainProfile extends StatelessWidget{
   var textStyle = TextStyle(fontSize: 18);
 
   @override
@@ -45,17 +45,6 @@ class ProfileMain extends StatelessWidget{
 }
 
 class MyProfile extends StatefulWidget{
-  /*final String surname;
-  final String name;
-  final String patronymic;
-  final String date;
-  final String town;
-  final String snils;
-  final String number;
-  final String mail*/
-
-  //const MyProfile({Key key, this.surname, this.name, this.patronymic, this.date, this.town, this.snils, this.number, this.mail}) : super(key: key);
-
   MyProfileState createState() => MyProfileState();
 }
 
@@ -94,92 +83,106 @@ class MyProfileState extends State<MyProfile>{
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.all(14),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Padding(padding: topTextPadding ,child: Text("Фамилия", style: upTextStyle)),
-                Text("$surname", style: botTextStyle,)
-              ],
-            ),
-          ),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Padding(child: Text("Имя", style: upTextStyle), padding: topTextPadding),
-                Text("$name" ,style: botTextStyle,)
-              ],
-            ),
-          ),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Padding(child: Text("Отчество", style: upTextStyle), padding: topTextPadding),
-                Text("$patronymic", style: botTextStyle,)
-              ],
-            ),
-          ),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Padding(child: Text("Дата рождения", style: upTextStyle), padding: topTextPadding),
-                Text("$date", style: botTextStyle,)
-              ],
-            ),
-          ),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Padding(child: Text("Мой город", style: upTextStyle), padding: topTextPadding),
-                Text("$town", style: botTextStyle,)
-              ],
-            ),
-          ),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Padding(child: Text("СНИЛС", style: upTextStyle,), padding: topTextPadding,),
-                Text("$snils", style: botTextStyle,)
-              ],
-            ),
-          ),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Padding(child: Text("Номер телефона", style: upTextStyle), padding: topTextPadding),
-                Text("$number", style: botTextStyle,)
-              ],
-            ),
-          ),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Padding(child: Text("Электронная почта", style: upTextStyle), padding: topTextPadding),
-                Text("$mail", style: botTextStyle,)
-              ],
-            ),
-          ),
-          Center(
-            child: FlatButton(
-              color: Colors.blueAccent,
-              child: Text("Заполнить профиль"),
-              onPressed: () => Navigator.of(context).pushNamed('/EditProfile')
-            ),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Мой профиль'),
+        actions: <Widget>[
+          FlatButton(
+            child: Text('Выйти'),
+            onPressed: () async {
+              SharedPreferencesWrap.setLoginInfo(false);
+              Navigator.pushNamedAndRemoveUntil(context, '/', (Route<dynamic> route) => false);
+            },
           )
         ],
       ),
+      body: Container(
+        margin: EdgeInsets.all(14),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Padding(padding: topTextPadding ,child: Text("Фамилия", style: upTextStyle)),
+                  Text("$surname", style: botTextStyle,)
+                ],
+              ),
+            ),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Padding(child: Text("Имя", style: upTextStyle), padding: topTextPadding),
+                  Text("$name" ,style: botTextStyle,)
+                ],
+              ),
+            ),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Padding(child: Text("Отчество", style: upTextStyle), padding: topTextPadding),
+                  Text("$patronymic", style: botTextStyle,)
+                ],
+              ),
+            ),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Padding(child: Text("Дата рождения", style: upTextStyle), padding: topTextPadding),
+                  Text("$date", style: botTextStyle,)
+                ],
+              ),
+            ),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Padding(child: Text("Мой город", style: upTextStyle), padding: topTextPadding),
+                  Text("$town", style: botTextStyle,)
+                ],
+              ),
+            ),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Padding(child: Text("СНИЛС", style: upTextStyle,), padding: topTextPadding,),
+                  Text("$snils", style: botTextStyle,)
+                ],
+              ),
+            ),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Padding(child: Text("Номер телефона", style: upTextStyle), padding: topTextPadding),
+                  Text("$number", style: botTextStyle,)
+                ],
+              ),
+            ),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Padding(child: Text("Электронная почта", style: upTextStyle), padding: topTextPadding),
+                  Text("$mail", style: botTextStyle,)
+                ],
+              ),
+            ),
+            Center(
+              child: FlatButton(
+                  color: Colors.blueAccent,
+                  child: Text("Заполнить профиль"),
+                  onPressed: () => Navigator.of(context).pushNamed('/EditProfile')
+              ),
+            )
+          ],
+        ),
+      )
     );
   }
 

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:pharmacy_app/shared_preferences_wrapper.dart';
 import 'package:http/http.dart';
@@ -13,7 +14,8 @@ class LoginWidget extends StatefulWidget{
 
 class _LoginWidgetState extends State<LoginWidget>{
   final formKey = GlobalKey<FormState>();
-  final phoneMask = MaskTextInputFormatter(mask: '8-###-###-##-##', filter: {'#': RegExp(r'[0-9]')});
+  final phoneMask = MaskTextInputFormatter(mask: '###-###-##-##', filter: {'#': RegExp(r'[0-9]')});
+  final scaKey = GlobalKey<ScaffoldState>();
 
   String phoneNumber;
   int newsCount = 20;
@@ -23,13 +25,14 @@ class _LoginWidgetState extends State<LoginWidget>{
   @override
   void initState() {
     super.initState();
+    debugDeviceInfo();
     _getNews();
   }
-
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: scaKey,
       body: Container(
         margin: EdgeInsets.only(left: 20, top: 40, right: 20, bottom: 10),
           child: Column(
@@ -44,11 +47,10 @@ class _LoginWidgetState extends State<LoginWidget>{
                 child: Form(
                   key: formKey,
                   child: TextFormField(
-                    autofocus: true,
                     validator: (value) {
                       if (value.isEmpty){
                         return 'Введите номер';
-                      } else if (value.length < 15){
+                      } else if (value.length < 13){
                         return 'Введите корректный номер телефона';
                       } else {
                         return null;
@@ -60,8 +62,10 @@ class _LoginWidgetState extends State<LoginWidget>{
                     onSaved: (value) => phoneNumber = value,
                     style: TextStyle(fontSize: 20, letterSpacing: 1),
                     decoration: InputDecoration(
+                      prefixText: "8-",
                       contentPadding: EdgeInsets.only(left: 85),
-                      hintText: '8-___-___-__-__',
+                      hintText: '___-___-__-__',
+                      prefixStyle: TextStyle(color: Colors.black, fontSize: 20),
                       border: OutlineInputBorder(),
                     ),
                   ),
@@ -97,7 +101,7 @@ class _LoginWidgetState extends State<LoginWidget>{
                   color: Color.fromARGB(255, 68, 156, 202),
                   textColor: Colors.black,
                   child: Text("Далее"),
-                  onPressed: _tapNextButton
+                  onPressed: _tapNextButton//_tapNextButton
                 ),
               ),
               Expanded(
@@ -130,16 +134,27 @@ class _LoginWidgetState extends State<LoginWidget>{
     Map<String, String> headers = {"DeviceID" : deviceID, 'AppID': appID,  'InstanceID': instanceID, 'Authorization': basic, 'accept': 'application/json'};
     Response response = await post(url, headers: headers);
     if (response.statusCode == 200)
-      {
-        String token = jsonDecode(response.body);
-        await SharedPreferencesWrap.setConfirmationToken(token);
-        print(response.body);
-        Navigator.of(context).pushNamed('/LoginCheckNumber');
-      }
+    {
+      String token = jsonDecode(response.body);
+      await SharedPreferencesWrap.setConfirmationToken(token);
+      Navigator.of(context).pushNamed('/LoginCheckNumber');
+    }
+    else {
+      final snackBar = SnackBar(
+        content: Text('Ошибка на сервере. Повторите запрос позже'),
+        duration: Duration(seconds: 3),
+        action: SnackBarAction(
+          label: 'Назад',
+          onPressed: () {},
+        ),
+      );
+      scaKey.currentState.showSnackBar(snackBar);
+      //print(response.body + " " + response.statusCode.toString());
+    }
   }
 
   void _getNews() async {
-    String page = "Profile";
+    String page = "Login";
     String From;
     String onlyNew;
     String accessToken;
@@ -162,14 +177,19 @@ class _LoginWidgetState extends State<LoginWidget>{
           bodyText: data['Body'].toString(),
           botSource: data['Source'].toString(),
           date: data['Date'].toString().replaceAll("T", ' '),
+          url: news[i]['ext_link'].toString(),
           )
         );
       }
-      print(newsCardWidget.length);
       setState(() {
 
       });
     }
+  }
+
+  void debugDeviceInfo() async {
+    var info = await SharedPreferencesWrap.getDeviceInfo();
+    print("DeviceID: " + info["deviceID"] + " " + " InstanceID " + info["instanceID"]);
   }
 
 }
@@ -186,7 +206,6 @@ class _LoginCheckNumberWidgetState extends State<LoginCheckNumberWidget>{
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _getNews();
   }
@@ -227,10 +246,8 @@ class _LoginCheckNumberWidgetState extends State<LoginCheckNumberWidget>{
                     keyboardType: TextInputType.numberWithOptions(),
                     textAlign: TextAlign.center,
                     maxLength: 4,
-                    autofocus: true,
                     style: TextStyle(fontSize: 16),
                     decoration: InputDecoration(
-                        hintText: '****',
                         border: OutlineInputBorder(),
                         labelText: 'Введите 4-х значный код из СМС'
                     ),
@@ -277,8 +294,7 @@ class _LoginCheckNumberWidgetState extends State<LoginCheckNumberWidget>{
   }
 
   void _getNews() async {
-    final String url = 'https://es.svodnik.pro:55443/es_test/ru_RU/hs/recipe/MainPage?Count=20';
-    String page;
+    final String url = 'https://es.svodnik.pro:55443/es_test/ru_RU/hs/recipe/MainPage?Count=20&Page=Login';
     String From;
     String onlyNew;
     String accessToken;
@@ -321,7 +337,7 @@ class _LoginCheckNumberWidgetState extends State<LoginCheckNumberWidget>{
       Map<String, String> headers = {"DeviceID": deviceID, "AppID": appID, "InstanceID": instanceID, "Authorization": 'Basic UmVjaXBlOip3c2VXU0U1NSo='};
       Response response = await put(url, headers: headers);
       if (response.statusCode == 200){
-        await SharedPreferencesWrap.setLogginInfo(true);
+        await SharedPreferencesWrap.setLoginInfo(true);
         Navigator.of(context).pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
       } else {
         print(response.statusCode);
@@ -343,7 +359,7 @@ class SplashScreen extends StatelessWidget{
               child: Text("009. Электронные рецепты", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
             ),
             Expanded(
-              child: Image.asset('assets/logo.png', width: 300,),
+              child: SvgPicture.asset('assets/logo.svg', width: 300),
             ),
             Expanded(
               child: Container(
