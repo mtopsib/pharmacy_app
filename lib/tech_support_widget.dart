@@ -9,6 +9,7 @@ class _TechSupportWidgetState extends State<TechSupportWidget>{
   
   List<Widget> messages = List<Widget>();
   String newMessage;
+  TextEditingController _textController = TextEditingController();
   
   @override
   void initState() {
@@ -50,6 +51,7 @@ class _TechSupportWidgetState extends State<TechSupportWidget>{
                     }
                   },
                   maxLines: 3,
+                  controller: _textController,
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: 'Введите текст сообщения'
@@ -74,6 +76,7 @@ class _TechSupportWidgetState extends State<TechSupportWidget>{
     if (formKey.currentState.validate()){
       formKey.currentState.save();
       messages.add(TechSupportQuestion(text: newMessage, date: "12.02.2020",));
+      _textController.text = "";
       setState(() {
       });
     }
@@ -103,7 +106,7 @@ class TechSupportAnswer extends StatelessWidget{
               ],
             ),
           ),
-          Text(text),
+          Container(child: Text(text, textAlign: TextAlign.right,), alignment: Alignment.centerRight,),
           Divider(color: Colors.black,)
         ],
       ),
@@ -132,7 +135,7 @@ class TechSupportQuestion extends StatelessWidget{
               ],
             ),
           ),
-          Text(text, textAlign: TextAlign.left,),
+          Container(child: Text(text, textAlign: TextAlign.left,), alignment: Alignment.centerLeft,),
           Divider(color: Colors.black,)
         ],
       ),

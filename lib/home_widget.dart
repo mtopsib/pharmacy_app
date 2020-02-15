@@ -20,10 +20,11 @@ class _HomeState extends State<Home>{
   @override
   void initState() {
     super.initState();
-    SharedPreferencesWrap.firstOpen();
-    SharedPreferencesWrap.getLoginInfo().then((logState) {
-      startPage = logState == false ? LoginWidget() : HomeLogged();
-      setState(() {
+    SharedPreferencesWrap.firstOpen().then((_){
+      SharedPreferencesWrap.getLoginInfo().then((logState) {
+        startPage = logState == false ? LoginWidget() : HomeLogged();
+        setState(() {
+        });
       });
     });
   }
@@ -126,11 +127,18 @@ class HomeListView extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
+    return RefreshIndicator(
+      onRefresh: () async {
+        await new Future.delayed(new Duration(seconds: 3));
+        return null;
+      },
+      child: ListView.builder(
+        physics: const AlwaysScrollableScrollPhysics(),
         itemCount: children.length,
         itemBuilder: (context, pos) => (
             children[pos]
         )
+      ),
     );
   }
 

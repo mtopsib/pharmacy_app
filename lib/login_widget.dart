@@ -8,6 +8,8 @@ import 'package:http/http.dart';
 import 'package:pharmacy_app/news_card_widget.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import 'info_wrapper.dart';
+
 class LoginWidget extends StatefulWidget{
   _LoginWidgetState createState() => _LoginWidgetState();
 }
@@ -101,7 +103,7 @@ class _LoginWidgetState extends State<LoginWidget>{
                   color: Color.fromARGB(255, 68, 156, 202),
                   textColor: Colors.black,
                   child: Text("Далее"),
-                  onPressed: _tapNextButton//_tapNextButton
+                  onPressed: _tapNextButton
                 ),
               ),
               Expanded(
@@ -126,11 +128,14 @@ class _LoginWidgetState extends State<LoginWidget>{
     if (formKey.currentState.validate()){
       formKey.currentState.save();
     }
+
+    var deviceInfo = await SharedPreferencesWrap.getDeviceInfo();
+
     String url = 'https://es.svodnik.pro:55443/es_test/ru_RU/hs/oauth/Phone/Login?Phone=' + phoneNumber;
-    String deviceID = '41bf1a6712334';
-    String appID = 'ea1f1bc1-c552-4787-8d99-9cac5b5b377d';
-    String instanceID = '41bf1a67-0653-4aac-8941-89c7b4016792';
-    String basic = 'Basic UmVjaXBlOip3c2VXU0U1NSo=';
+    String deviceID = deviceInfo['deviceID'];
+    String appID = deviceInfo['appID'];
+    String instanceID = deviceInfo['instanceID'];
+    String basic = deviceInfo['basic'];
     Map<String, String> headers = {"DeviceID" : deviceID, 'AppID': appID,  'InstanceID': instanceID, 'Authorization': basic, 'accept': 'application/json'};
     Response response = await post(url, headers: headers);
     if (response.statusCode == 200)
@@ -154,37 +159,16 @@ class _LoginWidgetState extends State<LoginWidget>{
   }
 
   void _getNews() async {
-    String page = "Login";
-    String From;
-    String onlyNew;
-    String accessToken;
-    String deviceID = '41bf1a6712334';
-    String appID = 'ea1f1bc1-c552-4787-8d99-9cac5b5b377d';
-    String instanceID = '41bf1a67-0653-4aac-8941-89c7b4016792';
-    String basic = 'Basic UmVjaXBlOip3c2VXU0U1NSo=';
-
-    final String url = 'https://es.svodnik.pro:55443/es_test/ru_RU/hs/recipe/MainPage?Count=' + newsCount.toString() + "&Page=$page";
-
-    Map<String, String> headers = {"DeviceID" : deviceID, 'AppID': appID,  'InstanceID': instanceID, 'Authorization': basic, 'accept': 'application/json'};
-    Response response = await get(url, headers: headers);
-    if (response.statusCode == 200){
-      List<dynamic> news = jsonDecode(response.body)['Records'];
-      //print(news[0]['Data']);
-      for(int i = 0; i < news.length; i++){
-        Map<String, dynamic> data = news[i]['Data'];
-        newsCardWidget.add(new NewsCard(
-          titleText: data['Header'].toString(),
-          bodyText: data['Body'].toString(),
-          botSource: data['Source'].toString(),
-          date: data['Date'].toString().replaceAll("T", ' '),
-          url: news[i]['ext_link'].toString(),
-          )
-        );
-      }
-      setState(() {
-
-      });
+    List<dynamic> news = await InfoWrapper.getNews("1", "Login", "false", "20");
+    if (news != null) {
+      newsCardWidget = news;
+    } else {
+      throw ("Error");
     }
+
+    setState(() {
+
+    });
   }
 
   void debugDeviceInfo() async {
@@ -294,33 +278,16 @@ class _LoginCheckNumberWidgetState extends State<LoginCheckNumberWidget>{
   }
 
   void _getNews() async {
-    final String url = 'https://es.svodnik.pro:55443/es_test/ru_RU/hs/recipe/MainPage?Count=20&Page=Login';
-    String From;
-    String onlyNew;
-    String accessToken;
-    String deviceID = '41bf1a6712334';
-    String appID = 'ea1f1bc1-c552-4787-8d99-9cac5b5b377d';
-    String instanceID = '41bf1a67-0653-4aac-8941-89c7b4016792';
-    String basic = 'Basic UmVjaXBlOip3c2VXU0U1NSo=';
-    Map<String, String> headers = {"DeviceID" : deviceID, 'AppID': appID,  'InstanceID': instanceID, 'Authorization': basic, 'accept': 'application/json'};
-    Response response = await get(url, headers: headers);
-    if (response.statusCode == 200){
-      List<dynamic> news = jsonDecode(response.body)['Records'];
-      //print(news[0]['Data']);
-      for(int i = 0; i < news.length; i++){
-        Map<String, dynamic> data = news[i]['Data'];
-        newsCardWidget.add(new NewsCard(
-          titleText: data['Header'].toString(),
-          bodyText: data['Body'].toString(),
-          botSource: data['Source'].toString(),
-          date: data['Date'].toString().replaceAll("T", ' '),
-        )
-        );
-      }
-      setState(() {
-
-      });
+    List<dynamic> news = await InfoWrapper.getNews("1", "Login", "false", "20");
+    if (news != null) {
+      newsCardWidget = news;
+    } else {
+      throw ("Error");
     }
+
+    setState(() {
+
+    });
   }
 
   void _onPressedNext() async {
@@ -329,18 +296,27 @@ class _LoginCheckNumberWidgetState extends State<LoginCheckNumberWidget>{
       formKey.currentState.save();
 
       final String token = await SharedPreferencesWrap.getConfirmationToken();
-      final String deviceID = '41bf1a6712334';
-      final String appID = 'ea1f1bc1-c552-4787-8d99-9cac5b5b377d';
-      final String instanceID = '41bf1a67-0653-4aac-8941-89c7b4016792';
-      final url = "https://es.svodnik.pro:55443/es_test/ru_RU/hs/oauth/Phone/Login?ConfirmationCode=$sms&ConfirmationToken=$token";//+token.replaceAll('"', '');
-      print(url);
-      Map<String, String> headers = {"DeviceID": deviceID, "AppID": appID, "InstanceID": instanceID, "Authorization": 'Basic UmVjaXBlOip3c2VXU0U1NSo='};
+      final info = await SharedPreferencesWrap.getDeviceInfo();
+      final String deviceID = info['deviceID'];
+      final String appID = info['appID'];
+      final String instanceID = info['instanceID'];
+      final url = "https://es.svodnik.pro:55443/es_test/ru_RU/hs/oauth/Phone/Login?ConfirmationCode=$sms&ConfirmationToken=$token";
+      Map<String, String> headers = {"DeviceID": deviceID, "AppID": appID, "InstanceID": instanceID, "Authorization": info['basic']};
+      //print(headers);
+      //print(token);
       Response response = await put(url, headers: headers);
       if (response.statusCode == 200){
         await SharedPreferencesWrap.setLoginInfo(true);
+        var tokens = jsonDecode(response.body);
+        print(tokens["RefreshToken"].toString() + " " + tokens["AccessToken"].toString());
+        SharedPreferencesWrap.setTokens(tokens["RefreshToken"].toString(), tokens["AccessToken"].toString());
         Navigator.of(context).pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
       } else {
         print(response.statusCode);
+        print(response.body);
+        //InfoWrapper.getAccessToken();
+        await SharedPreferencesWrap.setLoginInfo(true);
+        Navigator.of(context).pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false); //TODO: fix put request
       }
     }
   }
