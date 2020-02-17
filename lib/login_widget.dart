@@ -184,6 +184,11 @@ class LoginCheckNumberWidget extends StatefulWidget{
 
 class _LoginCheckNumberWidgetState extends State<LoginCheckNumberWidget>{
   final formKey = new GlobalKey<FormState>();
+  final scaKey = new GlobalKey<ScaffoldState>();
+  final snackBar = SnackBar(
+    content: Text("Проблемы с интернет соединением, повторите запрос позже"),
+    action: SnackBarAction(label: "Ок", onPressed: () {},),
+  );
 
   List<Widget> newsCardWidget = List<Widget>();
   String sms;
@@ -197,6 +202,7 @@ class _LoginCheckNumberWidgetState extends State<LoginCheckNumberWidget>{
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: scaKey,
       appBar: null,
       body: Container(
           margin: EdgeInsets.symmetric(vertical: 40, horizontal: 10),
@@ -312,11 +318,7 @@ class _LoginCheckNumberWidgetState extends State<LoginCheckNumberWidget>{
         SharedPreferencesWrap.setTokens(tokens["RefreshToken"].toString(), tokens["AccessToken"].toString());
         Navigator.of(context).pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
       } else {
-        print(response.statusCode);
-        print(response.body);
-        //InfoWrapper.getAccessToken();
-        await SharedPreferencesWrap.setLoginInfo(true);
-        Navigator.of(context).pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false); //TODO: fix put request
+        scaKey.currentState.showSnackBar(snackBar);
       }
     }
   }

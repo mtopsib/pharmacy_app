@@ -114,6 +114,14 @@ class PlaceHolderWidget extends StatelessWidget{
   Widget build(BuildContext context) {
     return Container(
         color: color,
+      child: FlatButton(
+        color: Colors.blue,
+        child: Text("Token debug"),
+        onPressed: () async {
+          var tokens = await SharedPreferencesWrap.getTokens();
+          print("Refresh token: " + tokens[0] + "\n" + "Access token: " + tokens[1]);
+        },
+      ),
     );
   }
 
