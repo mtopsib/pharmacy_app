@@ -80,15 +80,14 @@ class SharedPreferencesWrap{
     await SharedPreferencesWrap.setDeviceInfo(info);
   }
 
-  static Future<void> setTokens(String refresh, String access) async {
+  static Future<void> setRefreshToken(String refresh) async {
     final prefs = await SharedPreferences.getInstance();
+    prefs.setString("RefreshToken", refresh);
+  }
 
-    if (refresh != ""){
-      prefs.setString("RefreshToken", refresh);
-    }
-    if (access != ""){
-      prefs.setString("AccessToken", access);
-    }
+  static Future<void> setAccessToken(String access) async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString("AccessToken", access);
   }
 
   static Future<List<String>> getTokens() async {

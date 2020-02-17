@@ -315,7 +315,8 @@ class _LoginCheckNumberWidgetState extends State<LoginCheckNumberWidget>{
         await SharedPreferencesWrap.setLoginInfo(true);
         var tokens = jsonDecode(response.body);
         print(tokens["RefreshToken"].toString() + " " + tokens["AccessToken"].toString());
-        SharedPreferencesWrap.setTokens(tokens["RefreshToken"].toString(), tokens["AccessToken"].toString());
+        await SharedPreferencesWrap.setRefreshToken(tokens["RefreshToken"]);
+        await SharedPreferencesWrap.setAccessToken(tokens["AccessToken"]);
         Navigator.of(context).pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
       } else {
         scaKey.currentState.showSnackBar(snackBar);

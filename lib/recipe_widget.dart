@@ -21,7 +21,7 @@ class RecipeWidget extends StatelessWidget{
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Expanded(
-              flex: 5,
+              flex: 4,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -95,39 +95,36 @@ class RecipeWidget extends StatelessWidget{
                 ],
               ),
             ),
+            Divider(color: Colors.black,),
             // TODO: Исправить
             Expanded(
               flex: 2,
               child: ListView(
                 children: <Widget>[
-                  Expanded(
+                  Container(
+                    height: 200,
                     child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
+                      shrinkWrap: true,
+                      scrollDirection: Axis.horizontal,
                       itemCount: 20,
                       itemBuilder: (context, index){
                         return MedicamentCard();
                       },
                     ),
                   ),
-                  Expanded(
-                    child: ListView(
+                  Center(
+                    child: Column(
                       children: <Widget>[
-                        Center(
-                          child: Column(
-                            children: <Widget>[
-                              Text('Покажите этот QR код в аптеке при покупке по рецепту', textAlign: TextAlign.center,),
-                              Container(
-                                width: 100,
-                                height: 100,
-                                color: Colors.grey,
-                              )
-                            ],
-                          )
-                        ),
-
+                        Text('Покажите этот QR код в аптеке при покупке по рецепту', textAlign: TextAlign.center,),
+                        Container(
+                          margin: EdgeInsets.all(10),
+                          width: 200,
+                          height: 200,
+                          color: Colors.grey,
+                        )
                       ],
-                    ),
-                  )
+                    )
+                  ),
                 ]
               ),
             ),

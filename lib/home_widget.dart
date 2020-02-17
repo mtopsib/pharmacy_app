@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
+import 'package:pharmacy_app/info_wrapper.dart';
 import 'package:pharmacy_app/login_widget.dart';
 import 'package:pharmacy_app/news_card_widget.dart';
 import 'package:pharmacy_app/news_widget.dart';
@@ -125,31 +127,6 @@ class PlaceHolderWidget extends StatelessWidget{
     );
   }
 
-
-} //Widget for testing
-
-class HomeListView extends StatelessWidget{
-  final List<Widget> children;
-
-  const HomeListView({Key key, @required this.children}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return RefreshIndicator(
-      onRefresh: () async {
-        await new Future.delayed(new Duration(seconds: 3));
-        return null;
-      },
-      child: ListView.builder(
-        physics: const AlwaysScrollableScrollPhysics(),
-        itemCount: children.length,
-        itemBuilder: (context, pos) => (
-            children[pos]
-        )
-      ),
-    );
-  }
-
 }
 
 class HomePageWidget extends StatefulWidget{
@@ -158,10 +135,6 @@ class HomePageWidget extends StatefulWidget{
 
 class _HomePageWidgetState extends State<HomePageWidget>{
   final random = Random();
-
-  List<Widget> homeListViewWidgets;
-  List<Widget> currentHomeListViewWidgets;
-
   final Widget newsCard = new NewsCard(
       titleText: 'Новое приложение для электронных рецептов',
       bodyText: 'Сегодня на аппаратном совещании о развитии региональных авиаперевозок доложили гендиректор ООО «Международный Аэропорт Кемерово имени ...',
@@ -184,13 +157,17 @@ class _HomePageWidgetState extends State<HomePageWidget>{
   );
 
   int _selectedValue = 0;
+  List<Widget> mainContent = new List<Widget>();
 
   @override
   void initState() {
     super.initState();
-    homeListViewWidgets = List<Widget>.generate(20, (index) => random.nextInt(2) == 0 ? newsCard : recipeWidget);
-    currentHomeListViewWidgets = homeListViewWidgets;
-  }
+    mainContent.add(newsCard);
+    mainContent.add(recipeWidget);
+    setState(() {
+
+    });
+    }
 
   @override
   Widget build(BuildContext context) {
@@ -205,9 +182,10 @@ class _HomePageWidgetState extends State<HomePageWidget>{
                     child: ChoiceChip(
                       label: Text('Все'),
                       selected: 0 == _selectedValue,
-                      onSelected: (selecet) => setState(() {
+                      onSelected: (select) => setState(() {
                         _selectedValue = 0;
-                        _onTapAllChip();
+                        //refreshNews();
+                        //_onTapAllChip();
                       }),
                     )
                 ),
@@ -218,7 +196,7 @@ class _HomePageWidgetState extends State<HomePageWidget>{
                     label: Text('Новости'),
                     onSelected: (select) => setState((){
                       _selectedValue = 1;
-                      _onTapNewsChip();
+                      //_onTapNewsChip();
                     }),
                   ),
                 ),
@@ -228,7 +206,7 @@ class _HomePageWidgetState extends State<HomePageWidget>{
                     label: Text('Рецепты'),
                     onSelected: (select) => setState((){
                       _selectedValue = 2;
-                      _onTapRecipeChip();
+                      //_onTapRecipeChip();
                     }),
                   ),
                 ),
@@ -237,7 +215,16 @@ class _HomePageWidgetState extends State<HomePageWidget>{
           ),
           Container(
             child: Expanded(
-              child: HomeListView(children: currentHomeListViewWidgets),
+              child: RefreshIndicator(
+                onRefresh: () async { refreshNews();},
+                child: ListView.builder(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    itemCount: mainContent.length,
+                    itemBuilder: (context, pos) => (
+                        mainContent[pos]
+                    )
+                ),
+              )
             ),
           ),
         ],
@@ -245,7 +232,15 @@ class _HomePageWidgetState extends State<HomePageWidget>{
     );
   }
 
-  void _onTapAllChip(){
+  void refreshNews() async {
+    await InfoWrapper.refreshAccessToken();
+    mainContent = await InfoWrapper.getNews("", "Profile", "false", "");
+    setState(() {
+
+    });
+  }
+
+  /*void _onTapAllChip(){
     setState(() {
       currentHomeListViewWidgets = homeListViewWidgets;
     });
@@ -278,5 +273,5 @@ class _HomePageWidgetState extends State<HomePageWidget>{
       }
       print(currentHomeListViewWidgets.length);
     });
-  }
+  }*/
 }
