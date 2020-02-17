@@ -11,7 +11,7 @@ class RecipeWidget extends StatelessWidget{
     return Scaffold(
       appBar: AppBar(
           title: Text("Рецепт " + data['name'], style: TextStyle(fontSize: 16),),
-          actions: <Widget>[Icon(Icons.share)],
+          actions: <Widget>[Icon(Icons.share, color: Colors.black87)],
       ),
       body: Container(
         margin: EdgeInsets.all(5),
@@ -84,10 +84,8 @@ class RecipeWidget extends StatelessWidget{
                 color: Colors.blue,
               ),
             ),
-            MedicamentCard(),
-            /*Expanded(
+            Expanded(
               child: Container(
-                color: Colors.blue,
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
                   itemCount: 20,
@@ -96,7 +94,11 @@ class RecipeWidget extends StatelessWidget{
                   },
                 )
               ),
-            )*/
+            ),
+            Container(
+              color: Colors.blue,
+              height: 100,
+            )
           ],
         ),
       ),
@@ -150,6 +152,7 @@ class MedicamentCard extends StatelessWidget{
               ),
               Column(
                 mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: <Widget>[
                   Row(
                     children: <Widget>[
@@ -157,7 +160,7 @@ class MedicamentCard extends StatelessWidget{
                       Text("300 Р")
                     ],
                   ),
-                  Text('Кэшбэк до 10р')
+                  Text('Кэшбэк до 10р', style: TextStyle(fontSize: 10),)
                 ],
               )
             ]
