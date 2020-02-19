@@ -7,8 +7,8 @@ import 'package:pharmacy_app/shared_preferences_wrapper.dart';
 import 'package:http/http.dart';
 import 'package:pharmacy_app/news_card_widget.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-
 import 'info_wrapper.dart';
+//import 'package:geolocator/geolocator.dart';
 
 class LoginWidget extends StatefulWidget{
   _LoginWidgetState createState() => _LoginWidgetState();
@@ -27,6 +27,7 @@ class _LoginWidgetState extends State<LoginWidget>{
   @override
   void initState() {
     super.initState();
+    //getCurrentPosition();
     debugDeviceInfo();
     _getNews();
   }
@@ -175,6 +176,11 @@ class _LoginWidgetState extends State<LoginWidget>{
     var info = await SharedPreferencesWrap.getDeviceInfo();
     print("DeviceID: " + info["deviceID"] + " " + " InstanceID " + info["instanceID"]);
   }
+
+  /*void getCurrentPosition() async {
+    Position position = await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    print(position.toString());
+  }*/
 
 }
 

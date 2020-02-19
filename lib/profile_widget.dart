@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
+import 'package:pharmacy_app/camera_widget.dart';
 import 'package:pharmacy_app/shared_preferences_wrapper.dart';
 import 'dart:async';
 
@@ -179,6 +180,15 @@ class MyProfileState extends State<MyProfile>{
                   child: Text("Заполнить профиль"),
                   onPressed: () => Navigator.of(context).pushNamed('/EditProfile')
               ),
+            ),
+            Center(
+              child: Container(
+                child: FlatButton(
+                  child: Text("Отправить СНИЛС"),
+                  onPressed: () => Navigator.of(context).pushNamed('/Snils'),
+                  color: Colors.blueAccent,
+                ),
+              ),
             )
           ],
         ),
@@ -197,8 +207,7 @@ class ProfileEditState extends State<ProfileEdit>{
   final upTextStyle = const TextStyle(fontSize: 18, fontWeight: FontWeight.bold);
   final _key = GlobalKey<FormState>();
 
-  final snilsMask = MaskTextInputFormatter(mask: '###-###-###-##', filter: {"#": RegExp(r'[0-9]')});
-  final phoneMask = MaskTextInputFormatter(mask: '+7(###) ### ##-##', filter: {'#': RegExp(r'[0-9]')});
+  final phoneMask = MaskTextInputFormatter(mask: '###-###-##-##', filter: {'#': RegExp(r'[0-9]')});
   final dateMask = MaskTextInputFormatter(mask: '##/##/####', filter: {'#': RegExp(r'[0-9]')});
 
   String surname;
@@ -288,20 +297,15 @@ class ProfileEditState extends State<ProfileEdit>{
                 margin: EdgeInsets.symmetric(vertical: 10),
                 child: TextFormField(
                     validator: (value) {if (value.isEmpty)
-                    {return 'Введите СНИЛС';}
-                    else if (value.length < 14) {return null;}
+                    {return 'Введите город';}
                     else {
                       return null;}
                     },
-                    onSaved: (value) {snils = value; print(value);},
-                    keyboardType: TextInputType.numberWithOptions(),
-                    maxLength: 14,
-                    inputFormatters: [snilsMask],
+                    onSaved: (value) => town = value,
                     decoration: InputDecoration(
-                        hintText: "XXX-XXX-XXX-XX",
                         border: OutlineInputBorder(),
-                        suffixIcon: Icon(Icons.assignment_ind),
-                        labelText: "СНИЛС"
+                        suffixIcon: Icon(Icons.location_city),
+                        labelText: "Город"
                     )
                 ),
               ),
@@ -309,7 +313,7 @@ class ProfileEditState extends State<ProfileEdit>{
                 margin: EdgeInsets.symmetric(vertical: 10),
                 child: TextFormField(
                     validator: (value) {if (value.isEmpty){return 'Введите номер';}
-                    else if (value.length < 17){
+                    else if (value.length < 13){
                       return null;
                     }
                     else {
@@ -317,10 +321,12 @@ class ProfileEditState extends State<ProfileEdit>{
                     },
                   onSaved: (value) => number = value,
                   inputFormatters: [phoneMask],
-                  maxLength: 17,
+                  maxLength: 13,
                   keyboardType: TextInputType.numberWithOptions(),
                     decoration: InputDecoration(
-                      hintText: "+7(999) 999-99-99",
+                      hintText: "999-999-99-99",
+                      prefixText: "8-",
+                      prefixStyle: TextStyle(color: Colors.black, fontSize: 16),
                       border: OutlineInputBorder(),
                       suffixIcon: Icon(Icons.phone_android),
                       labelText: "Номер телефона"
@@ -376,4 +382,15 @@ class ProfileEditState extends State<ProfileEdit>{
     }
     return input[0].toUpperCase() + input.substring(1);
   }
+}
+
+class SnilsCameraWidget extends StatelessWidget{
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(),
+      body: CameraWidget(),
+    );
+  }
+
 }

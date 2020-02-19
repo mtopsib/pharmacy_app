@@ -43,6 +43,8 @@ class RouteGenerator{
         });
       case '/LoginCheckNumber':
         return MaterialPageRoute(builder: (_) => LoginCheckNumberWidget());
+      case '/Snils':
+        return MaterialPageRoute(builder: (_) => SnilsCameraWidget());
       default:
         return _errorRoute();
     }

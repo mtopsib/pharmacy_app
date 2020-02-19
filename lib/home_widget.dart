@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
+import 'package:pharmacy_app/camera_widget.dart';
 import 'package:pharmacy_app/info_wrapper.dart';
 import 'package:pharmacy_app/login_widget.dart';
 import 'package:pharmacy_app/news_card_widget.dart';
@@ -50,7 +51,7 @@ class _HomeLoggedState extends State<HomeLogged>{
   @override
   void initState(){
     super.initState();
-    _homeWidgets = [HomePageWidget(), PlaceHolderWidget(color: Colors.red,), PlaceHolderWidget(color: Colors.green,), MainProfile()];
+    _homeWidgets = [HomePageWidget(), PlaceHolderWidget(color: Colors.blue,), PlaceHolderWidget(color: Colors.green,), MainProfile()];
   }
 
   @override
