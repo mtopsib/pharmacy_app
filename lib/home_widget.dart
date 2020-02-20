@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:pharmacy_app/camera_widget.dart';
-import 'package:pharmacy_app/info_wrapper.dart';
+import 'package:pharmacy_app/server_wrapper.dart';
 import 'package:pharmacy_app/login_widget.dart';
 import 'package:pharmacy_app/news_card_widget.dart';
 import 'package:pharmacy_app/news_widget.dart';
@@ -234,8 +234,7 @@ class _HomePageWidgetState extends State<HomePageWidget>{
   }
 
   void refreshNews() async {
-    await InfoWrapper.refreshAccessToken();
-    mainContent = await InfoWrapper.getNews("", "Profile", "false", "");
+    mainContent = await ServerWrapper.getNewsCard("", "Profile", "false", "");
     setState(() {
 
     });

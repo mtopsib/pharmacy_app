@@ -7,7 +7,7 @@ import 'package:pharmacy_app/shared_preferences_wrapper.dart';
 import 'package:http/http.dart';
 import 'package:pharmacy_app/news_card_widget.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'info_wrapper.dart';
+import 'server_wrapper.dart';
 //import 'package:geolocator/geolocator.dart';
 
 class LoginWidget extends StatefulWidget{
@@ -131,8 +131,8 @@ class _LoginWidgetState extends State<LoginWidget>{
     }
 
     var deviceInfo = await SharedPreferencesWrap.getDeviceInfo();
-
-    String url = 'https://es.svodnik.pro:55443/es_test/ru_RU/hs/oauth/Phone/Login?Phone=' + phoneNumber;
+    print(phoneNumber);
+    String url = 'https://es.svodnik.pro:55443/es_test/ru_RU/hs/oauth/Phone/Login?Phone=8-' + phoneNumber;
     String deviceID = deviceInfo['deviceID'];
     String appID = deviceInfo['appID'];
     String instanceID = deviceInfo['instanceID'];
@@ -160,7 +160,7 @@ class _LoginWidgetState extends State<LoginWidget>{
   }
 
   void _getNews() async {
-    List<dynamic> news = await InfoWrapper.getNews("1", "Login", "false", "20");
+    List<dynamic> news = await ServerWrapper.getNewsCard("1", "Login", "false", "20");
     if (news != null) {
       newsCardWidget = news;
     } else {
@@ -290,7 +290,7 @@ class _LoginCheckNumberWidgetState extends State<LoginCheckNumberWidget>{
   }
 
   void _getNews() async {
-    List<dynamic> news = await InfoWrapper.getNews("1", "Login", "false", "20");
+    List<dynamic> news = await ServerWrapper.getNewsCard("1", "Login", "false", "20");
     if (news != null) {
       newsCardWidget = news;
     } else {

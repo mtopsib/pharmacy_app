@@ -6,6 +6,7 @@ import 'package:path/path.dart';
 import 'package:http/http.dart';
 import 'package:async/async.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:pharmacy_app/server_wrapper.dart';
 import 'package:pharmacy_app/shared_preferences_wrapper.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -100,22 +101,6 @@ class _CameraWidgetState extends State<CameraWidget>{
     );
   }
 
-  uploadSnils() async {
-    if (imagePath == null) return;
-    String base64Image = base64Encode(File(imagePath).readAsBytesSync());
-    String userID = "";
-    String url = "https://es.svodnik.pro:55443/es_test/ru_RU/hs/oauth/SNILS?UserID=$userID";
-    var tokens = await SharedPreferencesWrap.getTokens();
-    var info = await SharedPreferencesWrap.getDeviceInfo();
-    Map<String, String> headers = {"AccessToken": tokens[1], "DeviceID": info['deviceID'], "AppID": info["appID"], "InstanceID": info['instanceID']};
-
-    Response response = await put(url, headers: headers);
-    if (response.statusCode == 200){
-
-    }
-
-  }
-
   Future<void> _initializeCamera() async {
     cameras = await availableCameras();
     controller = CameraController(cameras[0], ResolutionPreset.medium);
@@ -137,6 +122,8 @@ class _CameraWidgetState extends State<CameraWidget>{
       print(path);
       imagePath = path;
       await controller.takePicture(path); //take photo
+      await ServerWrapper.uploadSnils(imagePath);
+      //Navigator.of(this.context).pop();
 
       setState(() {
 

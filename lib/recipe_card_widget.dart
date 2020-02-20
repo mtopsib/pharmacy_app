@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:pharmacy_app/server_wrapper.dart';
 
 class RecipeCard extends StatelessWidget{
   final String recipeName;
@@ -21,7 +22,7 @@ class RecipeCard extends StatelessWidget{
     var textStyle = TextStyle(fontSize: 10, color: Colors.black);
 
     return GestureDetector(
-      onTap: (){
+      onTap: () async {
         Map<String, String> data = {'name': recipeName, 'doctor': 'Айболит Иван Петрович', 'mnn': tradeName, 'activeSuspens': mnn, 'standartCount': standartCount,
         'dosage': dosage, 'form': form, 'duration': duration, 'tabletsPerDay': tabletsPerDay, 'description': "по 5 мг рвд на 30 дней", 'personName': personName,
         'hospital': 'Новокузнецкая клиническая больница №1'};

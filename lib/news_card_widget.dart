@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:pharmacy_app/news_widget.dart';
+import 'package:pharmacy_app/server_wrapper.dart';
 
 class NewsCard extends StatelessWidget{
+  final String newsID;
   final String titleText;
   final String bodyText;
   final String botSource;
   final String date;
   final String url;
 
-  const NewsCard({Key key, this.titleText, this.bodyText, this.botSource, this.date, this.url}) : super(key: key);
+  const NewsCard({Key key, this.titleText, this.bodyText, this.botSource, this.date, this.url, this.newsID}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +26,10 @@ class NewsCard extends StatelessWidget{
         ),
         height: 100.0,
         child: InkWell(
-        onTap: () => Navigator.of(context).pushNamed('/News', arguments: [titleText, botSource, date, bodyText, url]),
+        onTap: () {
+          readNews(newsID);
+          Navigator.of(context).pushNamed('/News', arguments: [titleText, botSource, date, bodyText, url]);
+          },
           child: Column(
             children: <Widget>[
               Container(
@@ -70,5 +75,10 @@ class NewsCard extends StatelessWidget{
           ),
         ),
     );
+  }
+
+  void readNews(String newsID) async {
+    await ServerWrapper.readNews(newsID);
+    await ServerWrapper.getNewsBody(newsID);
   }
 }

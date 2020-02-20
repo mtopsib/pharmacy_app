@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:pharmacy_app/camera_widget.dart';
+import 'package:pharmacy_app/server_wrapper.dart';
 import 'package:pharmacy_app/shared_preferences_wrapper.dart';
 import 'dart:async';
 
@@ -20,7 +21,10 @@ class MainProfile extends StatelessWidget{
             height: 50,
             child: FlatButton(
               child: Text('Мой профиль', style: textStyle,),
-              onPressed: () => Navigator.of(context).pushNamed('/MyProfile'),
+              onPressed: () {
+                  //await ServerWrapper.getProfileInfo(); //TODO: Получение информации профиля - исправить
+                  Navigator.of(context).pushNamed('/MyProfile');
+                },
             ),
           ),
           SizedBox(

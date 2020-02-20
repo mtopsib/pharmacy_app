@@ -38,6 +38,7 @@ dependencies:
   camera: 0.5.7+3
   image_picker: 0.6.3+1
   path_provider: 1.6.0
+  #geolocator: 5.2.1
 
 dev_dependencies:
   flutter_test:
