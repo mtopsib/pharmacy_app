@@ -2,99 +2,11 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
-import 'package:pharmacy_app/news_widget.dart';
 import 'package:pharmacy_app/recipe_card_widget.dart';
 import 'package:pharmacy_app/shared_preferences_wrapper.dart';
 import 'news_card_widget.dart';
 
 class ServerWrapper{
-
-  static Future<List<Widget>> getNewsCard(String from, String page, String onlyNew, String count) async {
-    var deviceInfo = await SharedPreferencesWrap.getDeviceInfo();
-    final tokens = await SharedPreferencesWrap.getTokens();
-    List<Widget> contentWidgets = new List<Widget>();
-
-    String accessToken = "";
-    if (tokens[1] != null){
-      accessToken = tokens[1];
-    }
-    String deviceID = deviceInfo['DeviceID'];
-    String appID = deviceInfo['AppID'];
-    String instanceID = deviceInfo['InstanceID'];
-    String basic = deviceInfo['Authorization'];
-
-    final String url = 'https://es.svodnik.pro:55443/es_test/ru_RU/hs/recipe/MainPage?Page=$page';//?Count=$count&Page=$page&OnlyNew=$onlyNew';
-
-    Map<String, String> headers = {"DeviceID" : deviceID, 'AppID': appID, 'InstanceID': instanceID, 'accept': 'application/json', 'AccessToken': accessToken, "Authorization": basic};
-    Response response = await get(url, headers: headers);
-    if (response.statusCode == 200){
-      print(response.body);
-      List<dynamic> content = jsonDecode(response.body)['Records'];
-      for (int i = 0; i < content.length; i++) {
-        Map<String, dynamic> data = content[i]['Data'];
-        if (content[i]["TypeData"] == "News"){
-          contentWidgets.add(NewsCard(
-            newsID: content[i]["ID"].toString(),
-            titleText: data['Header'].toString(),
-            bodyText: data['Body'].toString(),
-            botSource: data['Source'].toString(),
-            date: data['Date'].toString().replaceAll("T", ' '),
-            url: content[i]['ext_link'].toString(),
-          )
-          );
-        }
-        else if (content[i]["TypeData"] == "Recipe"){
-          contentWidgets.add(RecipeCard(
-            recipeName: data["Number"],
-            tradeName: "Анальгин",
-            mnn: "Метамизол натрия",
-            dosage: "0.03",
-            form: "тюб",
-            standartCount: "1",
-            duration: "20",
-            tabletsPerDay: "2",
-            source: "НГКМ №1",
-            date: data['Date'],
-            personName: data["Patient"],
-          ));
-        }
-
-      }
-      print(response.body);
-      return contentWidgets;
-    } else {
-      throw "Can't get news from server";
-    }
-  }
-
-  static Future<void> getNewsBody(String newsID) async {
-    var deviceInfo = await SharedPreferencesWrap.getDeviceInfo();
-
-    var url = "https://es.svodnik.pro:55443/es_test/ru_RU/hs/recipe/News?NewsID=$newsID";
-
-    Response response = await get(url, headers: deviceInfo);
-    if (response.statusCode == 200){
-      print(response.body);
-      //Map<String, String> content = jsonDecode(response.body);
-      //print(content['Header'] + "\n" + content['Body']);
-      return null;
-    } else {
-      throw "Cant't get news info";
-    }
-  }
-
-  static Future<void> deleteNews(String newsID) async {
-    var deviceInfo = await SharedPreferencesWrap.getDeviceInfo();
-
-    var url = "https://es.svodnik.pro:55443/es_test/ru_RU/hs/recipe/News?NewsID=$newsID";
-
-    Response response = await delete(url, headers: deviceInfo);
-    if (response.statusCode == 200){
-      print("succesful delete news");
-    } else {
-      throw "Cant't delete news";
-    }
-  }
 
   static Future<void> refreshAccessToken() async {
     final deviceInfo = await SharedPreferencesWrap.getDeviceInfo();
@@ -116,20 +28,6 @@ class ServerWrapper{
       throw "Неизвестный токен. Требуется регистрация пользователя.";
     }
 
-  }
-
-  static Future<void> readNews(String newsID) async{
-    var deviceInfo = await SharedPreferencesWrap.getDeviceInfo();
-
-    String url = "https://es.svodnik.pro:55443/es_test/ru_RU/hs/recipe/News?NewsID=$newsID";
-
-    Response response = await patch(url, headers: deviceInfo);
-    if (response.statusCode == 200){
-      print("News $newsID was read");
-    } else {
-      print(response.statusCode);
-      throw "Error while patch read news";
-    }
   }
 
   static Future<void> uploadSnils(String imagePath) async {
@@ -195,12 +93,15 @@ class ServerWrapper{
 class ServerRecipe{
   static Future<void> getRecipes({String page = "", String count = "", String from = "", String onlyNew = ""}) async {
     var deviceInfo = await SharedPreferencesWrap.getDeviceInfo();
+    if (deviceInfo["AccessToken"] == ""){
+      deviceInfo.remove("AccessToken");
+    }
 
     var url = "https://es.svodnik.pro:55443/es_test/ru_RU/hs/recipe/RecipeList";
 
     bool haveOneQuery = false;
     if (page != ""){
-      url += "&Page=$page";
+      url += "?Page=$page";
       haveOneQuery = true;
     }
     if (count != ""){
@@ -315,7 +216,7 @@ class ServerRecipe{
     }
   }
 
-  static void getGoodsList(String recipeID) async {
+  static Future<void> getGoodsList(String recipeID) async {
     var deviceInfo = await SharedPreferencesWrap.getDeviceInfo();
 
     var url = "https://es.svodnik.pro:55443/es_test/ru_RU/hs/recipe/ChoiceGoods?RecipeID=$recipeID";
@@ -328,7 +229,7 @@ class ServerRecipe{
     }
   }
 
-  static void handleGoods(String recipeID, String goodsID) async {
+  static Future<void> handleGoods(String recipeID, String goodsID) async {
     var deviceInfo = await SharedPreferencesWrap.getDeviceInfo();
 
     var url = "https://es.svodnik.pro:55443/es_test/ru_RU/hs/recipe/ChoiceGoods?RecipeID=$recipeID&GoodsID=$goodsID";
@@ -341,7 +242,7 @@ class ServerRecipe{
     }
   }
 
-  static void getFactoryList(String recipeID) async {
+  static Future<void> getFactoryList(String recipeID) async {
     var deviceInfo = await SharedPreferencesWrap.getDeviceInfo();
 
     var url = "https://es.svodnik.pro:55443/es_test/ru_RU/hs/recipe/ChoiceManufactured?RecipeID=$recipeID";
@@ -354,7 +255,7 @@ class ServerRecipe{
     }
   }
 
-  static void handleFactoryInRecipe(String recipeID, String manufacturedID) async {
+  static Future<void> handleFactoryInRecipe(String recipeID, String manufacturedID) async {
     var deviceInfo = await SharedPreferencesWrap.getDeviceInfo();
 
     var url = "https://es.svodnik.pro:55443/es_test/ru_RU/hs/recipe/ChoiceManufactured?RecipeID=$recipeID&ManufacturedID=$manufacturedID";
@@ -367,7 +268,7 @@ class ServerRecipe{
     }
   }
 
-  static void getPharmacies(String recipeID) async {
+  static Future<void> getPharmacies(String recipeID) async {
     var deviceInfo = await SharedPreferencesWrap.getDeviceInfo();
 
     var url = "https://es.svodnik.pro:55443/es_test/ru_RU/hs/recipe/WhereBuy?RecipeID=$recipeID";
@@ -380,7 +281,7 @@ class ServerRecipe{
     }
   }
 
-  static void handlePharmacies(String recipeID, String manufacturedID) async {
+  static Future<void> handlePharmacies(String recipeID, String manufacturedID) async {
     var deviceInfo = await SharedPreferencesWrap.getDeviceInfo();
 
     var url = "https://es.svodnik.pro:55443/es_test/ru_RU/hs/recipe/WhereBuy?RecipeID=$recipeID";
@@ -390,6 +291,182 @@ class ServerRecipe{
       print(response.body);
     } else {
       print("Не могу молучить список товаров");
+    }
+  }
+}
+
+class ServerNews{
+  static Future<List<Widget>> getNewsCard({String page = "", String from = "", String onlyNew = "", String count = ""}) async {
+    var deviceInfo = await SharedPreferencesWrap.getDeviceInfo();
+    List<Widget> contentWidgets = new List<Widget>();
+
+    if (deviceInfo["AccessToken"] == ""){
+      deviceInfo.remove("AccessToken");
+    }
+
+    String url = 'https://es.svodnik.pro:55443/es_test/ru_RU/hs/recipe/MainPage';
+
+    bool haveOneQuery = false;
+    if (page != ""){
+      url += "?Page=$page";
+      haveOneQuery = true;
+    }
+    if (count != ""){
+      if (haveOneQuery){
+        url += "&Count=";
+      } else {
+        url += "?Count=";
+        haveOneQuery = true;
+      }
+      url += count;
+    }
+    if (from != ""){
+      if (haveOneQuery){
+        url += "&from=";
+      } else {
+        url += "?from=";
+        haveOneQuery = true;
+      }
+      url += from;
+    }
+    if (onlyNew != ""){
+      if (haveOneQuery){
+        url += "&onlyNew=";
+      } else {
+        url += "?onlyNew=";
+        haveOneQuery = true;
+      }
+      url += onlyNew;
+    }
+
+    Response response = await get(url, headers: deviceInfo);
+
+    if (response.statusCode == 200){
+      List<dynamic> content = jsonDecode(response.body)['Records'];
+      for (int i = 0; i < content.length; i++) {
+        Map<String, dynamic> data = content[i]['Data'];
+        if (content[i]["TypeData"] == "News"){
+          contentWidgets.add(NewsCard(
+            newsID: content[i]["ID"].toString(),
+            titleText: data['Header'].toString(),
+            bodyText: data['Body'].toString(),
+            botSource: data['Source'].toString(),
+            date: data['Date'].toString().replaceAll("T", ' '),
+            url: content[i]['ext_link'].toString(),
+          )
+          );
+        }
+        else if (content[i]["TypeData"] == "Recipe"){
+          contentWidgets.add(RecipeCard(
+            recipeName: data["Number"].toString(),
+            tradeName: "Анальгин",
+            mnn: "Метамизол натрия",
+            dosage: "0.03",
+            form: "тюб",
+            standartCount: "1",
+            duration: "20",
+            tabletsPerDay: "2",
+            source: "НГКМ №1",
+            date: data['Date'].toString(),
+            personName: data["Patient"].toString(),
+            id: content[i]["ID"].toString(),
+          ));
+        }
+
+      }
+      return contentWidgets;
+    } else {
+      throw "Can't get news from server";
+    }
+  }
+
+  static Future<void> getPages() async {
+    final deviceInfo = await SharedPreferencesWrap.getDeviceInfo();
+
+    String url = 'https://es.svodnik.pro:55443/es_test/ru_RU/hs/recipe/MainPage?Page=Profile';
+
+    Response response = await get(url, headers: deviceInfo);
+
+    List<dynamic> pages = jsonDecode(response.body)["Pages"];
+
+    if (response.statusCode == 200){
+      print("Pages: " + pages.toString());
+    } else {
+      throw "Error while parsing pages";
+    }
+  }
+
+  static Future<Map<String, String>> getNewsBody(String newsID) async {
+    var deviceInfo = await SharedPreferencesWrap.getDeviceInfo();
+
+    var url = "https://es.svodnik.pro:55443/es_test/ru_RU/hs/recipe/News?NewsID=$newsID";
+
+    Response response = await get(url, headers: deviceInfo);
+    if (response.statusCode == 200){
+      Map<String, dynamic> content = jsonDecode(response.body);
+      Map<String, String> data = {"NotRead": content["NotRead"].toString(), "Header": content["Header"].toString(), "Body": content["Body"].toString(),
+      "Source": content["Source"].toString(), "Date": content["Date"].toString(), "ext_link":content["ext_link"].toString()};
+      return data;
+    } else {
+      throw "Cant't get news info";
+    }
+  }
+
+  static Future<void> deleteNews(String newsID) async {
+    var deviceInfo = await SharedPreferencesWrap.getDeviceInfo();
+
+    var url = "https://es.svodnik.pro:55443/es_test/ru_RU/hs/recipe/News?NewsID=$newsID";
+
+    Response response = await delete(url, headers: deviceInfo);
+    if (response.statusCode == 200){
+      print("succesful delete news");
+    } else {
+      throw "Cant't delete news";
+    }
+  }
+
+  static Future<void> readNews(String newsID) async{
+    var deviceInfo = await SharedPreferencesWrap.getDeviceInfo();
+
+    String url = "https://es.svodnik.pro:55443/es_test/ru_RU/hs/recipe/News?NewsID=$newsID";
+
+    Response response = await patch(url, headers: deviceInfo);
+    if (response.statusCode == 200){
+      print("News $newsID was read");
+    } else {
+      print(response.statusCode);
+      throw "Error while patch read news";
+    }
+  }
+
+}
+
+class ServerLogin{
+  static Future<Response> loginPhone(String phone) async {
+    var deviceInfo = await SharedPreferencesWrap.getDeviceInfo();
+    deviceInfo.remove("AccessToken");
+
+    String url = 'https://es.svodnik.pro:55443/es_test/ru_RU/hs/oauth/Phone/Login?Phone=8-$phone';
+
+    Response response = await post(url, headers: deviceInfo);
+    return response;
+  }
+}
+
+class ServerProfile{
+  static Future<void> getUserProfile({String userID = ""}) async {
+    final deviceInfo = await SharedPreferencesWrap.getDeviceInfo();
+
+    String url = 'https://es.svodnik.pro:55443/es_test/ru_RU/hs/oauth/Profile';
+    if (userID != ""){
+      url += "?UserID=$userID";
+    }
+
+    Response response = await get(url, headers: deviceInfo);
+    if (response.statusCode == 200){
+      print(response.body);
+    } else {
+      throw "Error while get user info";
     }
   }
 }

@@ -163,11 +163,7 @@ class _HomePageWidgetState extends State<HomePageWidget>{
   @override
   void initState() {
     super.initState();
-    mainContent.add(newsCard);
-    mainContent.add(recipeWidget);
-    setState(() {
-
-    });
+    refreshNews();
     }
 
   @override
@@ -234,44 +230,11 @@ class _HomePageWidgetState extends State<HomePageWidget>{
   }
 
   void refreshNews() async {
-    mainContent = await ServerWrapper.getNewsCard("", "Profile", "false", "");
+    ServerWrapper.refreshAccessToken();
+    mainContent = await ServerNews.getNewsCard(page: "Profile");
+    await ServerNews.getPages();
     setState(() {
 
     });
   }
-
-  /*void _onTapAllChip(){
-    setState(() {
-      currentHomeListViewWidgets = homeListViewWidgets;
-    });
-    /*setState(() {
-      currentHomeListViewWidgets = homeListViewWidgets;
-      print(currentHomeListViewWidgets.length);
-      homeListView = HomeListView(children: currentHomeListViewWidgets);
-    });*/
-  }
-
-  void _onTapNewsChip(){
-    setState(() {
-      currentHomeListViewWidgets = new List<Widget>();
-      for (int i = 0; i < homeListViewWidgets.length; i++){
-        if (homeListViewWidgets[i].toStringShort() == 'NewsCard'){
-          currentHomeListViewWidgets.add(homeListViewWidgets[i]);
-        }
-      }
-      print(currentHomeListViewWidgets.length);
-    });
-  }
-
-  void _onTapRecipeChip(){
-    setState(() {
-      currentHomeListViewWidgets = new List<Widget>();
-      for (int i = 0; i < homeListViewWidgets.length; i++){
-        if (homeListViewWidgets[i].toStringShort() == 'RecipeCard'){
-          currentHomeListViewWidgets.add(homeListViewWidgets[i]);
-        }
-      }
-      print(currentHomeListViewWidgets.length);
-    });
-  }*/
 }

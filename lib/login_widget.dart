@@ -5,7 +5,6 @@ import 'package:flutter_svg/svg.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:pharmacy_app/shared_preferences_wrapper.dart';
 import 'package:http/http.dart';
-import 'package:pharmacy_app/news_card_widget.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'server_wrapper.dart';
 //import 'package:geolocator/geolocator.dart';
@@ -18,6 +17,14 @@ class _LoginWidgetState extends State<LoginWidget>{
   final formKey = GlobalKey<FormState>();
   final phoneMask = MaskTextInputFormatter(mask: '###-###-##-##', filter: {'#': RegExp(r'[0-9]')});
   final scaKey = GlobalKey<ScaffoldState>();
+  final snackBar = SnackBar(
+    content: Text('Ошибка на сервере. Повторите запрос позже'),
+    duration: Duration(seconds: 3),
+    action: SnackBarAction(
+      label: 'Назад',
+      onPressed: () {},
+    ),
+  );
 
   String phoneNumber;
   int newsCount = 20;
@@ -27,8 +34,6 @@ class _LoginWidgetState extends State<LoginWidget>{
   @override
   void initState() {
     super.initState();
-    //getCurrentPosition();
-    debugDeviceInfo();
     _getNews();
   }
 
@@ -126,61 +131,31 @@ class _LoginWidgetState extends State<LoginWidget>{
   }
 
   void _tapNextButton() async {
-    if (formKey.currentState.validate()){
+    if (formKey.currentState.validate()) {
       formKey.currentState.save();
-    }
-
-    var deviceInfo = await SharedPreferencesWrap.getDeviceInfo();
-    print(phoneNumber);
-    String url = 'https://es.svodnik.pro:55443/es_test/ru_RU/hs/oauth/Phone/Login?Phone=8-' + phoneNumber;
-    String deviceID = deviceInfo['deviceID'];
-    String appID = deviceInfo['appID'];
-    String instanceID = deviceInfo['instanceID'];
-    String basic = deviceInfo['basic'];
-    Map<String, String> headers = {"DeviceID" : deviceID, 'AppID': appID,  'InstanceID': instanceID, 'Authorization': basic, 'accept': 'application/json'};
-    Response response = await post(url, headers: headers);
-    if (response.statusCode == 200)
-    {
-      String token = jsonDecode(response.body);
-      await SharedPreferencesWrap.setConfirmationToken(token);
-      Navigator.of(context).pushNamed('/LoginCheckNumber');
-    }
-    else {
-      final snackBar = SnackBar(
-        content: Text('Ошибка на сервере. Повторите запрос позже'),
-        duration: Duration(seconds: 3),
-        action: SnackBarAction(
-          label: 'Назад',
-          onPressed: () {},
-        ),
-      );
-      scaKey.currentState.showSnackBar(snackBar);
-      //print(response.body + " " + response.statusCode.toString());
+      Response response = await ServerLogin.loginPhone(phoneNumber);
+      if (response.statusCode == 200) {
+        String token = jsonDecode(response.body);
+        await SharedPreferencesWrap.setConfirmationToken(token);
+        Navigator.of(context).pushNamed('/LoginCheckNumber');
+      }
+      else {
+        scaKey.currentState.showSnackBar(snackBar);
+      }
     }
   }
 
   void _getNews() async {
-    List<dynamic> news = await ServerWrapper.getNewsCard("1", "Login", "false", "20");
+    var news = await ServerNews.getNewsCard(page: "Login");
     if (news != null) {
       newsCardWidget = news;
     } else {
       throw ("Error");
     }
-
     setState(() {
 
     });
   }
-
-  void debugDeviceInfo() async {
-    var info = await SharedPreferencesWrap.getDeviceInfo();
-    print("DeviceID: " + info["deviceID"] + " " + " InstanceID " + info["instanceID"]);
-  }
-
-  /*void getCurrentPosition() async {
-    Position position = await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-    print(position.toString());
-  }*/
 
 }
 
@@ -289,39 +264,22 @@ class _LoginCheckNumberWidgetState extends State<LoginCheckNumberWidget>{
     );
   }
 
-  void _getNews() async {
-    List<dynamic> news = await ServerWrapper.getNewsCard("1", "Login", "false", "20");
-    if (news != null) {
-      newsCardWidget = news;
-    } else {
-      throw ("Error");
-    }
-
-    setState(() {
-
-    });
-  }
-
   void _onPressedNext() async {
 
     if (formKey.currentState.validate()){
       formKey.currentState.save();
 
-      final String token = await SharedPreferencesWrap.getConfirmationToken();
+      final token = await SharedPreferencesWrap.getConfirmationToken();
       final info = await SharedPreferencesWrap.getDeviceInfo();
-      final String deviceID = info['deviceID'];
-      final String appID = info['appID'];
-      final String instanceID = info['instanceID'];
+      info.remove("AccessToken");
+
       final url = "https://es.svodnik.pro:55443/es_test/ru_RU/hs/oauth/Phone/Login?ConfirmationCode=$sms&ConfirmationToken=$token";
-      Map<String, String> headers = {"DeviceID": deviceID, "AppID": appID, "InstanceID": instanceID, "Authorization": info['basic']};
-      //print(headers);
-      //print(token);
-      Response response = await put(url, headers: headers);
+
+      Response response = await put(url, headers: info);
+
       if (response.statusCode == 200){
         await SharedPreferencesWrap.setLoginInfo(true);
         var tokens = jsonDecode(response.body);
-        print(response.body);
-        //print(tokens["RefreshToken"].toString() + " " + tokens["AccessToken"].toString());
         await SharedPreferencesWrap.setRefreshToken(tokens["RefreshToken"]);
         await SharedPreferencesWrap.setAccessToken(tokens["AccessToken"]);
         Navigator.of(context).pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
@@ -329,6 +287,18 @@ class _LoginCheckNumberWidgetState extends State<LoginCheckNumberWidget>{
         scaKey.currentState.showSnackBar(snackBar);
       }
     }
+  }
+
+  void _getNews() async {
+    var news = await ServerNews.getNewsCard(page: "Login");
+    if (news != null) {
+      newsCardWidget = news;
+    } else {
+      throw ("Error");
+    }
+    setState(() {
+
+    });
   }
 
 }

@@ -28,7 +28,7 @@ class NewsCard extends StatelessWidget{
         child: InkWell(
         onTap: () {
           readNews(newsID);
-          Navigator.of(context).pushNamed('/News', arguments: [titleText, botSource, date, bodyText, url]);
+          Navigator.of(context).pushNamed('/News', arguments: newsID);
           },
           child: Column(
             children: <Widget>[
@@ -78,7 +78,6 @@ class NewsCard extends StatelessWidget{
   }
 
   void readNews(String newsID) async {
-    await ServerWrapper.readNews(newsID);
-    await ServerWrapper.getNewsBody(newsID);
+    await ServerNews.readNews(newsID);
   }
 }

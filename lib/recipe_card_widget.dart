@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:pharmacy_app/server_wrapper.dart';
 
 class RecipeCard extends StatelessWidget{
+  final String id;
   final String recipeName;
   final String tradeName;
   final String mnn;
@@ -15,7 +16,7 @@ class RecipeCard extends StatelessWidget{
   final String personName;
   final String date;
 
-  const RecipeCard({Key key, this.recipeName, this.tradeName, this.mnn, this.dosage, this.form, this.standartCount, this.duration, this.tabletsPerDay, this.source, this.personName, this.date}) : super(key: key);
+  const RecipeCard({Key key, this.recipeName, this.tradeName, this.mnn, this.dosage, this.form, this.standartCount, this.duration, this.tabletsPerDay, this.source, this.personName, this.date, this.id}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

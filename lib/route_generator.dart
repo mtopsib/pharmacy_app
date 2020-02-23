@@ -17,8 +17,8 @@ class RouteGenerator{
       case '/':
         return MaterialPageRoute(builder: (_) => Home());
       case '/News':
-        if (args is List<String>){
-          return MaterialPageRoute(builder: (_) => NewsWidget(data: args));
+        if (args is String){
+          return MaterialPageRoute(builder: (_) => NewsWidget(args));
         } else {
           return _errorRoute();
         }
