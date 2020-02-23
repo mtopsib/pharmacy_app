@@ -104,85 +104,70 @@ class MyProfileState extends State<MyProfile>{
       body: Container(
         margin: EdgeInsets.all(14),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Padding(padding: topTextPadding ,child: Text("Фамилия", style: upTextStyle)),
-                  Text("$surname", style: botTextStyle,)
-                ],
-              ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Padding(padding: topTextPadding ,child: Text("Фамилия", style: upTextStyle)),
+                Text("$surname", style: botTextStyle,)
+              ],
             ),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Padding(child: Text("Имя", style: upTextStyle), padding: topTextPadding),
-                  Text("$name" ,style: botTextStyle,)
-                ],
-              ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Padding(child: Text("Имя", style: upTextStyle), padding: topTextPadding),
+                Text("$name" ,style: botTextStyle,)
+              ],
             ),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Padding(child: Text("Отчество", style: upTextStyle), padding: topTextPadding),
-                  Text("$patronymic", style: botTextStyle,)
-                ],
-              ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Padding(child: Text("Отчество", style: upTextStyle), padding: topTextPadding),
+                Text("$patronymic", style: botTextStyle,)
+              ],
             ),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Padding(child: Text("Дата рождения", style: upTextStyle), padding: topTextPadding),
-                  Text("$date", style: botTextStyle,)
-                ],
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Padding(child: Text("Дата рождения", style: upTextStyle), padding: topTextPadding),
+                Text("$date", style: botTextStyle,)
+              ],
               ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Padding(child: Text("Мой город", style: upTextStyle), padding: topTextPadding),
+                Text("$town", style: botTextStyle,)
+              ],
             ),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Padding(child: Text("Мой город", style: upTextStyle), padding: topTextPadding),
-                  Text("$town", style: botTextStyle,)
-                ],
-              ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Padding(child: Text("СНИЛС", style: upTextStyle,), padding: topTextPadding,),
+                Text("$snils", style: botTextStyle,)
+              ],
             ),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Padding(child: Text("СНИЛС", style: upTextStyle,), padding: topTextPadding,),
-                  Text("$snils", style: botTextStyle,)
-                ],
-              ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Padding(child: Text("Номер телефона", style: upTextStyle), padding: topTextPadding),
+                Text("$number", style: botTextStyle,)
+              ],
             ),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Padding(child: Text("Номер телефона", style: upTextStyle), padding: topTextPadding),
-                  Text("$number", style: botTextStyle,)
-                ],
-              ),
-            ),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Padding(child: Text("Электронная почта", style: upTextStyle), padding: topTextPadding),
-                  Text("$mail", style: botTextStyle,)
-                ],
-              ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Padding(child: Text("Электронная почта", style: upTextStyle), padding: topTextPadding),
+                Text("$mail", style: botTextStyle,)
+              ],
             ),
             Center(
               child: FlatButton(
-                  color: Colors.blueAccent,
-                  child: Text("Заполнить профиль"),
-                  onPressed: () => Navigator.of(context).pushNamed('/EditProfile')
+                color: Colors.blueAccent,
+                child: Text("Заполнить профиль"),
+                onPressed: () => Navigator.of(context).pushNamed('/EditProfile')
               ),
             ),
             Center(

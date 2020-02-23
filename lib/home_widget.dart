@@ -121,8 +121,8 @@ class PlaceHolderWidget extends StatelessWidget{
         color: Colors.blue,
         child: Text("Token debug"),
         onPressed: () async {
-          var tokens = await SharedPreferencesWrap.getTokens();
-          print("Refresh token: " + tokens[0] + "\n" + "Access token: " + tokens[1]);
+          //await ServerWrapper.getNewsBody("e7fd225c-02e6-40df-b2eb-5715723413b4");
+          await ServerRecipe.getRecipes();
         },
       ),
     );

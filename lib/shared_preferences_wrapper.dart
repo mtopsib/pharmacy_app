@@ -66,10 +66,11 @@ class SharedPreferencesWrap{
   }
 
   static Future<Map<String, String>> getDeviceInfo() async {
+    final tokens = await SharedPreferencesWrap.getTokens();
     final prefs = await SharedPreferences.getInstance();
     var deviceID = prefs.getString("DeviceID") ?? "";
     var instanceID = prefs.getString("InstanceID") ?? "";
-    Map<String, String> info = {"deviceID": deviceID, "instanceID": instanceID, "basic": "Basic UmVjaXBlOip3c2VXU0U1NSo=", "appID": "ea1f1bc1-c552-4787-8d99-9cac5b5b377d"};
+    Map<String, String> info = {"AccessToken": tokens[1], "DeviceID": deviceID, "InstanceID": instanceID, "Authorization": "Basic UmVjaXBlOip3c2VXU0U1NSo=", "AppID": "ea1f1bc1-c552-4787-8d99-9cac5b5b377d"};
     return info;
   }
 
@@ -77,6 +78,7 @@ class SharedPreferencesWrap{
   static void _initDeviceInfo() async {
     String uuid = Uuid().v1();
     String udid = await FlutterUdid.consistentUdid;
+    print("DeviceID $udid \n\n InstanceID $uuid");
     Map<String, String> info = {"deviceID": udid, "instanceID": uuid};
     await SharedPreferencesWrap.setDeviceInfo(info);
   }

@@ -320,7 +320,8 @@ class _LoginCheckNumberWidgetState extends State<LoginCheckNumberWidget>{
       if (response.statusCode == 200){
         await SharedPreferencesWrap.setLoginInfo(true);
         var tokens = jsonDecode(response.body);
-        print(tokens["RefreshToken"].toString() + " " + tokens["AccessToken"].toString());
+        print(response.body);
+        //print(tokens["RefreshToken"].toString() + " " + tokens["AccessToken"].toString());
         await SharedPreferencesWrap.setRefreshToken(tokens["RefreshToken"]);
         await SharedPreferencesWrap.setAccessToken(tokens["AccessToken"]);
         Navigator.of(context).pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
