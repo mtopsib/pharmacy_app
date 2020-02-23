@@ -122,7 +122,7 @@ class _CameraWidgetState extends State<CameraWidget>{
       print(path);
       imagePath = path;
       await controller.takePicture(path); //take photo
-      await ServerWrapper.uploadSnils(imagePath);
+      await ServerProfile.uploadSnils(imagePath);
       //Navigator.of(this.context).pop();
 
       setState(() {

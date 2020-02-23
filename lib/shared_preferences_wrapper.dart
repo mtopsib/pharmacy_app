@@ -74,7 +74,6 @@ class SharedPreferencesWrap{
     return info;
   }
 
-  //TODO: move to info_wrapper
   static void _initDeviceInfo() async {
     String uuid = Uuid().v1();
     String udid = await FlutterUdid.consistentUdid;
@@ -98,5 +97,15 @@ class SharedPreferencesWrap{
     final refresh = prefs.getString("RefreshToken") ?? "";
     final access = prefs.getString("AccessToken") ?? "";
     return [refresh, access];
+  }
+
+  static Future<void> setUserID(String userID) async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString("UserID", userID);
+  }
+
+  static Future<String> getUserID() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString("UserID");
   }
 }

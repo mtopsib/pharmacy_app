@@ -30,21 +30,6 @@ class ServerWrapper{
 
   }
 
-  static Future<void> uploadSnils(String imagePath) async {
-    if (imagePath == null) return;
-    String base64Image = base64Encode(File(imagePath).readAsBytesSync());
-    String userID = "";
-    String url = "https://es.svodnik.pro:55443/es_test/ru_RU/hs/oauth/SNILS?UserID=$userID";
-    var info = await SharedPreferencesWrap.getDeviceInfo();
-
-    Response response = await put(url, headers: info, body: base64Image);
-    if (response.statusCode == 200){
-      print("Успешная загрузка снилса на сервер");
-    } else {
-      throw "Ошибка при загрузке снилса";
-    }
-  }
-
   static Future<void> getProfileInfo([String userID]) async {
     var deviceInfo = await SharedPreferencesWrap.getDeviceInfo();
 
@@ -454,7 +439,7 @@ class ServerLogin{
 }
 
 class ServerProfile{
-  static Future<void> getUserProfile({String userID = ""}) async {
+  static Future<Map<String, dynamic>> getUserProfile({String userID = ""}) async {
     final deviceInfo = await SharedPreferencesWrap.getDeviceInfo();
 
     String url = 'https://es.svodnik.pro:55443/es_test/ru_RU/hs/oauth/Profile';
@@ -464,9 +449,109 @@ class ServerProfile{
 
     Response response = await get(url, headers: deviceInfo);
     if (response.statusCode == 200){
-      print(response.body);
+      Map<String, dynamic> data = jsonDecode(response.body);
+
+      return data;
     } else {
       throw "Error while get user info";
     }
   }
+
+  static Future<void> changeUserData(Map<String, dynamic> data) async {
+    var deviceInfo = await SharedPreferencesWrap.getDeviceInfo();
+    var userID = await SharedPreferencesWrap.getUserID();
+    if (userID == null){
+      return;
+    }
+
+    String url = 'https://es.svodnik.pro:55443/es_test/ru_RU/hs/oauth/Profile';
+
+    Response response = await patch(url, headers: deviceInfo, body: jsonEncode(data));
+    if (response.statusCode == 200){
+      print("Data succesfuly changed");
+    } else {
+      throw "Error while change user data";
+    }
+  }
+
+  static Future<void> addRelatives(String agree) async {
+    var deviceInfo = await SharedPreferencesWrap.getDeviceInfo();
+
+    String url = 'https://es.svodnik.pro:55443/es_test/ru_RU/hs/oauth/Profile';
+
+    Response response = await put(url, headers: deviceInfo);
+    if (response.statusCode == 200){
+      print(response.body);
+    } else {
+      throw "Error while change user data";
+    }
+  }
+
+  static Future<void> uploadSnils(String imagePath) async {
+    var userID = await SharedPreferencesWrap.getUserID();
+    if (userID == null) return;
+    if (imagePath == null) return;
+    String base64Image = base64Encode(File(imagePath).readAsBytesSync());
+    String url = "https://es.svodnik.pro:55443/es_test/ru_RU/hs/oauth/SNILS?UserID=$userID";
+    var info = await SharedPreferencesWrap.getDeviceInfo();
+
+    Response response = await put(url, headers: info, body: base64Image);
+    if (response.statusCode == 200){
+      print("Успешная загрузка снилса на сервер");
+    } else {
+      throw "Ошибка при загрузке снилса";
+    }
+  }
+
+}
+
+class ServerMessages{
+  static Future<String> getMessage(String messageID) async {
+    String url = "https://es.svodnik.pro:55443/es_test/ru_RU/hs/Message?MessageID=$messageID";
+
+    Response response = await get(url);
+    if (response.statusCode == 200){
+      return (jsonDecode(response.body).toString());
+      print(response.body);
+    } else {
+      throw "Error while getting message";
+    }
+  }
+
+  static Future<void> readMessage(String messageID) async {
+    String url = "https://es.svodnik.pro:55443/es_test/ru_RU/hs/Message?MessageID=$messageID";
+
+    Response response = await get(url);
+    if (response.statusCode == 200){
+      print("read message");
+    } else {
+      throw "Error while reading message";
+    }
+  }
+
+  static Future<void> postMessage(Map<String, String> data) async {
+    String userID = await SharedPreferencesWrap.getUserID();
+    if (userID == null) return;
+    String url = "https://es.svodnik.pro:55443/es_test/ru_RU/hs/Message?UserID=$userID";
+
+    Response response = await post(url, body: jsonEncode(data));
+    if (response.statusCode == 200){
+      print("ok");
+    } else {
+      throw "Error while posting message";
+    }
+  }
+
+  static Future<void> deleteMessage(String messageID) async {
+    String url = "https://es.svodnik.pro:55443/es_test/ru_RU/hs/Message?MessageID=$messageID";
+
+    Response response = await delete(url);
+    if (response.statusCode == 200){
+      print("delete message");
+    } else {
+      throw "Error while deleting message";
+    }
+  }
+
+
 }

@@ -21,8 +21,7 @@ class MainProfile extends StatelessWidget{
             height: 50,
             child: FlatButton(
               child: Text('Мой профиль', style: textStyle,),
-              onPressed: () {
-                  //await ServerWrapper.getProfileInfo(); //TODO: Получение информации профиля - исправить
+              onPressed: () async {
                   Navigator.of(context).pushNamed('/MyProfile');
                 },
             ),
@@ -66,11 +65,12 @@ class MyProfileState extends State<MyProfile>{
   String snils;
   String number;
   String mail;
+  String snilsConfirm;
 
   @override
   void initState() {
     super.initState();
-    SharedPreferencesWrap.getPersonData().then((data){
+    /*SharedPreferencesWrap.getPersonData().then((data){
       surname = data[0];
       name = data[1];
       patronymic = data[2];
@@ -82,8 +82,8 @@ class MyProfileState extends State<MyProfile>{
       setState(() {
 
       });
-    });
-
+    });*/
+    setDataFromServer();
   }
 
   @override
@@ -104,85 +104,123 @@ class MyProfileState extends State<MyProfile>{
       body: Container(
         margin: EdgeInsets.all(14),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Padding(padding: topTextPadding ,child: Text("Фамилия", style: upTextStyle)),
-                Text("$surname", style: botTextStyle,)
-              ],
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Padding(child: Text("Имя", style: upTextStyle), padding: topTextPadding),
-                Text("$name" ,style: botTextStyle,)
-              ],
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Padding(child: Text("Отчество", style: upTextStyle), padding: topTextPadding),
-                Text("$patronymic", style: botTextStyle,)
-              ],
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Padding(child: Text("Дата рождения", style: upTextStyle), padding: topTextPadding),
-                Text("$date", style: botTextStyle,)
-              ],
+            Expanded(
+              flex: 3,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Padding(padding: topTextPadding ,child: Text("Фамилия", style: upTextStyle)),
+                      Text("$surname", style: botTextStyle,)
+                    ],
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Padding(child: Text("Имя", style: upTextStyle), padding: topTextPadding),
+                      Text("$name" ,style: botTextStyle,)
+                    ],
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Padding(child: Text("Отчество", style: upTextStyle), padding: topTextPadding),
+                      Text("$patronymic", style: botTextStyle,)
+                    ],
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Padding(child: Text("Дата рождения", style: upTextStyle), padding: topTextPadding),
+                      Text("$date", style: botTextStyle,)
+                    ],
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Padding(child: Text("Мой город", style: upTextStyle), padding: topTextPadding),
+                      Text("$town", style: botTextStyle,)
+                    ],
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Padding(child: Text("СНИЛС", style: upTextStyle,), padding: topTextPadding,),
+                      Text("$snils", style: botTextStyle,)
+                    ],
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Padding(child: Text("Номер телефона", style: upTextStyle), padding: topTextPadding),
+                      Text("$number", style: botTextStyle,)
+                    ],
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Padding(child: Text("Электронная почта", style: upTextStyle), padding: topTextPadding),
+                      Text("$mail", style: botTextStyle,)
+                    ],
+                  ),
+                ],
               ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Padding(child: Text("Мой город", style: upTextStyle), padding: topTextPadding),
-                Text("$town", style: botTextStyle,)
-              ],
             ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Padding(child: Text("СНИЛС", style: upTextStyle,), padding: topTextPadding,),
-                Text("$snils", style: botTextStyle,)
-              ],
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Padding(child: Text("Номер телефона", style: upTextStyle), padding: topTextPadding),
-                Text("$number", style: botTextStyle,)
-              ],
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Padding(child: Text("Электронная почта", style: upTextStyle), padding: topTextPadding),
-                Text("$mail", style: botTextStyle,)
-              ],
-            ),
-            Center(
-              child: FlatButton(
-                color: Colors.blueAccent,
-                child: Text("Заполнить профиль"),
-                onPressed: () => Navigator.of(context).pushNamed('/EditProfile')
-              ),
-            ),
-            Center(
-              child: Container(
-                child: FlatButton(
-                  child: Text("Отправить СНИЛС"),
-                  onPressed: () => Navigator.of(context).pushNamed('/Snils'),
-                  color: Colors.blueAccent,
-                ),
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: <Widget>[
+                  FlatButton(
+                      color: Colors.blueAccent,
+                      child: Text("Заполнить профиль"),
+                      onPressed: () => Navigator.of(context).pushNamed('/EditProfile')
+                  ),
+                  FlatButton(
+                    child: Text("Отправить СНИЛС"),
+                    onPressed: () => Navigator.of(context).pushNamed('/Snils'),
+                    color: Colors.blueAccent,
+                  ),
+                ],
               ),
             )
           ],
         ),
       )
     );
+  }
+
+  void setDataFromServer() async {
+    final data = await ServerProfile.getUserProfile();
+    name = data["Name"].toString() ?? "";
+    surname = data["Surname"].toString() ?? "";
+    patronymic = data["MiddleName"].toString() ?? "";
+    date = data["Birthday"].toString().replaceAll("T", " ") ?? "";
+    number = "8-" + data["Phone"].toString() ?? "";
+    mail = data["eMail"].toString() ?? "";
+    town = data["Towns"][0]["Town"].toString() ?? "";
+    switch (data["SNILSConfirm"].toString()){
+      case "0":
+        snils = "СНИЛС не вводился";
+        break;
+      case "1":
+        snils = data["SNILS"].toString();
+        break;
+      case "2":
+        snils = "СНИЛС не распознан";
+        break;
+      case "3":
+        snils = "СНИЛС не распознан";
+        break;
+    }
+    setState(() {
+
+    });
   }
 
 }
@@ -344,12 +382,15 @@ class ProfileEditState extends State<ProfileEdit>{
                   onPressed: () async {
                     if (_key.currentState.validate()){
                       _key.currentState.save();
-                      SharedPreferencesWrap.setPersonData(this.surname, this.name, this.patronymic,
-                      this.date, this.town, this.snils, this.number, this.mail).then((_)
-                      {
-                        Navigator.of(context).pushNamedAndRemoveUntil('/MyProfile', ModalRoute.withName('/'));
-                      }
-                      );
+
+                      Map<String, dynamic> changeData = {"Nikname": "", "Surname": surname, "Name": name, "MiddleName": patronymic,
+                      "Gender": "M", "Birthday": date, "eMail": mail, "SNILSConfirm": "1", "ESIAConfirm": false, "Towns":
+                      [{"Region": "Kem obl", "Town": town, "ID": "string"}]};
+
+                      await SharedPreferencesWrap.setPersonData(this.surname, this.name, this.patronymic,
+                      this.date, this.town, this.snils, this.number, this.mail);
+
+                      Navigator.of(context).pushNamedAndRemoveUntil('/MyProfile', ModalRoute.withName('/'));
                     }
                   },
                 ),
