@@ -1,4 +1,5 @@
 import 'package:flutter_udid/flutter_udid.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:pharmacy_app/server_wrapper.dart';
 import 'package:pharmacy_app/login_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -107,5 +108,11 @@ class SharedPreferencesWrap{
   static Future<String> getUserID() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString("UserID");
+  }
+
+  static Future<String> getCurrentCity() async {
+    Position position = await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.best);
+    List<Placemark> placemark = await Geolocator().placemarkFromCoordinates(position.latitude, position.longitude);
+    return placemark[0].locality;
   }
 }

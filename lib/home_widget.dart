@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
-import 'package:pharmacy_app/camera_widget.dart';
 import 'package:pharmacy_app/server_wrapper.dart';
 import 'package:pharmacy_app/login_widget.dart';
 import 'package:pharmacy_app/news_card_widget.dart';
-import 'package:pharmacy_app/news_widget.dart';
 import 'package:pharmacy_app/recipe_card_widget.dart';
 import 'dart:math';
 import 'package:pharmacy_app/profile_widget.dart';
@@ -122,7 +119,7 @@ class PlaceHolderWidget extends StatelessWidget{
         child: Text("Token debug"),
         onPressed: () async {
           //await ServerWrapper.getNewsBody("e7fd225c-02e6-40df-b2eb-5715723413b4");
-          await ServerRecipe.getRecipes();
+          print(await SharedPreferencesWrap.getCurrentCity());
         },
       ),
     );

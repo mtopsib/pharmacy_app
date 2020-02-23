@@ -7,7 +7,6 @@ import 'package:pharmacy_app/shared_preferences_wrapper.dart';
 import 'package:http/http.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'server_wrapper.dart';
-//import 'package:geolocator/geolocator.dart';
 
 class LoginWidget extends StatefulWidget{
   _LoginWidgetState createState() => _LoginWidgetState();
