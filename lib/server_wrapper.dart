@@ -450,14 +450,14 @@ class ServerProfile{
     Response response = await get(url, headers: deviceInfo);
     if (response.statusCode == 200){
       Map<String, dynamic> data = jsonDecode(response.body);
-
+      await SharedPreferencesWrap.setUserID(data["UserID"].toString());
       return data;
     } else {
       throw "Error while get user info";
     }
   }
 
-  static Future<void> changeUserData(Map<String, dynamic> data) async {
+  static Future<void> changeUserData(Map<String, String> data) async {
     var deviceInfo = await SharedPreferencesWrap.getDeviceInfo();
     var userID = await SharedPreferencesWrap.getUserID();
     if (userID == null){
@@ -467,10 +467,11 @@ class ServerProfile{
     String url = 'https://es.svodnik.pro:55443/es_test/ru_RU/hs/oauth/Profile';
 
     Response response = await patch(url, headers: deviceInfo, body: jsonEncode(data));
+    print(jsonEncode(data));
     if (response.statusCode == 200){
       print("Data succesfuly changed");
     } else {
-      throw "Error while change user data";
+      print(response.body);
     }
   }
 
@@ -499,7 +500,7 @@ class ServerProfile{
     if (response.statusCode == 200){
       print("Успешная загрузка снилса на сервер");
     } else {
-      throw "Ошибка при загрузке снилса";
+      print(response.body);
     }
   }
 

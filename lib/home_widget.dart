@@ -2,8 +2,6 @@ import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:pharmacy_app/server_wrapper.dart';
 import 'package:pharmacy_app/login_widget.dart';
-import 'package:pharmacy_app/news_card_widget.dart';
-import 'package:pharmacy_app/recipe_card_widget.dart';
 import 'dart:math';
 import 'package:pharmacy_app/profile_widget.dart';
 import 'package:pharmacy_app/shared_preferences_wrapper.dart';

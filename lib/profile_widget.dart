@@ -41,11 +41,54 @@ class MainProfile extends StatelessWidget{
               child: Text('Тех. поддержка', style: textStyle,),
               onPressed: () => Navigator.of(context).pushNamed('/TechSupport'),
             ),
-          )
+          ),
+          Expanded(
+            child: Container(),
+          ),
+          ProfileNewsWidget()
         ],
       ),
     );
   }
+}
+
+class ProfileNewsWidget extends StatefulWidget{
+  _ProfileNewsWidgetState createState() => _ProfileNewsWidgetState();
+}
+
+class _ProfileNewsWidgetState extends State<ProfileNewsWidget>{
+  List<Widget> news = List();
+
+  @override
+  void initState() {
+    super.initState();
+    getNews();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (news.length > 0){
+      return Expanded(
+        child: ListView.builder(
+          itemCount: news.length,
+            itemBuilder: (context, index){
+              return news[index];
+            }
+        ),
+      );
+    } else {
+      return Container();
+    }
+  }
+
+  void getNews() async {
+    news = await ServerNews.getNewsCard(page: "Profile");
+    print("Get news");
+    setState(() {
+
+    });
+  }
+
 }
 
 class MyProfile extends StatefulWidget{
@@ -57,32 +100,19 @@ class MyProfileState extends State<MyProfile>{
   final botTextStyle = const TextStyle(fontSize: 14);
   final topTextPadding = const EdgeInsets.only(bottom: 8);
 
-  String surname;
-  String name;
-  String patronymic;
-  String date;
-  String town;
-  String snils;
-  String number;
-  String mail;
-  String snilsConfirm;
+  String surname = "";
+  String name = "";
+  String patronymic = "";
+  String date = "";
+  String town = "";
+  String snils = "";
+  String number = "";
+  String mail = "";
+  String snilsConfirm = "";
 
   @override
   void initState() {
     super.initState();
-    /*SharedPreferencesWrap.getPersonData().then((data){
-      surname = data[0];
-      name = data[1];
-      patronymic = data[2];
-      date = data[3];
-      town = data[4];
-      snils = data[5];
-      number = data[6];
-      mail = data[7];
-      setState(() {
-
-      });
-    });*/
     setDataFromServer();
   }
 
@@ -203,7 +233,11 @@ class MyProfileState extends State<MyProfile>{
     date = data["Birthday"].toString().replaceAll("T", " ") ?? "";
     number = "8-" + data["Phone"].toString() ?? "";
     mail = data["eMail"].toString() ?? "";
-    town = data["Towns"][0]["Town"].toString() ?? "";
+    try{
+      town = data["Towns"][0]["Town"].toString() ?? "";
+    } catch (e){
+      town = "";
+    }
     switch (data["SNILSConfirm"].toString()){
       case "0":
         snils = "СНИЛС не вводился";
@@ -215,7 +249,7 @@ class MyProfileState extends State<MyProfile>{
         snils = "СНИЛС не распознан";
         break;
       case "3":
-        snils = "СНИЛС не распознан";
+        snils = "СНИЛС на распознавании";
         break;
     }
     setState(() {
@@ -232,19 +266,21 @@ class ProfileEdit extends StatefulWidget{
 class ProfileEditState extends State<ProfileEdit>{
   final topTextPadding = const EdgeInsets.only(bottom: 8);
   final upTextStyle = const TextStyle(fontSize: 18, fontWeight: FontWeight.bold);
+
   final _key = GlobalKey<FormState>();
 
-  final phoneMask = MaskTextInputFormatter(mask: '###-###-##-##', filter: {'#': RegExp(r'[0-9]')});
+  //final phoneMask = MaskTextInputFormatter(mask: '###-###-##-##', filter: {'#': RegExp(r'[0-9]')});
   final dateMask = MaskTextInputFormatter(mask: '##/##/####', filter: {'#': RegExp(r'[0-9]')});
 
   String surname;
   String name;
   String patronymic;
   String date;
-  String town;
-  String snils;
-  String number;
+  //String town;
+  //String snils;
+  //String number;
   String mail;
+  bool male = true;
 
   @override
   Widget build(BuildContext context) {
@@ -253,9 +289,10 @@ class ProfileEditState extends State<ProfileEdit>{
       child: ListView(
         children: [
           Form(
-          key: _key,
-          child: Column(
+            key: _key,
+            child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Container(
                 margin: EdgeInsets.symmetric(vertical: 10),
@@ -320,7 +357,7 @@ class ProfileEditState extends State<ProfileEdit>{
                     )
                 ),
               ),
-              Container(
+              /*Container(
                 margin: EdgeInsets.symmetric(vertical: 10),
                 child: TextFormField(
                     validator: (value) {if (value.isEmpty)
@@ -335,8 +372,8 @@ class ProfileEditState extends State<ProfileEdit>{
                         labelText: "Город"
                     )
                 ),
-              ),
-              Container(
+              ),*/
+              /*Container(
                 margin: EdgeInsets.symmetric(vertical: 10),
                 child: TextFormField(
                     validator: (value) {if (value.isEmpty){return 'Введите номер';}
@@ -359,7 +396,7 @@ class ProfileEditState extends State<ProfileEdit>{
                       labelText: "Номер телефона"
                     )
                 ),
-              ),
+              ),*/
               Container(
                 margin: EdgeInsets.symmetric(vertical: 10),
                 child: TextFormField(
@@ -372,7 +409,29 @@ class ProfileEditState extends State<ProfileEdit>{
                     )
                 ),
               ),
+              Text("Пол", style: TextStyle(fontSize: 20),),
               Container(
+                child: Row(
+                  children: <Widget>[
+                    ChoiceChip(
+                      onSelected: (_) {setState(() {male = true;});},
+                      label: Text("Мужской"),
+                      selected: male == true,
+                    ),
+                    Container(
+                      width: 10,
+                    ),
+                    ChoiceChip(
+                      onSelected: (_) {setState(() {male = false;});},
+                      label: Text("Женский"),
+                      selected: male == false,
+                    ),
+                  ],
+                ),
+              ),
+
+              Container(
+                alignment: Alignment.bottomCenter,
                 margin: EdgeInsets.symmetric(vertical: 10),
                 width: double.infinity,
                 height: 40,
@@ -383,12 +442,9 @@ class ProfileEditState extends State<ProfileEdit>{
                     if (_key.currentState.validate()){
                       _key.currentState.save();
 
-                      Map<String, dynamic> changeData = {"Nikname": "", "Surname": surname, "Name": name, "MiddleName": patronymic,
-                      "Gender": "M", "Birthday": date, "eMail": mail, "SNILSConfirm": "1", "ESIAConfirm": false, "Towns":
-                      [{"Region": "Kem obl", "Town": town, "ID": "string"}]};
-
-                      await SharedPreferencesWrap.setPersonData(this.surname, this.name, this.patronymic,
-                      this.date, this.town, this.snils, this.number, this.mail);
+                      Map<String, String> data = {"Surname": surname, "Name": name, "MiddleName": patronymic,
+                      "Gender": male == true ? "М" : "Ж", "Birthday": date, "eMail": mail};
+                      await ServerProfile.changeUserData(data);
 
                       Navigator.of(context).pushNamedAndRemoveUntil('/MyProfile', ModalRoute.withName('/'));
                     }

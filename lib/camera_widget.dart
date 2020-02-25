@@ -119,15 +119,14 @@ class _CameraWidgetState extends State<CameraWidget>{
         (await getTemporaryDirectory()).path, //Temporary path//TODO: change IOS settings for path_provider
         '${DateTime.now()}.png',
       );
-      print(path);
+      //print(path);
       imagePath = path;
       await controller.takePicture(path); //take photo
       await ServerProfile.uploadSnils(imagePath);
-      //Navigator.of(this.context).pop();
+      Navigator.of(this.context).pop();
+      /*setState(() {
 
-      setState(() {
-
-      });
+      });*/
     } catch (e) {
       print(e);
     }
