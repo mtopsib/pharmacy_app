@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
 class RecipeWidget extends StatelessWidget{
   final Map<String, String> data;
@@ -116,11 +117,10 @@ class RecipeWidget extends StatelessWidget{
                     child: Column(
                       children: <Widget>[
                         Text('Покажите этот QR код в аптеке при покупке по рецепту', textAlign: TextAlign.center,),
-                        Container(
-                          margin: EdgeInsets.all(10),
-                          width: 200,
-                          height: 200,
-                          color: Colors.grey,
+                        QrImage(
+                          data: "Amazing qr",
+                          version: QrVersions.auto,
+                          size: 200.0,
                         )
                       ],
                     )

@@ -1,3 +1,4 @@
+import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:pharmacy_app/server_wrapper.dart';
 import 'package:pharmacy_app/login_widget.dart';
@@ -133,34 +134,13 @@ class HomePageWidget extends StatefulWidget{
 
 class _HomePageWidgetState extends State<HomePageWidget>{
   final random = Random();
-  final Widget newsCard = new NewsCard(
-      titleText: 'Новое приложение для электронных рецептов',
-      bodyText: 'Сегодня на аппаратном совещании о развитии региональных авиаперевозок доложили гендиректор ООО «Международный Аэропорт Кемерово имени ...',
-      botSource: 'Источник: РИА НОВОСТИ',
-      date: 'Дата: 01 января 2020',
-      url: "https://google.com",
-  );
-  final Widget recipeWidget = new RecipeCard(
-    recipeName: '32ЛП000001-000001',
-    tradeName: "Анальгин",
-    mnn: "Метамизол натрия (Metamizole sodium)",
-    dosage: "0.003",
-    form: "тюб",
-    standartCount: 1.toString(),
-    duration: 20.toString(),
-    tabletsPerDay: 2.toString(),
-    source: 'НКГБ №1',
-    personName: 'Иванов Иван Иванович',
-    date: '01 нваря 2020',
-  );
 
-  int _selectedValue = 0;
   List<Widget> mainContent = new List<Widget>();
 
   @override
   void initState() {
     super.initState();
-    refreshNews();
+      refreshNews();
     }
 
   @override
@@ -168,45 +148,7 @@ class _HomePageWidgetState extends State<HomePageWidget>{
     return Container(
       child: Column(
         children: <Widget>[
-          Container(
-            child: Row(
-              children: <Widget>[
-                Container(
-                    margin: EdgeInsets.only(left: 10, right: 10),
-                    child: ChoiceChip(
-                      label: Text('Все'),
-                      selected: 0 == _selectedValue,
-                      onSelected: (select) => setState(() {
-                        _selectedValue = 0;
-                        //refreshNews();
-                        //_onTapAllChip();
-                      }),
-                    )
-                ),
-                Container(
-                  margin: EdgeInsets.only(right: 10),
-                  child: ChoiceChip(
-                    selected: 1 == _selectedValue,
-                    label: Text('Новости'),
-                    onSelected: (select) => setState((){
-                      _selectedValue = 1;
-                      //_onTapNewsChip();
-                    }),
-                  ),
-                ),
-                Container(
-                  child: ChoiceChip(
-                    selected: 2 == _selectedValue,
-                    label: Text('Рецепты'),
-                    onSelected: (select) => setState((){
-                      _selectedValue = 2;
-                      //_onTapRecipeChip();
-                    }),
-                  ),
-                ),
-              ],
-            ),
-          ),
+          ChipsWidget(),
           Container(
             child: Expanded(
               child: RefreshIndicator(
@@ -228,10 +170,105 @@ class _HomePageWidgetState extends State<HomePageWidget>{
 
   void refreshNews() async {
     ServerWrapper.refreshAccessToken();
-    mainContent = await ServerNews.getNewsCard(page: "Profile");
-    await ServerNews.getPages();
+    mainContent = await ServerNews.getNewsCard();
     setState(() {
 
     });
   }
+}
+
+class ChipsWidget extends StatefulWidget{
+  _ChipsWidgetState createState() => _ChipsWidgetState();
+}
+
+class _ChipsWidgetState extends State<ChipsWidget>{
+  List<Widget> chips = new List<Widget>();
+  List<dynamic> homePages;
+
+  @override
+  void initState() {
+    super.initState();
+    getPages();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 5),
+      child: Row(
+        children: chips
+      ),
+    );
+  }
+
+  void getPages() async {
+    homePages = await ServerNews.getPages();
+    refreshChips();
+
+  }
+
+  void refreshChips(){
+    chips = new List<Widget>();
+    for (int i = 0; i < homePages.length; i++) {
+      chips.add(
+          ChipWithBadge(
+              name: homePages[i]["Name"].toString(),
+              newsCount: homePages[i]["New"].toString(),
+              id: i,
+              onTap: getPages
+          )
+      );
+    }
+    setState(() {
+    });
+  }
+}
+
+class ChipWithBadge extends StatefulWidget{
+  final Function onTap;
+  final String name;
+  final String newsCount;
+  final int id;
+
+  const ChipWithBadge({Key key, this.name, this.newsCount, this.id, this.onTap}) : super(key: key);
+
+  _ChipWithBadgeState createState() => _ChipWithBadgeState();
+}
+
+class _ChipWithBadgeState extends State<ChipWithBadge>{
+  static int activeWidget = 0;
+  @override
+  Widget build(BuildContext context) {
+    if (widget.newsCount != "0"){
+      return Padding(
+        padding: EdgeInsets.symmetric(horizontal: 5),
+        child: Badge(
+          position: BadgePosition.topRight(top: 0, right: -4),
+          badgeColor: Colors.red,
+          badgeContent: Text(widget.newsCount, style: TextStyle(fontSize: 10, color: Colors.white)),
+          child: ChoiceChip(
+            label: Text(widget.name),
+            onSelected: (_) {
+              activeWidget = widget.id;
+              widget.onTap();
+            },
+            selected: widget.id == activeWidget
+          ),
+        ),
+      );
+    } else {
+      return Padding(
+        padding: EdgeInsets.symmetric(horizontal: 5),
+        child: ChoiceChip(
+          label: Text(widget.name),
+          onSelected: (_) {
+            activeWidget = widget.id;
+            widget.onTap();
+          },
+          selected: widget.id == activeWidget,
+        ),
+      );
+    }
+  }
+
 }

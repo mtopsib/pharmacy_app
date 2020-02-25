@@ -365,17 +365,17 @@ class ServerNews{
     }
   }
 
-  static Future<void> getPages() async {
+  static Future<List<dynamic>> getPages() async {
     final deviceInfo = await SharedPreferencesWrap.getDeviceInfo();
 
-    String url = 'https://es.svodnik.pro:55443/es_test/ru_RU/hs/recipe/MainPage?Page=Profile';
+    String url = 'https://es.svodnik.pro:55443/es_test/ru_RU/hs/recipe/MainPage';
 
     Response response = await get(url, headers: deviceInfo);
 
     List<dynamic> pages = jsonDecode(response.body)["Pages"];
 
     if (response.statusCode == 200){
-      print("Pages: " + pages.toString());
+      return pages;
     } else {
       throw "Error while parsing pages";
     }
