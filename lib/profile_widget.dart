@@ -209,7 +209,8 @@ class MyProfileState extends State<MyProfile>{
                   FlatButton(
                       color: Colors.blueAccent,
                       child: Text("Заполнить профиль"),
-                      onPressed: () => Navigator.of(context).pushNamed('/EditProfile')
+                      onPressed: () => Navigator.of(context).pushNamed('/EditProfile', arguments: {
+                        "surname": surname, "name": name, "patronymic": patronymic, "date": convertDate(date), "mail": mail})
                   ),
                   FlatButton(
                     child: Text("Отправить СНИЛС"),
@@ -223,6 +224,11 @@ class MyProfileState extends State<MyProfile>{
         ),
       )
     );
+  }
+
+  static String convertDate(String date){
+    if (date.length < 10) return "";
+    return date[8] + date[9] + "/" + date[5] + date[6] + "/" +  date[0] + date[1] + date[2] + date[3] ;
   }
 
   void setDataFromServer() async {
@@ -260,6 +266,10 @@ class MyProfileState extends State<MyProfile>{
 }
 
 class ProfileEdit extends StatefulWidget{
+  final data;
+
+  const ProfileEdit({Key key, this.data}) : super(key: key);
+
   ProfileEditState createState() => ProfileEditState();
 }
 
@@ -272,14 +282,14 @@ class ProfileEditState extends State<ProfileEdit>{
   //final phoneMask = MaskTextInputFormatter(mask: '###-###-##-##', filter: {'#': RegExp(r'[0-9]')});
   final dateMask = MaskTextInputFormatter(mask: '##/##/####', filter: {'#': RegExp(r'[0-9]')});
 
-  String surname;
-  String name;
-  String patronymic;
-  String date;
+  String surname = "";
+  String name = "";
+  String patronymic = "";
+  String date = "";
   //String town;
   //String snils;
   //String number;
-  String mail;
+  String mail = "";
   bool male = true;
 
   @override
@@ -297,9 +307,11 @@ class ProfileEditState extends State<ProfileEdit>{
               Container(
                 margin: EdgeInsets.symmetric(vertical: 10),
                 child: TextFormField(
+                  initialValue: widget.data["surname"] ?? "",
                   validator: (value) {if (value.isEmpty){return 'Введите фамилию';} else {
                   return null;}
                   },
+
                   onSaved: (value) => surname = toUpFirstLetter(value),
                     decoration: InputDecoration(
                         hintText: "Ваша фамилия",
@@ -312,6 +324,7 @@ class ProfileEditState extends State<ProfileEdit>{
               Container(
                 margin: EdgeInsets.symmetric(vertical: 10),
                 child: TextFormField(
+                    initialValue: widget.data["name"] ?? "",
                     validator: (value) {if (value.isEmpty){return 'Введите имя';} else {
                       return null;}
                     },
@@ -327,6 +340,7 @@ class ProfileEditState extends State<ProfileEdit>{
               Container(
                 margin: EdgeInsets.symmetric(vertical: 10),
                 child: TextFormField(
+                    initialValue: widget.data["patronymic"] ?? "",
                     validator: (value) {if (value.isEmpty){return 'Введите отчество';} else {
                       return null;}
                     },
@@ -342,6 +356,7 @@ class ProfileEditState extends State<ProfileEdit>{
               Container(
                 margin: EdgeInsets.symmetric(vertical: 10),
                 child: TextFormField(
+                  initialValue: widget.data["date"] ?? "",
                     validator: (value) {if (value.isEmpty){return 'Введите дату рождения';} else if (value.length < 10){return null;} else {
                       return null;}
                     },
@@ -400,13 +415,14 @@ class ProfileEditState extends State<ProfileEdit>{
               Container(
                 margin: EdgeInsets.symmetric(vertical: 10),
                 child: TextFormField(
-                    onSaved: (value) => mail = value,
-                    decoration: InputDecoration(
-                        hintText: "example@mail.ru",
-                        border: OutlineInputBorder(),
-                        suffixIcon: Icon(Icons.mail),
-                        labelText: "Электронная почта"
-                    )
+                  initialValue: widget.data["mail"] ?? "",
+                  onSaved: (value) => mail = value,
+                  decoration: InputDecoration(
+                      hintText: "example@mail.ru",
+                      border: OutlineInputBorder(),
+                      suffixIcon: Icon(Icons.mail),
+                      labelText: "Электронная почта"
+                  )
                 ),
               ),
               Text("Пол", style: TextStyle(fontSize: 20),),
@@ -443,7 +459,7 @@ class ProfileEditState extends State<ProfileEdit>{
                       _key.currentState.save();
 
                       Map<String, String> data = {"Surname": surname, "Name": name, "MiddleName": patronymic,
-                      "Gender": male == true ? "М" : "Ж", "Birthday": date, "eMail": mail};
+                      "Gender": male == true ? "М" : "Ж", "Birthday": convertDate(date), "eMail": mail};
                       await ServerProfile.changeUserData(data);
 
                       Navigator.of(context).pushNamedAndRemoveUntil('/MyProfile', ModalRoute.withName('/'));
@@ -467,6 +483,11 @@ class ProfileEditState extends State<ProfileEdit>{
       return input;
     }
     return input[0].toUpperCase() + input.substring(1);
+  }
+
+  static String convertDate(String date){
+    String newDate = date[6] + date[7] + date[8] + date[9] + date[3] + date[4] + date[5] + date[0] + date[1] + date[2];
+    return newDate;
   }
 }
 

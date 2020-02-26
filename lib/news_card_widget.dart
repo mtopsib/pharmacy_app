@@ -9,8 +9,9 @@ class NewsCard extends StatelessWidget{
   final String botSource;
   final String date;
   final String url;
+  final bool read;
 
-  const NewsCard({Key key, this.titleText, this.bodyText, this.botSource, this.date, this.url, this.newsID}) : super(key: key);
+  const NewsCard({Key key, this.titleText, this.bodyText, this.botSource, this.date, this.url, this.newsID, this.read}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -32,16 +33,26 @@ class NewsCard extends StatelessWidget{
           },
           child: Column(
             children: <Widget>[
-              Container(
-                alignment: Alignment(-1.0, -1.0),
-                child: Text(
-                  titleText,
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                  textAlign: TextAlign.start,
-                  maxLines: 1,
-                ),
-                padding: EdgeInsets.fromLTRB(4, 4, 0, 0),
-                height: 30,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Container(
+                    width: 320,
+                    alignment: Alignment(-1.0, -1.0),
+                    child: Text(
+                      titleText,
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                      textAlign: TextAlign.start,
+                      maxLines: 1,
+                    ),
+                    padding: EdgeInsets.fromLTRB(4, 4, 0, 0),
+                    height: 30,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 5),
+                    child: Icon(Icons.star, size: 14, color: read ? Colors.white : Colors.black,),
+                  )
+                ],
               ),
               Expanded(
                 child: Container(

@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:pharmacy_app/server_wrapper.dart';
 
 class RecipeCard extends StatelessWidget{
   final String id;

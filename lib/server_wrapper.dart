@@ -327,6 +327,7 @@ class ServerNews{
     Response response = await get(url, headers: deviceInfo);
 
     if (response.statusCode == 200){
+      print(response.body);
       List<dynamic> content = jsonDecode(response.body)['Records'];
       for (int i = 0; i < content.length; i++) {
         Map<String, dynamic> data = content[i]['Data'];
@@ -338,7 +339,8 @@ class ServerNews{
             botSource: data['Source'].toString(),
             date: data['Date'].toString().replaceAll("T", ' '),
             url: content[i]['ext_link'].toString(),
-          )
+            read: content[i]['NotRead'] as bool,
+            )
           );
         }
         else if (content[i]["TypeData"] == "Recipe"){
@@ -353,7 +355,7 @@ class ServerNews{
             tabletsPerDay: "2",
             source: "НГКМ №1",
             date: data['Date'].toString(),
-            personName: data["Patient"].toString(),
+            personName: data["PatientFIO"].toString(),
             id: content[i]["ID"].toString(),
           ));
         }

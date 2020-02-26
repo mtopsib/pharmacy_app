@@ -55,7 +55,7 @@ class _HomeLoggedState extends State<HomeLogged>{
     return Scaffold(
       appBar: AppBar(
           title: Text(_titleTexts[_selectedIndex]),
-          leading: Container(
+          /*leading: Container(
             margin: EdgeInsets.all(3),
             decoration: BoxDecoration(
                 shape: BoxShape.circle,
@@ -65,7 +65,7 @@ class _HomeLoggedState extends State<HomeLogged>{
                     image: NetworkImage('https://sun9-34.userapi.com/c851528/v851528050/18be99/nCNut-hmPpI.jpg')
                 )
             ),
-          )
+          )*/
       ),
 
       body: _homeWidgets[_selectedIndex],
@@ -146,7 +146,15 @@ class _HomePageWidgetState extends State<HomePageWidget>{
     return Container(
       child: Column(
         children: <Widget>[
-          ChipsWidget(),
+          Container(
+            height: 50,
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              children: <Widget>[
+                ChipsWidget(),
+              ],
+            )
+          ),
           Container(
             child: Expanded(
               child: RefreshIndicator(
@@ -170,7 +178,6 @@ class _HomePageWidgetState extends State<HomePageWidget>{
     ServerWrapper.refreshAccessToken();
     mainContent = await ServerNews.getNewsCard();
     setState(() {
-
     });
   }
 }
@@ -206,13 +213,19 @@ class _ChipsWidgetState extends State<ChipsWidget>{
   }
 
   void refreshChips(){
-    chips = new List<Widget>();
+    chips.clear();
+    chips.add(ChipWithBadge(
+      name: "Все",
+      newsCount: "0",
+      id: 0,
+      onTap: getPages,
+    ));
     for (int i = 0; i < homePages.length; i++) {
       chips.add(
           ChipWithBadge(
               name: homePages[i]["Name"].toString(),
               newsCount: homePages[i]["New"].toString(),
-              id: i,
+              id: i + 1,
               onTap: getPages
           )
       );

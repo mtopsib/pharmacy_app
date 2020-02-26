@@ -38,7 +38,7 @@ class RouteGenerator{
         return MaterialPageRoute(builder: (_) {
           return Scaffold(
             appBar: AppBar(title: Text('Мой профиль')),
-            body: ProfileEdit(),
+            body: ProfileEdit(data: args),
           );
         });
       case '/LoginCheckNumber':
