@@ -182,7 +182,7 @@ class _HomePageWidgetState extends State<HomePageWidget>{
   void refreshNews() async {
     ServerWrapper.refreshAccessToken();
     mainContent = await ServerNews.getNewsCard();
-    persistantContent = mainContent;
+    filterNews();
     setState(() {
     });
   }
@@ -190,7 +190,11 @@ class _HomePageWidgetState extends State<HomePageWidget>{
   void filterNews() {
     List<Widget> filteredContent = new List();
     var chipName = _ChipWithBadgeState.activeWidgetName;
-    if (chipName == "Все") return;
+    if (chipName == "Все") {
+      persistantContent = mainContent;
+      setState(() {});
+      return;
+    }
     for (int i = 0; i < mainContent.length; i++){
       switch(mainContent[i].toStringShort()){
         case "NewsCard":
@@ -221,6 +225,7 @@ class ChipsWidget extends StatefulWidget{
 class _ChipsWidgetState extends State<ChipsWidget>{
   List<Widget> chips = new List<Widget>();
   List<dynamic> homePages;
+  List<GlobalKey> keys = new List();
 
   @override
   void initState() {
@@ -246,7 +251,9 @@ class _ChipsWidgetState extends State<ChipsWidget>{
 
   void refreshChips(){
     chips.clear();
+    keys.add(GlobalKey<_ChipWithBadgeState>());
     chips.add(ChipWithBadge(
+      key: keys[0],
       name: "Все",
       newsCount: "0",
       id: "Все",
@@ -256,15 +263,17 @@ class _ChipsWidgetState extends State<ChipsWidget>{
       },
     ));
     for (int i = 0; i < homePages.length; i++) {
+      keys.add(GlobalKey<_ChipWithBadgeState>());
       chips.add(
           ChipWithBadge(
-              name: homePages[i]["Name"].toString(),
-              newsCount: homePages[i]["New"].toString(),
-              id: homePages[i]["Name"].toString(),
-              onTap: () {
-                refreshChipsFast();
-                widget.onTap();
-              },
+            key: keys[i+1],
+            name: homePages[i]["Name"].toString(),
+            newsCount: homePages[i]["New"].toString(),
+            id: homePages[i]["Name"].toString(),
+            onTap: () {
+              refreshChipsFast();
+              widget.onTap();
+            },
           )
       );
     }
@@ -272,8 +281,8 @@ class _ChipsWidgetState extends State<ChipsWidget>{
   }
 
   void refreshChipsFast() {
-    for (int i = 0; i < chips.length; i++){
-      var chip = chips[i] as ChipWithBadge;
+    for (int i = 0; i < keys.length; i++){
+      keys[i].currentState.setState((){});
     }
   }
 }
@@ -304,7 +313,6 @@ class _ChipWithBadgeState extends State<ChipWithBadge>{
             label: Text(widget.name),
             onSelected: (_) {
               activeWidgetName = widget.id;
-              setState(() {});
               widget.onTap();
             },
             selected: widget.id == activeWidgetName
@@ -318,7 +326,6 @@ class _ChipWithBadgeState extends State<ChipWithBadge>{
           label: Text(widget.name),
           onSelected: (_) {
             activeWidgetName = widget.id;
-            setState(() {});
             widget.onTap();
           },
           selected: widget.id == activeWidgetName,
