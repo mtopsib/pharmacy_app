@@ -113,6 +113,8 @@ class SharedPreferencesWrap{
   static Future<String> getCurrentCity() async {
     Position position = await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.best);
     List<Placemark> placemark = await Geolocator().placemarkFromCoordinates(position.latitude, position.longitude);
+    print("Latitude: " + position.latitude.toString());
+    print("Longitude: " + position.longitude.toString());
     return placemark[0].locality;
   }
 }

@@ -162,14 +162,14 @@ class ServerRecipe{
     }
   }
 
-  static Future<void> getRecipeBody(String recipeID) async {
+  static Future<Map<String, dynamic>> getRecipeBody(String recipeID) async {
     var deviceInfo = await SharedPreferencesWrap.getDeviceInfo();
 
     var url = "https://es.svodnik.pro:55443/es_test/ru_RU/hs/recipe/Recipe?RecipeID=$recipeID";
 
     Response response = await get(url, headers: deviceInfo);
     if (response.statusCode == 200){
-      print(response.body);
+      return jsonDecode(response.body);
     } else {
       throw "Cant't get recipe body";
     }
@@ -327,7 +327,6 @@ class ServerNews{
     Response response = await get(url, headers: deviceInfo);
 
     if (response.statusCode == 200){
-      print(response.body);
       List<dynamic> content = jsonDecode(response.body)['Records'];
       for (int i = 0; i < content.length; i++) {
         Map<String, dynamic> data = content[i]['Data'];

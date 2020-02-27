@@ -1,5 +1,7 @@
 import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
+import 'package:pharmacy_app/main.dart';
+import 'package:pharmacy_app/news_card_widget.dart';
 import 'package:pharmacy_app/server_wrapper.dart';
 import 'package:pharmacy_app/login_widget.dart';
 import 'dart:math';
@@ -115,7 +117,7 @@ class PlaceHolderWidget extends StatelessWidget{
         color: color,
       child: FlatButton(
         color: Colors.blue,
-        child: Text("Token debug"),
+        child: Text("Geolocation debug"),
         onPressed: () async {
           //await ServerWrapper.getNewsBody("e7fd225c-02e6-40df-b2eb-5715723413b4");
           print(await SharedPreferencesWrap.getCurrentCity());
@@ -134,6 +136,7 @@ class _HomePageWidgetState extends State<HomePageWidget>{
   final random = Random();
 
   List<Widget> mainContent = new List<Widget>();
+  List<Widget> persistantContent = new List<Widget>();
 
   @override
   void initState() {
@@ -151,7 +154,9 @@ class _HomePageWidgetState extends State<HomePageWidget>{
             child: ListView(
               scrollDirection: Axis.horizontal,
               children: <Widget>[
-                ChipsWidget(),
+                ChipsWidget(
+                  onTap: filterNews,
+                ),
               ],
             )
           ),
@@ -161,9 +166,9 @@ class _HomePageWidgetState extends State<HomePageWidget>{
                 onRefresh: () async { refreshNews();},
                 child: ListView.builder(
                     physics: const AlwaysScrollableScrollPhysics(),
-                    itemCount: mainContent.length,
+                    itemCount: persistantContent.length,
                     itemBuilder: (context, pos) => (
-                        mainContent[pos]
+                        persistantContent[pos]
                     )
                 ),
               )
@@ -177,12 +182,39 @@ class _HomePageWidgetState extends State<HomePageWidget>{
   void refreshNews() async {
     ServerWrapper.refreshAccessToken();
     mainContent = await ServerNews.getNewsCard();
+    persistantContent = mainContent;
     setState(() {
     });
+  }
+
+  void filterNews() {
+    List<Widget> filteredContent = new List();
+    var chipName = _ChipWithBadgeState.activeWidgetName;
+    if (chipName == "Все") return;
+    for (int i = 0; i < mainContent.length; i++){
+      switch(mainContent[i].toStringShort()){
+        case "NewsCard":
+          if (chipName == "Новости"){
+            filteredContent.add(mainContent[i]);
+          }
+          break;
+        case "RecipeCard":
+          if (chipName == "Рецепты"){
+            filteredContent.add(mainContent[i]);
+          }
+          break;
+      }
+    }
+    persistantContent = filteredContent;
+    setState(() {});
   }
 }
 
 class ChipsWidget extends StatefulWidget{
+  final Function onTap;
+
+  const ChipsWidget({Key key, this.onTap}) : super(key: key);
+
   _ChipsWidgetState createState() => _ChipsWidgetState();
 }
 
@@ -217,21 +249,32 @@ class _ChipsWidgetState extends State<ChipsWidget>{
     chips.add(ChipWithBadge(
       name: "Все",
       newsCount: "0",
-      id: 0,
-      onTap: getPages,
+      id: "Все",
+      onTap: () {
+        refreshChipsFast();
+        widget.onTap();
+      },
     ));
     for (int i = 0; i < homePages.length; i++) {
       chips.add(
           ChipWithBadge(
               name: homePages[i]["Name"].toString(),
               newsCount: homePages[i]["New"].toString(),
-              id: i + 1,
-              onTap: getPages
+              id: homePages[i]["Name"].toString(),
+              onTap: () {
+                refreshChipsFast();
+                widget.onTap();
+              },
           )
       );
     }
-    setState(() {
-    });
+    setState(() {});
+  }
+
+  void refreshChipsFast() {
+    for (int i = 0; i < chips.length; i++){
+      var chip = chips[i] as ChipWithBadge;
+    }
   }
 }
 
@@ -239,7 +282,7 @@ class ChipWithBadge extends StatefulWidget{
   final Function onTap;
   final String name;
   final String newsCount;
-  final int id;
+  final String id;
 
   const ChipWithBadge({Key key, this.name, this.newsCount, this.id, this.onTap}) : super(key: key);
 
@@ -247,7 +290,7 @@ class ChipWithBadge extends StatefulWidget{
 }
 
 class _ChipWithBadgeState extends State<ChipWithBadge>{
-  static int activeWidget = 0;
+  static String activeWidgetName;
   @override
   Widget build(BuildContext context) {
     if (widget.newsCount != "0"){
@@ -260,10 +303,11 @@ class _ChipWithBadgeState extends State<ChipWithBadge>{
           child: ChoiceChip(
             label: Text(widget.name),
             onSelected: (_) {
-              activeWidget = widget.id;
+              activeWidgetName = widget.id;
+              setState(() {});
               widget.onTap();
             },
-            selected: widget.id == activeWidget
+            selected: widget.id == activeWidgetName
           ),
         ),
       );
@@ -273,13 +317,13 @@ class _ChipWithBadgeState extends State<ChipWithBadge>{
         child: ChoiceChip(
           label: Text(widget.name),
           onSelected: (_) {
-            activeWidget = widget.id;
+            activeWidgetName = widget.id;
+            setState(() {});
             widget.onTap();
           },
-          selected: widget.id == activeWidget,
+          selected: widget.id == activeWidgetName,
         ),
       );
     }
   }
-
 }

@@ -1,82 +1,89 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:pharmacy_app/server_wrapper.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
-class RecipeWidget extends StatelessWidget{
-  final Map<String, String> data;
-  static const TextStyle infoStyle = TextStyle(fontWeight: FontWeight.bold);
+class RecipeWidget extends StatefulWidget{
+  final recipeId;
 
-  const RecipeWidget({Key key, this.data}) : super(key: key);
+  const RecipeWidget({Key key, this.recipeId}) : super(key: key);
+
+  RecipeWidgetState createState() => RecipeWidgetState();
+}
+
+class RecipeWidgetState extends State<RecipeWidget>{
+  static const TextStyle infoStyle = TextStyle(fontWeight: FontWeight.bold);
+  Map<String, dynamic> data;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title: Text("Рецепт " + data['name'], style: TextStyle(fontSize: 16),),
+          title: Text("Рецепт " + widget.recipeId[1], style: TextStyle(fontSize: 16),),
           actions: <Widget>[Icon(Icons.share, color: Colors.black87)],
       ),
-      body: Container(
-        color: Color.fromARGB(255, 228, 246, 243),
-        margin: EdgeInsets.all(5),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Expanded(
-              flex: 4,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      body: FutureBuilder(
+        future: getRecipeData(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done){
+            return Container(
+              color: Color.fromARGB(255, 228, 246, 243),
+              padding: EdgeInsets.all(5),
+              child: ListView(
+                //physics: BouncingScrollPhysics(),
+                //crossAxisAlignment: CrossAxisAlignment.start,
+                //mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   Container(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: <Widget>[
                         Text("Пациент:"),
-                        Text(data['personName'])
+                        Text(data['Patient'].toString())
                       ],
                     ),
                     alignment: Alignment.topRight,
                   ),
                   Text('Лечебное учреждение:'),
-                  Text(data['hospital'], style: infoStyle,),
+                  Text(data['Hospital'].toString(), style: infoStyle,),
                   Text('Ваш врач:'),
-                  Text(data['doctor'], style: infoStyle,),
+                  Text(data['Doctor'].toString(), style: infoStyle,),
                   Text('Наименование МНН:'),
-                  Text(data['mnn'], style: infoStyle,),
+                  Text(data['Goods']["MNN"].toString(), style: infoStyle,),
                   Text("Действующее вещество:"),
-                  Text(data['activeSuspens'], style: infoStyle,),
+                  Text(data['Goods']["Purpose"].toString(), style: infoStyle,),
                   Row(
                     children: <Widget>[
                       Text('Количество стандартов: '),
-                      Text(data['standartCount'], style: infoStyle,),
+                      Text(data['Goods']["Count_standarts"].toString(), style: infoStyle,),
                     ],
                   ),
                   Row(
                     children: <Widget>[
                       Text('Дозировка: '),
-                      Text(data['dosage'], style: infoStyle,),
+                      Text(data['Goods']["Dose"].toString(), style: infoStyle,),
                     ],
                   ),
                   Row(
                     children: <Widget>[
                       Text('Форма выпуска: '),
-                      Text(data['form'], style: infoStyle,),
+                      Text(data['Goods']["Form_release"], style: infoStyle,),
                     ],
                   ),
                   Row(
                     children: <Widget>[
                       Text('Количество дней приёма препарата: '),
-                      Text(data['duration'], style: infoStyle,),
+                      Text(data['Goods']["Count_days_use_drug"].toString(), style: infoStyle,),
                     ],
                   ),
                   Row(
                     children: <Widget>[
                       Text('Количество приёма в день: '),
-                      Text(data['tabletsPerDay'], style: infoStyle,),
+                      Text(data['Goods']["Count_per_day"].toString(), style: infoStyle,),
                     ],
                   ),
                   Text('Описание приёма препарата врачем:'),
-                  Text(data['description'], style: infoStyle),
+                  Text(data['Goods']["DescriptionFromDoctor"].toString(), style: infoStyle),
                   Container(
                     alignment: Alignment.center,
                     child: FlatButton(
@@ -93,15 +100,7 @@ class RecipeWidget extends StatelessWidget{
                       color: Colors.blue,
                     ),
                   ),
-                ],
-              ),
-            ),
-            Divider(color: Colors.black,),
-            // TODO: Исправить
-            Expanded(
-              flex: 2,
-              child: ListView(
-                children: <Widget>[
+                  Divider(color: Colors.black,),
                   Container(
                     height: 200,
                     child: ListView.builder(
@@ -114,24 +113,34 @@ class RecipeWidget extends StatelessWidget{
                     ),
                   ),
                   Center(
-                    child: Column(
-                      children: <Widget>[
-                        Text('Покажите этот QR код в аптеке при покупке по рецепту', textAlign: TextAlign.center,),
-                        QrImage(
-                          data: "Amazing qr",
-                          version: QrVersions.auto,
-                          size: 200.0,
-                        )
-                      ],
-                    )
+                      child: Column(
+                        children: <Widget>[
+                          Text('Покажите этот QR код в аптеке при покупке по рецепту', textAlign: TextAlign.center,),
+                          QrImage(
+                            data: data["QRCode"].toString(),
+                            version: QrVersions.auto,
+                            size: 200.0,
+                          )
+                        ],
+                      )
                   ),
-                ]
+                ],
               ),
-            ),
-          ],
-        ),
+            );
+          }
+          else {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+        },
       ),
     );
+  }
+
+  Future<void> getRecipeData() async {
+    data = await ServerRecipe.getRecipeBody(widget.recipeId[0]);
+    print(data);
   }
 
 }

@@ -23,10 +23,8 @@ class RecipeCard extends StatelessWidget{
 
     return GestureDetector(
       onTap: () async {
-        Map<String, String> data = {'name': recipeName, 'doctor': 'Айболит Иван Петрович', 'mnn': tradeName, 'activeSuspens': mnn, 'standartCount': standartCount,
-        'dosage': dosage, 'form': form, 'duration': duration, 'tabletsPerDay': tabletsPerDay, 'description': "по 5 мг рвд на 30 дней", 'personName': personName,
-        'hospital': 'Новокузнецкая клиническая больница №1'};
-        Navigator.of(context).pushNamed("/RecipeWidget", arguments: data);
+
+        Navigator.of(context).pushNamed("/RecipeWidget", arguments: [id, recipeName]);
       },
       child: Container(
         margin: EdgeInsets.all(5),

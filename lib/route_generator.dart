@@ -26,8 +26,8 @@ class RouteGenerator{
       case '/TechSupport':
         return MaterialPageRoute(builder: (_) => TechSupportWidget());
       case '/RecipeWidget':
-        if (args is Map<String, String>){
-          return MaterialPageRoute(builder: (_) => RecipeWidget(data: args,));
+        if (args is List<String>){
+          return MaterialPageRoute(builder: (_) => RecipeWidget(recipeId: args,));
         } else {
           return _errorRoute();
         }
