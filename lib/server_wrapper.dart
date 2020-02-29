@@ -253,7 +253,7 @@ class ServerRecipe{
     }
   }
 
-  static Future<void> getPharmacies(String recipeID) async {
+  static Future<List<dynamic>> getPharmacies(String recipeID) async {
     var deviceInfo = await SharedPreferencesWrap.getDeviceInfo();
 
     var url = "https://es.svodnik.pro:55443/es_test/ru_RU/hs/recipe/WhereBuy?RecipeID=$recipeID";
@@ -261,21 +261,23 @@ class ServerRecipe{
     Response response = await get(url, headers: deviceInfo);
     if (response.statusCode == 200){
       print(response.body);
+      return jsonDecode(response.body);
     } else {
       print("Не могу молучить список аптек");
     }
   }
 
-  static Future<void> handlePharmacies(String recipeID, String manufacturedID) async {
+  static Future<void> handlePharmacies(String recipeID) async {
     var deviceInfo = await SharedPreferencesWrap.getDeviceInfo();
 
     var url = "https://es.svodnik.pro:55443/es_test/ru_RU/hs/recipe/WhereBuy?RecipeID=$recipeID";
 
     Response response = await put(url, headers: deviceInfo);
+    print(response.body);
     if (response.statusCode == 200){
       print(response.body);
     } else {
-      print("Не могу молучить список товаров");
+      print("Не могу зафиксировать выбранную аптеку");
     }
   }
 }
