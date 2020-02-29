@@ -219,6 +219,14 @@ class MyProfileState extends State<MyProfile>{
                     onPressed: () => Navigator.of(context).pushNamed('/Snils'),
                     color: Colors.blueAccent,
                   ),
+                  FlatButton(
+                    child: Text("Авторизация через Госуслуги"),
+                    onPressed: () async {
+                      var url = await ServerLogin.loginEsia();
+                      Navigator.of(context).pushNamed("/Webview", arguments: url);
+                    },
+                    color: Colors.blueAccent,
+                  )
                 ],
               ),
             )

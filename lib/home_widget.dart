@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 import 'package:pharmacy_app/main.dart';
 import 'package:pharmacy_app/news_card_widget.dart';
+import 'package:pharmacy_app/recipe_widget.dart';
 import 'package:pharmacy_app/server_wrapper.dart';
 import 'package:pharmacy_app/login_widget.dart';
 import 'dart:math';
@@ -50,7 +51,7 @@ class _HomeLoggedState extends State<HomeLogged>{
   @override
   void initState(){
     super.initState();
-    _homeWidgets = [HomePageWidget(), PlaceHolderWidget(color: Colors.blue,), PlaceHolderWidget(color: Colors.green,), MainProfile()];
+    _homeWidgets = [HomePageWidget(), ChooseRecipe(recipeID: "226292e1-f981-4aaa-93c9-3199c3df1802",), PlaceHolderWidget(color: Colors.green,), MainProfile()];
   }
 
   @override
@@ -108,9 +109,8 @@ class PlaceHolderWidget extends StatelessWidget{
       child: FlatButton(
         color: Colors.blue,
         child: Text("Geolocation debug"),
-        onPressed: () {
-          //await ServerWrapper.getNewsBody("e7fd225c-02e6-40df-b2eb-5715723413b4");
-          Navigator.of(context).pushNamed("/Webview");
+        onPressed: () async {
+
         },
       ),
     );
@@ -133,6 +133,7 @@ class _HomePageWidgetState extends State<HomePageWidget>{
   void initState() {
     super.initState();
       refreshNews();
+      webViewListener();
     }
 
   @override
@@ -204,10 +205,9 @@ class _HomePageWidgetState extends State<HomePageWidget>{
     setState(() {});
   }
 
-  //TODO: implement webview
-  void listenWebView(){
-    flutterWebViewPlugin.onUrlChanged.listen((url) {
-
+  void webViewListener(){
+    flutterWebViewPlugin.onUrlChanged.listen((url){
+      print(url);
     });
   }
 }
@@ -229,6 +229,8 @@ class _ChipsWidgetState extends State<ChipsWidget>{
   void initState() {
     super.initState();
     getPages();
+    _ChipWithBadgeState.activeWidgetName = "Все";
+    refreshChipsFast();
   }
 
   @override

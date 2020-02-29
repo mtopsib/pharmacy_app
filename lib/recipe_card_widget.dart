@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:pharmacy_app/server_wrapper.dart';
 
 class RecipeCard extends StatelessWidget{
   final String id;
@@ -23,7 +24,7 @@ class RecipeCard extends StatelessWidget{
 
     return GestureDetector(
       onTap: () async {
-
+        await ServerRecipe.readRecipe(id);
         Navigator.of(context).pushNamed("/RecipeWidget", arguments: [id, recipeName]);
       },
       child: Container(

@@ -41,7 +41,7 @@ class _LoginWidgetState extends State<LoginWidget>{
     return Scaffold(
       key: scaKey,
       body: Container(
-        margin: EdgeInsets.only(left: 20, top: 40, right: 20, bottom: 10),
+        margin: EdgeInsets.only(left: 10, top: 40, right: 10, bottom: 10),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[

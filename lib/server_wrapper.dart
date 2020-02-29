@@ -201,14 +201,14 @@ class ServerRecipe{
     }
   }
 
-  static Future<void> getGoodsList(String recipeID) async {
+  static Future<List<dynamic>> getGoodsList(String recipeID) async {
     var deviceInfo = await SharedPreferencesWrap.getDeviceInfo();
 
     var url = "https://es.svodnik.pro:55443/es_test/ru_RU/hs/recipe/ChoiceGoods?RecipeID=$recipeID";
 
     Response response = await get(url, headers: deviceInfo);
     if (response.statusCode == 200){
-      print(response.body);
+      return jsonDecode(response.body);
     } else {
       print("Не могу молучить список товаров");
     }
@@ -436,6 +436,24 @@ class ServerLogin{
 
     Response response = await post(url, headers: deviceInfo);
     return response;
+  }
+
+  static Future<String> loginEsia() async {
+    var info = await SharedPreferencesWrap.getDeviceInfo();
+    String url = "https://es.svodnik.pro:55443/es_test/ru_RU/hs/oauth/ESIA?url_to_redirect=https://009.am";
+
+    Response response = await get(url, headers: info);
+    if (response.statusCode == 200){
+      return jsonDecode(response.body)['redirect_url'].toString();
+    }
+  }
+
+  static Future<void> postDataFromEsia(String code, String state) async {
+    var info = await SharedPreferencesWrap.getDeviceInfo();
+
+    String url = "https://es.svodnik.pro:55443/es_test/ru_RU/hs/oauth/ESIA?code=$code&state=$state";
+
+    Response response = await post(url, headers: info);
   }
 }
 

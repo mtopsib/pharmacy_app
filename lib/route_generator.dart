@@ -47,7 +47,7 @@ class RouteGenerator{
       case '/Snils':
         return MaterialPageRoute(builder: (_) => SnilsCameraWidget());
       case "/Webview":
-        return MaterialPageRoute(builder: (_) => WebViewWidget());
+        return MaterialPageRoute(builder: (_) => WebViewWidget(url: args,));
       default:
         return _errorRoute();
     }
