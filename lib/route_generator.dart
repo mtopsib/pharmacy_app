@@ -8,6 +8,7 @@ import 'package:pharmacy_app/main.dart';
 import 'package:pharmacy_app/recipe_widget.dart';
 import 'package:pharmacy_app/shared_preferences_wrapper.dart';
 import 'package:pharmacy_app/tech_support_widget.dart';
+import 'package:pharmacy_app/webview_widget.dart';
 
 class RouteGenerator{
   static Route<dynamic> generateRoute(RouteSettings settings){
@@ -45,6 +46,8 @@ class RouteGenerator{
         return MaterialPageRoute(builder: (_) => LoginCheckNumberWidget());
       case '/Snils':
         return MaterialPageRoute(builder: (_) => SnilsCameraWidget());
+      case "/Webview":
+        return MaterialPageRoute(builder: (_) => WebViewWidget());
       default:
         return _errorRoute();
     }

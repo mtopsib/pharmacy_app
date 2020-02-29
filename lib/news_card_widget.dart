@@ -37,7 +37,7 @@ class NewsCard extends StatelessWidget{
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   Container(
-                    width: 320,
+                    width: 300,
                     alignment: Alignment(-1.0, -1.0),
                     child: Text(
                       titleText,

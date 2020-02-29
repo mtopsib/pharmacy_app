@@ -126,6 +126,8 @@ class MyProfileState extends State<MyProfile>{
             child: Text('Выйти'),
             onPressed: () async {
               SharedPreferencesWrap.setLoginInfo(false);
+              SharedPreferencesWrap.setConfirmationToken("");
+              SharedPreferencesWrap.setAccessToken("");
               Navigator.pushNamedAndRemoveUntil(context, '/', (Route<dynamic> route) => false);
             },
           )

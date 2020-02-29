@@ -1,5 +1,6 @@
 import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 import 'package:pharmacy_app/main.dart';
 import 'package:pharmacy_app/news_card_widget.dart';
 import 'package:pharmacy_app/server_wrapper.dart';
@@ -57,17 +58,6 @@ class _HomeLoggedState extends State<HomeLogged>{
     return Scaffold(
       appBar: AppBar(
           title: Text(_titleTexts[_selectedIndex]),
-          /*leading: Container(
-            margin: EdgeInsets.all(3),
-            decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(color: Colors.grey),
-                image: DecorationImage(
-                    fit: BoxFit.fill,
-                    image: NetworkImage('https://sun9-34.userapi.com/c851528/v851528050/18be99/nCNut-hmPpI.jpg')
-                )
-            ),
-          )*/
       ),
 
       body: _homeWidgets[_selectedIndex],
@@ -109,7 +99,7 @@ class _HomeLoggedState extends State<HomeLogged>{
 class PlaceHolderWidget extends StatelessWidget{
   final Color color;
 
-  const PlaceHolderWidget({Key key, this.color}) : super(key: key);
+  PlaceHolderWidget({Key key, this.color}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -118,9 +108,9 @@ class PlaceHolderWidget extends StatelessWidget{
       child: FlatButton(
         color: Colors.blue,
         child: Text("Geolocation debug"),
-        onPressed: () async {
+        onPressed: () {
           //await ServerWrapper.getNewsBody("e7fd225c-02e6-40df-b2eb-5715723413b4");
-          print(await SharedPreferencesWrap.getCurrentCity());
+          Navigator.of(context).pushNamed("/Webview");
         },
       ),
     );
@@ -134,6 +124,7 @@ class HomePageWidget extends StatefulWidget{
 
 class _HomePageWidgetState extends State<HomePageWidget>{
   final random = Random();
+  final flutterWebViewPlugin = FlutterWebviewPlugin();
 
   List<Widget> mainContent = new List<Widget>();
   List<Widget> persistantContent = new List<Widget>();
@@ -211,6 +202,13 @@ class _HomePageWidgetState extends State<HomePageWidget>{
     }
     persistantContent = filteredContent;
     setState(() {});
+  }
+
+  //TODO: implement webview
+  void listenWebView(){
+    flutterWebViewPlugin.onUrlChanged.listen((url) {
+
+    });
   }
 }
 
