@@ -290,6 +290,10 @@ class ServerNews{
     if (deviceInfo["AccessToken"] == ""){
       deviceInfo.remove("AccessToken");
     }
+    var geoInfo = await SharedPreferencesWrap.getCurrentCity();
+    deviceInfo["GEO_Width"] = geoInfo[1];
+    deviceInfo["GEO_Long"] = geoInfo[2];
+    deviceInfo["Town"] = geoInfo[0];
 
     String url = 'https://es.svodnik.pro:55443/es_test/ru_RU/hs/recipe/MainPage';
 

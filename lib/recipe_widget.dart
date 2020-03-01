@@ -378,7 +378,8 @@ class _ChooseRecipeState extends State<ChooseRecipe>{
   Future<void> getGoodsData() async {
     goods.clear();
     data = await ServerRecipe.getGoodsList(widget.recipeID);
-    city = await SharedPreferencesWrap.getCurrentCity();
+    var geoInfo = await SharedPreferencesWrap.getCurrentCity();
+    city = geoInfo[0];
     for (int i = 0; i < data.length; i++){
       goods.add(PharmacyCard(
         goodsID: data[i]["GoodsID"].toString(),

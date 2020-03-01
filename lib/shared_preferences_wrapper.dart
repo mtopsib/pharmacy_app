@@ -110,11 +110,11 @@ class SharedPreferencesWrap{
     return prefs.getString("UserID");
   }
 
-  static Future<String> getCurrentCity() async {
+  static Future<List<String>> getCurrentCity() async {
     Position position = await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.best);
     List<Placemark> placemark = await Geolocator().placemarkFromCoordinates(position.latitude, position.longitude);
     print("Latitude: " + position.latitude.toString());
     print("Longitude: " + position.longitude.toString());
-    return placemark[0].locality;
+    return [placemark[0].locality, position.latitude.toString(), position.longitude.toString()];
   }
 }

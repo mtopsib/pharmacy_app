@@ -57,7 +57,8 @@ class _WebViewWidgetState extends State<WebViewWidget>{
   }
 
   void postEsiaAndClose(String code, String state) async {
-    await ServerLogin.postDataFromEsia(code, state);
     Navigator.of(context).pop();
+    await ServerLogin.postDataFromEsia(code, state);
+    print("Successful posted data");
   }
 }
