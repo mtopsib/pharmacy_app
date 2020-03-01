@@ -45,13 +45,13 @@ class HomeLogged extends StatefulWidget{
 class _HomeLoggedState extends State<HomeLogged>{
   int _selectedIndex = 0;
 
-  List<String> _titleTexts = ['Главная', 'Рецепты', 'Главная - новость', 'профиль'];
+  List<String> _titleTexts = ['Главная', 'Профиль'];
   List<Widget> _homeWidgets;
 
   @override
   void initState(){
     super.initState();
-    _homeWidgets = [HomePageWidget(), ChooseRecipe(recipeID: "226292e1-f981-4aaa-93c9-3199c3df1802",), PlaceHolderWidget(color: Colors.green,), MainProfile()];
+    _homeWidgets = [HomePageWidget(), MainProfile()];
   }
 
   @override
@@ -73,14 +73,14 @@ class _HomeLoggedState extends State<HomeLogged>{
             icon: Icon(Icons.home),
             title: Text('Главная'),
           ),
-          BottomNavigationBarItem(
+          /*BottomNavigationBarItem(
             icon: Icon(Icons.format_list_bulleted),
             title: Text('Рецепты'),
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.notifications_active),
             title: Text('Уведомления'),
-          ),
+          ),*/
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
             title: Text('Профиль'),

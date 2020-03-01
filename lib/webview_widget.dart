@@ -45,10 +45,13 @@ class _WebViewWidgetState extends State<WebViewWidget>{
   Widget build(BuildContext context) {
     // TODO: implement build
     return WebviewScaffold(
+      clearCache: true,
+      clearCookies: true,
+      appCacheEnabled: false,
       hidden: true,
       url: widget.url,
       appBar: AppBar(
-        title: Text("WebView test"),
+        title: Text('Вход через "Госуслуги"'),
       ),
     );
   }

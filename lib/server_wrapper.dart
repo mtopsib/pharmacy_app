@@ -260,22 +260,22 @@ class ServerRecipe{
 
     Response response = await get(url, headers: deviceInfo);
     if (response.statusCode == 200){
-      print(response.body);
       return jsonDecode(response.body);
     } else {
       print("Не могу молучить список аптек");
     }
   }
 
-  static Future<void> handlePharmacies(String recipeID) async {
+  static Future<void> handlePharmacies(String recipeID, String goodsID, double price, String aptekaID) async {
     var deviceInfo = await SharedPreferencesWrap.getDeviceInfo();
 
     var url = "https://es.svodnik.pro:55443/es_test/ru_RU/hs/recipe/WhereBuy?RecipeID=$recipeID";
+    var body = List<dynamic>();
+    body.add({"Goods009ID": goodsID, "Price": price, "AptekaID": aptekaID});
 
-    Response response = await put(url, headers: deviceInfo);
-    print(response.body);
+    Response response = await put(url, headers: deviceInfo, body: jsonEncode(body));
     if (response.statusCode == 200){
-      print(response.body);
+      print("Товар успешно добавлен");
     } else {
       print("Не могу зафиксировать выбранную аптеку");
     }
@@ -347,14 +347,8 @@ class ServerNews{
         else if (content[i]["TypeData"] == "Recipe"){
           contentWidgets.add(RecipeCard(
             recipeName: data["Number"].toString(),
-            tradeName: "Анальгин",
-            mnn: "Метамизол натрия",
-            dosage: "0.03",
-            form: "тюб",
-            standartCount: "1",
-            duration: "20",
-            tabletsPerDay: "2",
-            source: "НГКМ №1",
+            goods: data["Goods"],
+            hospital: data["Hospital"],
             date: data['Date'].toString(),
             personName: data["PatientFIO"].toString(),
             id: content[i]["ID"].toString(),

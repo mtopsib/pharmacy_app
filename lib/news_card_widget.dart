@@ -76,7 +76,7 @@ class NewsCard extends StatelessWidget{
                       ),
                     ),
                     Text(
-                        date,
+                        date.substring(0, 10),
                         style: TextStyle(fontSize: 11)
                     )
                   ],

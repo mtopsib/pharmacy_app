@@ -20,9 +20,9 @@ class RecipeWidgetState extends State<RecipeWidget>{
   @override
   void initState() {
     super.initState();
-    recipeWidgets = [RecipeBody(recipeID: widget.recipeId[0], onTapFindGoods: () => setState(() => mainWidget = 1),),
-                     ChooseRecipe(recipeID: widget.recipeId[0], onTapGoods: () => setState(() => mainWidget = 2)),
-                     BuyGoods(recipeId: widget.recipeId[0],)];
+    recipeWidgets = [RecipeBody(recipeID: widget.recipeId[0], onTapFindGoods: () => setState(() => mainWidget = 1)),
+                     ChooseRecipe(recipeID: widget.recipeId[0],   onTapGoods: () => setState(() => mainWidget = 2)),
+                     BuyGoods(recipeId: widget.recipeId[0],       onTapPharm: () => setState(() => mainWidget = 0))];
   }
 
   @override
@@ -49,7 +49,7 @@ class RecipeBody extends StatefulWidget {
 class _RecipeBodyState extends State<RecipeBody>{
   static const TextStyle infoStyle = TextStyle(fontWeight: FontWeight.bold);
   Map<String, dynamic> data;
-  List<Widget> goodWidgets = new List();
+  List<Widget> goodWidgets = new List<Widget>();
 
   @override
   Widget build(BuildContext context) {
@@ -84,8 +84,8 @@ class _RecipeBodyState extends State<RecipeBody>{
                       Text(data['Doctor'].toString(), style: infoStyle,),
                       //Text('Наименование МНН:'),
                       //Text(data['Goods']["MNN"].toString(), style: infoStyle,),
-                      //Text("Действующее вещество:"),
-                      //Text(data['Goods']["Purpose"].toString(), style: infoStyle,),
+                      Text("Препарат:"),
+                      Text(data['Goods']["Purpose"].toString(), style: infoStyle,),
                       Row(
                         children: <Widget>[
                           Text('Количество стандартов: '),
@@ -146,20 +146,9 @@ class _RecipeBodyState extends State<RecipeBody>{
                   child: ListView.builder(
                     shrinkWrap: true,
                     scrollDirection: Axis.horizontal,
-                    itemCount: 20,
+                    itemCount: goodWidgets.length,
                     itemBuilder: (context, index){
-                      return MedicamentCard(
-                        recipeId: widget.recipeID,
-                        name: "Анальгин gfdssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssdgfdfgfdghfdgjfdjgfdhsssss",
-                        pharmName: "Столичная аптека",
-                        town: "г. Новокузнецк",
-                        street: "пр. Курако, 1 (2.2 км)",
-                        phone: "8-917-218-21-97",
-                        time: "с 8:00 до 22:00",
-                        price: "300",
-                        cashback: "10",
-                        goodsID: "",
-                      );
+                      return goodWidgets[index];
                     },
                   ),
                 ),
@@ -188,8 +177,29 @@ class _RecipeBodyState extends State<RecipeBody>{
     );
   }
 
+  Future<void> getData() async {
+    goodWidgets.clear();
+    var data = await ServerRecipe.getPharmacies(widget.recipeID);
+    for (int i = 0; i < data.length; i++){
+      goodWidgets.add(MedicamentCard(
+        recipeId: widget.recipeID,
+        goodsID: data[i]["Goods009ID"].toString(),
+        name: data[i]["Goods009Name"].toString(),
+        pharmName: data[i]["Apteka"]["Name"].toString(),
+        town: data[i]["Apteka"]["Town"].toString(),
+        street: data[i]["Apteka"]["Address"].toString(),
+        phone: data[i]["Apteka"]["Phone"].toString(),
+        time: data[i]["Apteka"]["Schedule"].toString(),
+        price: data[i]["Price"].toString(),
+        aptekaID: data[i]["Apteka"]["ID"],
+        cashback: "10",
+      ));
+    }
+  }
+
   Future<void> getRecipeData() async {
     data = await ServerRecipe.getRecipeBody(widget.recipeID);
+    await getData();
   }
 
 }
@@ -206,9 +216,10 @@ class MedicamentCard extends StatefulWidget{
   final time;
   final price;
   final cashback;
+  final aptekaID;
 
   const MedicamentCard({Key key, this.name, this.pharmName, this.town, this.street, this.phone, this.time, this.price,
-    this.cashback, this.goodsID, this.recipeId}) : super(key: key);
+    this.cashback, this.goodsID, this.recipeId, this.aptekaID}) : super(key: key);
 
   _MedicamentCardState createState() => _MedicamentCardState();
 }
@@ -290,7 +301,7 @@ class _MedicamentCardState extends State<MedicamentCard>{
   }
 
   void handlePharmacy(BuildContext context) async {
-    await ServerRecipe.handlePharmacies(widget.recipeId);
+    await ServerRecipe.handlePharmacies(widget.recipeId, widget.goodsID, double.parse(widget.price), widget.aptekaID);
     handled = !handled;
     setState(() {});
     Scaffold.of(context).showSnackBar(SnackBar(
@@ -468,6 +479,16 @@ class _BuyGoodsState extends State<BuyGoods>{
                   child: ListView(
                     children: widgets,
                   ),
+                ),
+                Container(
+                  height: 60,
+                  width: 200,
+                  padding: const EdgeInsets.all(8.0),
+                  child: FlatButton(
+                    color: Colors.lightBlueAccent,
+                    child: Text("Закончить выбор", style: TextStyle(fontSize: 16),),
+                    onPressed: widget.onTapPharm,
+                  ),
                 )
               ],
             ),
@@ -495,10 +516,10 @@ class _BuyGoodsState extends State<BuyGoods>{
         phone: data[i]["Apteka"]["Phone"].toString(),
         time: data[i]["Apteka"]["Schedule"].toString(),
         price: data[i]["Price"].toString(),
+        aptekaID: data[i]["Apteka"]["ID"],
         cashback: "10",
       ));
     }
-
   }
 
 }
