@@ -27,12 +27,11 @@ class RouteGenerator{
       case '/TechSupport':
         return MaterialPageRoute(builder: (_) => TechSupportWidget());
       case '/RecipeWidget':
-        if (args is List<String>){
-          return MaterialPageRoute(builder: (_) => RecipeWidget(recipeId: args,));
-        } else {
-          return _errorRoute();
-        }
-        break;
+        return MaterialPageRoute(builder: (_) => RecipeWidget(recipeId: args,));
+      case '/ChooseRecipe':
+        return MaterialPageRoute(builder: (_) => ChooseRecipe(args));
+      case '/BuyGoods':
+        return MaterialPageRoute(builder: (_) => BuyGoods(args));
       case '/MyProfile':
         return MaterialPageRoute(builder: (_) => MyProfile());
       case '/EditProfile':

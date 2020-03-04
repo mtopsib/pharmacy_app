@@ -227,6 +227,15 @@ class ServerRecipe{
     }
   }
 
+  static Future<void> deleteGoods(String recipeId, String goodsId, String aptekaId) async {
+    var info = await SharedPreferencesWrap.getDeviceInfo();
+
+    var url = "https://es.svodnik.pro:55443/es_test/ru_RU/hs/recipe/WhereBuy?RecipeID=$recipeId&Goods009ID=$goodsId&AptekaID=$aptekaId";
+
+    Response response = await delete(url, headers: info);
+    print("delete answer ${response.body}");
+  }
+
   static Future<void> getFactoryList(String recipeID) async {
     var deviceInfo = await SharedPreferencesWrap.getDeviceInfo();
 
