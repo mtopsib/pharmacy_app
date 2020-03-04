@@ -109,12 +109,15 @@ class MyProfileState extends State<MyProfile>{
   String number = "";
   String mail = "";
   String snilsConfirm = "";
+  String gender = "";
+  bool esiaConfirm = false;
+  bool emailConfirm = false;
 
-  @override
-  void initState() {
-    super.initState();
-    setDataFromServer();
-  }
+//  @override
+//  void initState() {
+//    super.initState();
+//    setDataFromServer();
+//  }
 
   @override
   Widget build(BuildContext context) {
@@ -123,7 +126,7 @@ class MyProfileState extends State<MyProfile>{
         title: Text('Мой профиль'),
         actions: <Widget>[
           FlatButton(
-            child: Text('Выйти'),
+            child: Text('Выйти', style: TextStyle(color: Colors.white),),
             onPressed: () async {
               SharedPreferencesWrap.setLoginInfo(false);
               SharedPreferencesWrap.setConfirmationToken("");
@@ -133,105 +136,161 @@ class MyProfileState extends State<MyProfile>{
           )
         ],
       ),
-      body: Container(
-        margin: EdgeInsets.all(14),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Expanded(
-              flex: 3,
+      body: FutureBuilder(
+        future: setDataFromServer(),
+        builder: (context, snapshot){
+          if (snapshot.connectionState == ConnectionState.done){
+            return Container(
+              margin: EdgeInsets.all(14),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Padding(padding: topTextPadding ,child: Text("Фамилия", style: upTextStyle)),
-                      Text("$surname", style: botTextStyle,)
-                    ],
+                  Expanded(
+                    flex: 4,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 3),
+                              child: Text("Фамилия", style: upTextStyle),
+                            ),
+                            Text("$surname", style: botTextStyle,)
+                          ],
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 3),
+                              child: Text("Имя", style: upTextStyle),
+                            ),
+                            Text("$name" ,style: botTextStyle,)
+                          ],
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 3),
+                              child: Text("Отчество", style: upTextStyle),
+                            ),
+                            Text("$patronymic", style: botTextStyle,)
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Padding(
+                                  padding: const EdgeInsets.only(bottom: 3),
+                                  child: Text("Дата рождения", style: upTextStyle),
+                                ),
+                                Text("${date.substring(0, 10)}", style: botTextStyle,)
+                              ],
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Padding(
+                                  padding: const EdgeInsets.only(bottom: 3),
+                                  child: Text("Пол", style: upTextStyle,),
+                                ),
+                                Text(gender, style: botTextStyle,)
+                              ],
+                            )
+                          ],
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 3),
+                              child: Text("СНИЛС", style: upTextStyle,),
+                            ),
+                            Text("$snils", style: botTextStyle,)
+                          ],
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 3),
+                              child: Text("Номер телефона", style: upTextStyle),
+                            ),
+                            Text("$number", style: botTextStyle,)
+                          ],
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 3),
+                              child: Row(
+                                children: <Widget>[
+                                  Text("Электронная почта   ", style: upTextStyle),
+                                  Icon(Icons.check_circle, color: emailConfirm ? Colors.lightGreen : Colors.red,)
+                                ],
+                              ),
+                            ),
+                            Text("$mail", style: botTextStyle,)
+                          ],
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 3),
+                              child: Text("Авторизация через Госуслуги", style: upTextStyle,),
+                            ),
+                            Text(esiaConfirm ? "Пройдена" : "Не пройдена", style: botTextStyle,)
+                          ],
+                        )
+                      ],
+                    ),
                   ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Padding(child: Text("Имя", style: upTextStyle), padding: topTextPadding),
-                      Text("$name" ,style: botTextStyle,)
-                    ],
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Padding(child: Text("Отчество", style: upTextStyle), padding: topTextPadding),
-                      Text("$patronymic", style: botTextStyle,)
-                    ],
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Padding(child: Text("Дата рождения", style: upTextStyle), padding: topTextPadding),
-                      Text("$date", style: botTextStyle,)
-                    ],
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Padding(child: Text("Мой город", style: upTextStyle), padding: topTextPadding),
-                      Text("$town", style: botTextStyle,)
-                    ],
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Padding(child: Text("СНИЛС", style: upTextStyle,), padding: topTextPadding,),
-                      Text("$snils", style: botTextStyle,)
-                    ],
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Padding(child: Text("Номер телефона", style: upTextStyle), padding: topTextPadding),
-                      Text("$number", style: botTextStyle,)
-                    ],
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Padding(child: Text("Электронная почта", style: upTextStyle), padding: topTextPadding),
-                      Text("$mail", style: botTextStyle,)
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: <Widget>[
-                  FlatButton(
-                      color: Colors.blueAccent,
-                      child: Text("Заполнить профиль"),
-                      onPressed: () => Navigator.of(context).pushNamed('/EditProfile', arguments: {
-                        "surname": surname, "name": name, "patronymic": patronymic, "date": convertDate(date), "mail": mail})
-                  ),
-                  FlatButton(
-                    child: Text("Отправить СНИЛС"),
-                    onPressed: () => Navigator.of(context).pushNamed('/Snils'),
-                    color: Colors.blueAccent,
-                  ),
-                  FlatButton(
-                    child: Text("Авторизация через Госуслуги"),
-                    onPressed: () async {
-                      var url = await ServerLogin.loginEsia();
-                      Navigator.of(context).pushNamed("/Webview", arguments: url);
-                    },
-                    color: Colors.blueAccent,
+                  Expanded(
+                    flex: 3,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: <Widget>[
+                        FlatButton(
+                            color: Colors.blueAccent,
+                            child: Text("Заполнить профиль"),
+                            onPressed: () => Navigator.of(context).pushNamed('/EditProfile', arguments: {
+                              "surname": surname, "name": name, "patronymic": patronymic, "date": convertDate(date), "mail": mail})
+                        ),
+                        FlatButton(
+                          child: Text("Отправить СНИЛС"),
+                          onPressed: () => Navigator.of(context).pushNamed('/Snils'),
+                          color: Colors.blueAccent,
+                        ),
+                        FlatButton(
+                          child: Text("Авторизация через Госуслуги"),
+                          onPressed: () async {
+                            var url = await ServerLogin.loginEsia();
+                            Navigator.of(context).pushNamed("/Webview", arguments: url);
+                          },
+                          color: Colors.blueAccent,
+                        )
+                      ],
+                    ),
                   )
                 ],
               ),
-            )
-          ],
-        ),
+            );
+          } else {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+        },
       )
     );
   }
@@ -241,7 +300,7 @@ class MyProfileState extends State<MyProfile>{
     return date[8] + date[9] + "/" + date[5] + date[6] + "/" +  date[0] + date[1] + date[2] + date[3] ;
   }
 
-  void setDataFromServer() async {
+  Future<void> setDataFromServer() async {
     final data = await ServerProfile.getUserProfile();
     name = data["Name"].toString() ?? "";
     surname = data["Surname"].toString() ?? "";
@@ -249,11 +308,14 @@ class MyProfileState extends State<MyProfile>{
     date = data["Birthday"].toString().replaceAll("T", " ") ?? "";
     number = "8-" + data["Phone"].toString() ?? "";
     mail = data["eMail"].toString() ?? "";
-    try{
-      town = data["Towns"][0]["Town"].toString() ?? "";
-    } catch (e){
-      town = "";
-    }
+    gender = data["Gender"].toString() == "M" ? "Мужской" : "Женский";
+    esiaConfirm = data["ESIAConfirm"] as bool;
+    emailConfirm = data["eMailConfirmed"] as bool;
+//    try{
+//      town = data["Towns"][0]["Town"].toString() ?? "";
+//    } catch (e){
+//      town = "";
+//    }
     switch (data["SNILSConfirm"].toString()){
       case "0":
         snils = "СНИЛС не вводился";
@@ -268,9 +330,6 @@ class MyProfileState extends State<MyProfile>{
         snils = "СНИЛС на распознавании";
         break;
     }
-    setState(() {
-
-    });
   }
 
 }
@@ -296,9 +355,6 @@ class ProfileEditState extends State<ProfileEdit>{
   String name = "";
   String patronymic = "";
   String date = "";
-  //String town;
-  //String snils;
-  //String number;
   String mail = "";
   bool male = true;
 

@@ -289,7 +289,7 @@ class _MedicamentCardState extends State<MedicamentCard>{
                     child: FlatButton(
                       color: Colors.lightGreenAccent,
                       onPressed: () => handlePharmacy(context),
-                      child: Text('Отложить'),
+                      child: Text('Запомнить'),
                     ),
                   )
                 ],
