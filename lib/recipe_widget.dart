@@ -23,7 +23,10 @@ class RecipeWidgetState extends State<RecipeWidget>{
     return Scaffold(
       appBar: AppBar(
           title: Text("Рецепт " + widget.recipeId[1], style: TextStyle(fontSize: 16),),
-          actions: <Widget>[Icon(Icons.share, color: Colors.black87)],
+          actions: <Widget>[Padding(
+            padding: const EdgeInsets.only(right: 10),
+            child: Icon(Icons.share, color: Colors.black87),
+          )],
       ),
       body: FutureBuilder(
         future: getRecipeData(),
@@ -93,14 +96,14 @@ class RecipeWidgetState extends State<RecipeWidget>{
                       ],
                     ),
                   ),
-                  SizedBox(
+                  /*SizedBox(
                     width: double.infinity,
                     child: FlatButton(
                       child: Text('Создать график приёма препората'),
                       onPressed: () {},
                       color: Colors.blue,
                     ),
-                  ),
+                  ),*/
                   SizedBox(
                     width: double.infinity,
                     child: FlatButton(
@@ -131,6 +134,7 @@ class RecipeWidgetState extends State<RecipeWidget>{
                             data: data["QRCode"].toString(),
                             version: QrVersions.auto,
                             size: 200.0,
+                            backgroundColor: Colors.white,
                           )
                         ],
                       )
@@ -152,6 +156,7 @@ class RecipeWidgetState extends State<RecipeWidget>{
   Future<void> getData() async {
     goodWidgets.clear();
     var data = await ServerRecipe.getPharmacies(widget.recipeId[0]);
+    print(data);
     for (int i = 0; i < data.length; i++){
       goodWidgets.add(MedicamentCard(
         recipeId: widget.recipeId[0],
@@ -251,7 +256,7 @@ class _MedicamentCardState extends State<MedicamentCard>{
                 children: <Widget>[
                   Row(
                     children: <Widget>[
-                      Icon(Icons.star, color: handled ? Colors.yellow : Colors.black),
+                      Icon(Icons.star, color: handled ? Colors.green : Colors.black),
                       Text("${widget.price} ₽")
                     ],
                   ),
@@ -264,7 +269,7 @@ class _MedicamentCardState extends State<MedicamentCard>{
                     margin: EdgeInsets.only(right: 2),
                     child: FlatButton(
                       color: Colors.lightGreenAccent,
-                      onPressed: () => handlePharmacy(context),
+                      onPressed: () => handlePharmacy(),
                       child: Text('Запомнить'),
                     ),
                   ) :
@@ -280,13 +285,10 @@ class _MedicamentCardState extends State<MedicamentCard>{
     );
   }
 
-  void handlePharmacy(BuildContext context) async {
+  void handlePharmacy() async {
     await ServerRecipe.handlePharmacies(widget.recipeId, widget.goodsID, double.parse(widget.price), widget.aptekaID);
     handled = !handled;
     setState(() {});
-    Scaffold.of(context).showSnackBar(SnackBar(
-      content: handled ? Text("Рецепт успешно добавлен в корзину") : Text("Рецепт убран из корзины"),
-    ));
   }
 }
 

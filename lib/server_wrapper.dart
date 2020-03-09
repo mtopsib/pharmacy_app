@@ -449,7 +449,7 @@ class ServerLogin{
 
   static Future<String> loginEsia() async {
     var info = await SharedPreferencesWrap.getDeviceInfo();
-    String url = "https://es.svodnik.pro:55443/es_test/ru_RU/hs/oauth/ESIA?url_to_redirect=https://009.am";
+    String url = "https://es.svodnik.pro:55443/es_test/ru_RU/hs/oauth/ESIA?url_to_redirect=http://009.best/";
 
     Response response = await get(url, headers: info);
     if (response.statusCode == 200){

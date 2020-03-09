@@ -34,14 +34,14 @@ class MainProfile extends StatelessWidget{
               onPressed: () {},
             ),
           ),
-          SizedBox(
+          /*SizedBox(
             width: double.infinity,
             height: 50,
             child: FlatButton(
               child: Text('Тех. поддержка', style: textStyle,),
               onPressed: () => Navigator.of(context).pushNamed('/TechSupport'),
             ),
-          ),
+          ),*/
           Expanded(
             child: Container(),
           ),

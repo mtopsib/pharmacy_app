@@ -43,7 +43,6 @@ class _WebViewWidgetState extends State<WebViewWidget>{
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return WebviewScaffold(
       clearCache: true,
       clearCookies: true,

@@ -17,7 +17,10 @@ class _NewsWidgetState extends State<NewsWidget>{
   Widget build(BuildContext context) {
     return Scaffold(
       key: scaKey,
-      appBar: AppBar(title: Text('Главная - Новости')),
+      appBar: AppBar(
+          title: Text('Главная - Новости'),
+          leading: IconButton(icon: Icon(Icons.arrow_back), onPressed: () => Navigator.of(context).pushReplacementNamed("/")),
+           ),
       body: FutureBuilder(
         future: _initializeData(),
         builder: (context, snapshot) {
