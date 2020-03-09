@@ -23,10 +23,10 @@ class RecipeWidgetState extends State<RecipeWidget>{
     return Scaffold(
       appBar: AppBar(
           title: Text("Рецепт " + widget.recipeId[1], style: TextStyle(fontSize: 16),),
-          actions: <Widget>[Padding(
+          /*actions: <Widget>[Padding(
             padding: const EdgeInsets.only(right: 10),
             child: Icon(Icons.share, color: Colors.black87),
-          )],
+          )],*/
       ),
       body: FutureBuilder(
         future: getRecipeData(),
@@ -322,10 +322,10 @@ class _ChooseRecipeState extends State<ChooseRecipe>{
                   Center(
                     child: Padding(
                       padding: const EdgeInsets.all(3.0),
-                      child: Text("Поиск выгодной покупки", style: TextStyle(fontSize: 16),),
+                      child: Text("Выберите препарат", style: TextStyle(fontSize: 16),),
                     ),
                   ),
-                  Row(
+                  /*Row(
                     children: <Widget>[
                       Text("Ваш город: $city   "),
                       SizedBox(
@@ -337,7 +337,7 @@ class _ChooseRecipeState extends State<ChooseRecipe>{
                         ),
                       )
                     ],
-                  ),
+                  ),*/
                   Divider(),
                   Expanded(
                       child: ListView.builder(
@@ -399,6 +399,7 @@ class PharmacyCard extends StatelessWidget{
         onTap();
       },
       child: Card(
+        elevation: 7,
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(

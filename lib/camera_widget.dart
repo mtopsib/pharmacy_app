@@ -6,6 +6,7 @@ import 'package:path/path.dart';
 import 'package:http/http.dart';
 import 'package:async/async.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:pharmacy_app/route_generator.dart';
 import 'package:pharmacy_app/server_wrapper.dart';
 import 'package:pharmacy_app/shared_preferences_wrapper.dart';
 import 'package:image_picker/image_picker.dart';
@@ -123,7 +124,7 @@ class _CameraWidgetState extends State<CameraWidget>{
       imagePath = path;
       await controller.takePicture(path); //take photo
       await ServerProfile.uploadSnils(imagePath);
-      Navigator.of(this.context).pop();
+      Navigator.of(this.context).pushNamedAndRemoveUntil("/MyProfile", ModalRoute.withName("/"), arguments: true);
       /*setState(() {
 
       });*/

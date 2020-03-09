@@ -169,6 +169,7 @@ class ServerRecipe{
 
     Response response = await get(url, headers: deviceInfo);
     if (response.statusCode == 200){
+      print(jsonDecode(response.body));
       return jsonDecode(response.body);
     } else {
       throw "Cant't get recipe body";

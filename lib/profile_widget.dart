@@ -26,14 +26,14 @@ class MainProfile extends StatelessWidget{
                 },
             ),
           ),
-          SizedBox(
+          /*SizedBox(
             width: double.infinity,
             height: 50,
             child: FlatButton(
               child: Text('Мои близкие', style: textStyle,),
               onPressed: () {},
             ),
-          ),
+          ),*/
           /*SizedBox(
             width: double.infinity,
             height: 50,
@@ -91,7 +91,11 @@ class _ProfileNewsWidgetState extends State<ProfileNewsWidget>{
 
 }
 
-class MyProfile extends StatefulWidget{
+class MyProfile extends StatefulWidget {
+  final bool showSnilsAlert;
+
+  const MyProfile({Key key, this.showSnilsAlert = true}) : super(key: key);
+
   MyProfileState createState() => MyProfileState();
 }
 
@@ -137,7 +141,7 @@ class MyProfileState extends State<MyProfile>{
         ],
       ),
       body: FutureBuilder(
-        future: setDataFromServer(),
+        future: setDataFromServer(context),
         builder: (context, snapshot){
           if (snapshot.connectionState == ConnectionState.done){
             return Container(
@@ -263,22 +267,22 @@ class MyProfileState extends State<MyProfile>{
                         FlatButton(
                             color: Colors.blueAccent,
                             child: Text("Заполнить профиль"),
-                            onPressed: () => Navigator.of(context).pushNamed('/EditProfile', arguments: {
+                            onPressed: () => Navigator.of(context).pushNamedAndRemoveUntil('/EditProfile', (Route<dynamic> route) => false,arguments: {
                               "surname": surname, "name": name, "patronymic": patronymic, "date": convertDate(date), "mail": mail})
                         ),
-                        FlatButton(
+                        snilsConfirm != "1" ? FlatButton(
                           child: Text("Отправить СНИЛС"),
                           onPressed: () => Navigator.of(context).pushNamed('/Snils'),
                           color: Colors.blueAccent,
-                        ),
-                        FlatButton(
+                        ) : SizedBox(),
+                        !esiaConfirm ? FlatButton(
                           child: Text("Авторизация через Госуслуги"),
                           onPressed: () async {
                             var url = await ServerLogin.loginEsia();
                             Navigator.of(context).pushNamed("/Webview", arguments: url);
                           },
                           color: Colors.blueAccent,
-                        )
+                        ) : SizedBox()
                       ],
                     ),
                   )
@@ -300,7 +304,7 @@ class MyProfileState extends State<MyProfile>{
     return date[8] + date[9] + "/" + date[5] + date[6] + "/" +  date[0] + date[1] + date[2] + date[3] ;
   }
 
-  Future<void> setDataFromServer() async {
+  Future<void> setDataFromServer(BuildContext context) async {
     final data = await ServerProfile.getUserProfile();
     name = data["Name"].toString() ?? "";
     surname = data["Surname"].toString() ?? "";
@@ -330,6 +334,24 @@ class MyProfileState extends State<MyProfile>{
         snils = "СНИЛС на распознавании";
         break;
     }
+    if (widget.showSnilsAlert) showSnilsPopUp(context);
+
+  }
+
+  void showSnilsPopUp(BuildContext context){
+    AlertDialog alert = AlertDialog(
+      content: Text("Документ будет проверен в ближайшее время и Ваш профиль будет автоматически заполнен", textAlign: TextAlign.center),
+      actions: <Widget>[
+        FlatButton(child: Text("Закрыть"), onPressed: () => Navigator.of(context).pop(),)
+      ],
+    );
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      }
+    );
   }
 
 }

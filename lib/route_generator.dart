@@ -33,7 +33,7 @@ class RouteGenerator{
       case '/BuyGoods':
         return MaterialPageRoute(builder: (_) => BuyGoods(args));
       case '/MyProfile':
-        return MaterialPageRoute(builder: (_) => MyProfile());
+        return MaterialPageRoute(builder: (_) => MyProfile(showSnilsAlert: args,));
       case '/EditProfile':
         return MaterialPageRoute(builder: (_) {
           return Scaffold(

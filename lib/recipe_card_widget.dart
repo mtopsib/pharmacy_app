@@ -61,11 +61,11 @@ class RecipeCard extends StatelessWidget{
                        child: Row(
                          mainAxisAlignment: MainAxisAlignment.end,
                          children: <Widget>[
-                           ColoredIcon(
+                           /*ColoredIcon(
                              icon: Icons.shopping_cart,
                              color: Colors.black,
                              activeColor: Colors.red[800],
-                           ),
+                           ),*/
                            ColoredIcon(
                              icon: Icons.star,
                              color: Colors.black,
