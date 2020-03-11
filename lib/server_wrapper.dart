@@ -453,7 +453,7 @@ class ServerLogin{
 
   static Future<String> loginEsia() async {
     var info = await SharedPreferencesWrap.getDeviceInfo();
-    String url = "https://es.svodnik.pro:55443/es_test/ru_RU/hs/oauth/ESIA?url_to_redirect=http://009.best/";
+    String url = "https://es.svodnik.pro:55443/es_test/ru_RU/hs/oauth/ESIA?url_to_redirect=https://xn--90arb8cyac.009.xn--p1ai/";
 
     Response response = await get(url, headers: info);
     if (response.statusCode == 200){
@@ -533,6 +533,18 @@ class ServerProfile{
       print("Успешная загрузка снилса на сервер");
     } else {
       print(response.body);
+    }
+  }
+
+  static Future<void> logout() async {
+    var info = await SharedPreferencesWrap.getDeviceInfo();
+    var url = "https://es.svodnik.pro:55443/es_test/ru_RU/hs/oauth/Phone/Logout";
+
+    Response response = await post(url, headers: info);
+    if (response.statusCode == 200){
+      print("Successful logout");
+    } else {
+      print("Error while post logout");
     }
   }
 

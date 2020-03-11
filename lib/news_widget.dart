@@ -19,7 +19,7 @@ class _NewsWidgetState extends State<NewsWidget>{
       key: scaKey,
       appBar: AppBar(
           title: Text('Главная - Новости'),
-          leading: IconButton(icon: Icon(Icons.arrow_back), onPressed: () => Navigator.of(context).pushReplacementNamed("/")),
+          leading: IconButton(icon: Icon(Icons.arrow_back), onPressed: () => Navigator.of(context).pushNamedAndRemoveUntil("/", (Route<dynamic> route) => false)),
            ),
       body: FutureBuilder(
         future: _initializeData(),

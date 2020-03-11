@@ -56,8 +56,8 @@ class _WebViewWidgetState extends State<WebViewWidget>{
   }
 
   void postEsiaAndClose(String code, String state) async {
-    Navigator.of(context).pop();
     await ServerLogin.postDataFromEsia(code, state);
+    Navigator.of(context).pushNamedAndRemoveUntil("/MyProfile", ModalRoute.withName('/'), arguments: false);
     print("Successful posted data");
   }
 }

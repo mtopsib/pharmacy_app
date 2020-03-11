@@ -6,6 +6,7 @@ import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:pharmacy_app/shared_preferences_wrapper.dart';
 import 'package:http/http.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'server_wrapper.dart';
 
 class LoginWidget extends StatefulWidget{
@@ -87,13 +88,13 @@ class _LoginWidgetState extends State<LoginWidget>{
                     TextSpan(
                       text: 'Лицензионным соглашением',
                       style: TextStyle(color: Colors.blue),
-                      recognizer: TapGestureRecognizer()..onTap = () => print("Tap on license")
+                      recognizer: TapGestureRecognizer()..onTap = () => _launchURL("https://кэшбэк.009.рф/terms")
                     ),
                     TextSpan(text: ' и '),
                     TextSpan(
                       text: 'Политикой конфидециальности,',
                       style: TextStyle(color: Colors.blue),
-                      recognizer: TapGestureRecognizer()..onTap = () => print("Tap on confidence")
+                      recognizer: TapGestureRecognizer()..onTap = () => _launchURL("https://кэшбэк.009.рф/privacy-policy")
                     ),
                     TextSpan(
                       text: ' и выражаю своё согласие на обработку персональных данных'
@@ -127,6 +128,12 @@ class _LoginWidgetState extends State<LoginWidget>{
           )
         ),
     );
+  }
+
+  _launchURL(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url);
+    }
   }
 
   void _tapNextButton() async {

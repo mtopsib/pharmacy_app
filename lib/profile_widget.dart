@@ -6,6 +6,8 @@ import 'package:pharmacy_app/server_wrapper.dart';
 import 'package:pharmacy_app/shared_preferences_wrapper.dart';
 import 'dart:async';
 
+import 'package:url_launcher/url_launcher.dart';
+
 class MainProfile extends StatelessWidget{
   var textStyle = TextStyle(fontSize: 18);
 
@@ -132,6 +134,7 @@ class MyProfileState extends State<MyProfile>{
           FlatButton(
             child: Text('Выйти', style: TextStyle(color: Colors.white),),
             onPressed: () async {
+              await ServerProfile.logout();
               SharedPreferencesWrap.setLoginInfo(false);
               SharedPreferencesWrap.setConfirmationToken("");
               SharedPreferencesWrap.setAccessToken("");
@@ -267,8 +270,8 @@ class MyProfileState extends State<MyProfile>{
                         !esiaConfirm ? FlatButton(
                             color: Colors.blueAccent,
                             child: Text("Заполнить профиль"),
-                            onPressed: () => Navigator.of(context).pushNamedAndRemoveUntil('/EditProfile', (Route<dynamic> route) => false,arguments: {
-                              "surname": surname, "name": name, "patronymic": patronymic, "date": convertDate(date), "mail": mail})
+                            onPressed: () => Navigator.of(context).pushNamed('/EditProfile', arguments: {
+                              "surname": surname, "name": name, "patronymic": patronymic, "date": convertDate(date), "mail": mail, "gender": gender})
                         ) : SizedBox(),
                         snilsConfirm != "1" ? FlatButton(
                           child: Text("Отправить СНИЛС"),
@@ -283,8 +286,21 @@ class MyProfileState extends State<MyProfile>{
                           },
                           color: Colors.blueAccent,
                         ) : FlatButton(
+                          color: Colors.blueAccent,
                           child: Text("Отозвать доступ к Госуслугам"),
                           onPressed: () => showEsiaAlert(context),
+                        ),
+                        Center(
+                          child: GestureDetector(
+                              onTap: () => _launchURL("https://кэшбэк.009.рф/terms"),
+                              child: Text("Лицензионное соглашение", style: TextStyle(color: Colors.lightBlueAccent))
+                          ),
+                        ),
+                        Center(
+                          child: GestureDetector(
+                            onTap: () => _launchURL("https://кэшбэк.009.рф/privacy-policy"),
+                              child: Text("Политика конфиденциальности", style: TextStyle(color: Colors.lightBlueAccent))
+                          ),
                         )
                       ],
                     ),
@@ -300,6 +316,12 @@ class MyProfileState extends State<MyProfile>{
         },
       )
     );
+  }
+
+  _launchURL(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url);
+    }
   }
 
   static String convertDate(String date){
@@ -364,7 +386,7 @@ class MyProfileState extends State<MyProfile>{
         FlatButton(child: Text("нет"), onPressed: () => Navigator.of(context).pop(),),
         FlatButton(child: Text("Да"), onPressed: () async {
           ServerProfile.changeUserData({"ESIAConfirm": "false"});
-          Navigator.of(context).pop();
+          Navigator.of(context).pushNamedAndRemoveUntil("/MyProfile", ModalRoute.withName('/'), arguments: false);
         },)
       ],
     );
@@ -401,7 +423,13 @@ class ProfileEditState extends State<ProfileEdit>{
   String patronymic = "";
   String date = "";
   String mail = "";
-  bool male = true;
+  bool male;
+
+  @override
+  void initState() {
+    super.initState();
+    male = widget.data["gender"] == "Мужской" ? true : false;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -483,46 +511,6 @@ class ProfileEditState extends State<ProfileEdit>{
                     )
                 ),
               ),
-              /*Container(
-                margin: EdgeInsets.symmetric(vertical: 10),
-                child: TextFormField(
-                    validator: (value) {if (value.isEmpty)
-                    {return 'Введите город';}
-                    else {
-                      return null;}
-                    },
-                    onSaved: (value) => town = value,
-                    decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        suffixIcon: Icon(Icons.location_city),
-                        labelText: "Город"
-                    )
-                ),
-              ),*/
-              /*Container(
-                margin: EdgeInsets.symmetric(vertical: 10),
-                child: TextFormField(
-                    validator: (value) {if (value.isEmpty){return 'Введите номер';}
-                    else if (value.length < 13){
-                      return null;
-                    }
-                    else {
-                      return null;}
-                    },
-                  onSaved: (value) => number = value,
-                  inputFormatters: [phoneMask],
-                  maxLength: 13,
-                  keyboardType: TextInputType.numberWithOptions(),
-                    decoration: InputDecoration(
-                      hintText: "999-999-99-99",
-                      prefixText: "8-",
-                      prefixStyle: TextStyle(color: Colors.black, fontSize: 16),
-                      border: OutlineInputBorder(),
-                      suffixIcon: Icon(Icons.phone_android),
-                      labelText: "Номер телефона"
-                    )
-                ),
-              ),*/
               Container(
                 margin: EdgeInsets.symmetric(vertical: 10),
                 child: TextFormField(

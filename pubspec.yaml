@@ -44,8 +44,13 @@ dependencies:
   flutter_webview_plugin: 0.3.10+1
 
 dev_dependencies:
+  flutter_launcher_icons: "^0.7.0"
   flutter_test:
     sdk: flutter
+
+flutter_icons:
+  android: true
+  image_path: "assets/icon.png"
 
 
 # For information on the generic Dart part of this file, see the

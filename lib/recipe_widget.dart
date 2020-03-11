@@ -22,7 +22,8 @@ class RecipeWidgetState extends State<RecipeWidget>{
     return Scaffold(
       appBar: AppBar(
           title: Text("Рецепт " + widget.recipeId[1], style: TextStyle(fontSize: 16),),
-          /*actions: <Widget>[Padding(
+          leading: IconButton(icon: Icon(Icons.arrow_back), onPressed: () => Navigator.of(context).pushNamedAndRemoveUntil("/", (Route<dynamic> route) => false)),
+        /*actions: <Widget>[Padding(
             padding: const EdgeInsets.only(right: 10),
             child: Icon(Icons.share, color: Colors.black87),
           )],*/
@@ -106,7 +107,7 @@ class RecipeWidgetState extends State<RecipeWidget>{
                   SizedBox(
                     width: double.infinity,
                     child: FlatButton(
-                      child: Text('Найти препорат выгодно'),
+                      child: Text('Найти препарат выгодно'),
                       onPressed: () async {
                         Navigator.of(context).pushNamed("/ChooseRecipe", arguments: widget.recipeId);
                       },
@@ -285,11 +286,9 @@ class _MedicamentCardRecipeState extends State<MedicamentCardRecipe>{
                     children: <Widget>[
                       Column(
                         children: <Widget>[
-                          Row(
-                            children: <Widget>[
-                              Icon(Icons.star, color: handled ? Colors.green : Colors.black),
-                              Text("${widget.price} ₽")
-                            ],
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 3),
+                            child: Text("${widget.price} ₽"),
                           ),
                           Text('Кэшбэк до ${widget.cashback} ₽', style: TextStyle(fontSize: 10),),
                         ],
