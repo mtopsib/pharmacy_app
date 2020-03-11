@@ -191,6 +191,7 @@ class _BuyGoodsState extends State<BuyGoods>{
   Future<void> getData() async {
     widgets.clear();
     var data = await ServerRecipe.getPharmacies(widget.recipeData[0]);
+    print(data);
     for (int i = 0; i < data.length; i++){
       widgets.add(MedicamentCard(
         recipeId: widget.recipeData[0],

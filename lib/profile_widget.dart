@@ -119,6 +119,8 @@ class MyProfileState extends State<MyProfile>{
   bool esiaConfirm = false;
   bool emailConfirm = false;
 
+  Widget snilsButton = SizedBox();
+
 //  @override
 //  void initState() {
 //    super.initState();
@@ -241,7 +243,7 @@ class MyProfileState extends State<MyProfile>{
                               child: Row(
                                 children: <Widget>[
                                   Text("Электронная почта   ", style: upTextStyle),
-                                  Icon(Icons.check_circle, color: emailConfirm ? Colors.lightGreen : Colors.red,)
+                                  //Icon(Icons.check_circle, color: emailConfirm ? Colors.lightGreen : Colors.red,)
                                 ],
                               ),
                             ),
@@ -273,11 +275,7 @@ class MyProfileState extends State<MyProfile>{
                             onPressed: () => Navigator.of(context).pushNamed('/EditProfile', arguments: {
                               "surname": surname, "name": name, "patronymic": patronymic, "date": convertDate(date), "mail": mail, "gender": gender})
                         ) : SizedBox(),
-                        snilsConfirm != "1" ? FlatButton(
-                          child: Text("Отправить СНИЛС"),
-                          onPressed: () => Navigator.of(context).pushNamed('/Snils'),
-                          color: Colors.blueAccent,
-                        ) : SizedBox(),
+                        snilsButton,
                         !esiaConfirm ? FlatButton(
                           child: Text("Авторизация через Госуслуги"),
                           onPressed: () async {
@@ -340,6 +338,14 @@ class MyProfileState extends State<MyProfile>{
     gender = data["Gender"].toString() == "M" ? "Мужской" : "Женский";
     esiaConfirm = data["ESIAConfirm"] as bool;
     emailConfirm = data["eMailConfirmed"] as bool;
+
+    if (!esiaConfirm){
+      snilsButton = FlatButton(
+        child: Text("Отправить СНИЛС"),
+        onPressed: () => Navigator.of(context).pushNamed('/Snils'),
+        color: Colors.blueAccent,
+      );
+    }
 //    try{
 //      town = data["Towns"][0]["Town"].toString() ?? "";
 //    } catch (e){

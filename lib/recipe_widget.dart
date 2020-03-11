@@ -19,137 +19,143 @@ class RecipeWidgetState extends State<RecipeWidget>{
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-          title: Text("Рецепт " + widget.recipeId[1], style: TextStyle(fontSize: 16),),
-          leading: IconButton(icon: Icon(Icons.arrow_back), onPressed: () => Navigator.of(context).pushNamedAndRemoveUntil("/", (Route<dynamic> route) => false)),
-        /*actions: <Widget>[Padding(
-            padding: const EdgeInsets.only(right: 10),
-            child: Icon(Icons.share, color: Colors.black87),
-          )],*/
+    return WillPopScope(
+      onWillPop: () {
+        Navigator.of(context).pushNamedAndRemoveUntil("/", (Route<dynamic> route) => false);
+        return Future(() => false);
+      },
+      child: Scaffold(
+        appBar: AppBar(
+            title: Text("Рецепт " + widget.recipeId[1], style: TextStyle(fontSize: 16),),
+            leading: IconButton(icon: Icon(Icons.arrow_back), onPressed: () => Navigator.of(context).pushNamedAndRemoveUntil("/", (Route<dynamic> route) => false)),
+          /*actions: <Widget>[Padding(
+              padding: const EdgeInsets.only(right: 10),
+              child: Icon(Icons.share, color: Colors.black87),
+            )],*/
+        ),
+        body: FutureBuilder(
+          future: getRecipeData(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.done){
+              return Container(
+                color: Color.fromARGB(255, 228, 246, 243),
+                padding: EdgeInsets.all(5),
+                child: ListView(
+                  children: <Widget>[
+                    Container(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: <Widget>[
+                          Text("Пациент:"),
+                          Text(data['Patient'].toString())
+                        ],
+                      ),
+                      alignment: Alignment.topRight,
+                    ),
+                    SizedBox(
+                      height: 300,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Text('Лечебное учреждение:'),
+                          Text(data['Hospital'].toString(), style: infoStyle,),
+                          Text('Ваш врач:'),
+                          Text(data['Doctor'].toString(), style: infoStyle,),
+                          //Text('Наименование МНН:'),
+                          //Text(data['Goods']["MNN"].toString(), style: infoStyle,),
+                          Text("Препарат:"),
+                          Text(data['Goods']["Purpose"].toString(), style: infoStyle,),
+                          Row(
+                            children: <Widget>[
+                              Text('Количество стандартов: '),
+                              Text(data['Goods']["Count_standarts"].toString(), style: infoStyle,),
+                            ],
+                          ),
+                          Row(
+                            children: <Widget>[
+                              Text('Дозировка: '),
+                              Text(data['Goods']["Dose"].toString(), style: infoStyle,),
+                            ],
+                          ),
+                          Row(
+                            children: <Widget>[
+                              Text('Форма выпуска: '),
+                              Text(data['Goods']["Form_release"], style: infoStyle,),
+                            ],
+                          ),
+                          Row(
+                            children: <Widget>[
+                              Text('Количество дней приёма препарата: '),
+                              Text(data['Goods']["Count_days_use_drug"].toString(), style: infoStyle,),
+                            ],
+                          ),
+                          Row(
+                            children: <Widget>[
+                              Text('Количество приёма в день: '),
+                              Text(data['Goods']["Count_per_day"].toString(), style: infoStyle,),
+                            ],
+                          ),
+                          Text('Описание приёма препарата врачем:'),
+                          Text(data['Goods']["DescriptionFromDoctor"].toString(), style: infoStyle),
+                        ],
+                      ),
+                    ),
+                    /*SizedBox(
+                      width: double.infinity,
+                      child: FlatButton(
+                        child: Text('Создать график приёма препората'),
+                        onPressed: () {},
+                        color: Colors.blue,
+                      ),
+                    ),*/
+                    SizedBox(
+                      width: double.infinity,
+                      child: FlatButton(
+                        child: Text('Найти препарат выгодно'),
+                        onPressed: () async {
+                          Navigator.of(context).pushNamed("/ChooseRecipe", arguments: widget.recipeId);
+                        },
+                        color: Colors.blue,
+                      ),
+                    ),
+                    Divider(color: Colors.black,),
+                    goodWidgets.length > 0 ? Container(
+                      height: 400,
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        scrollDirection: Axis.horizontal,
+                        itemCount: goodWidgets.length,
+                        itemBuilder: (context, index){
+                          return goodWidgets[index];
+                        },
+                      ),
+                    ) :
+                    Center(
+                      child: Column(
+                        children: <Widget>[
+                          Text('Покажите этот QR код в аптеке при покупке по рецепту', textAlign: TextAlign.center,),
+                          QrImage(
+                            data: data["QRCode"].toString(),
+                            version: QrVersions.auto,
+                            size: 200.0,
+                            backgroundColor: Colors.white,
+                          )
+                        ],
+                      )
+                    ),
+                  ],
+                ),
+              );
+            }
+            else {
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+          },
+        )
       ),
-      body: FutureBuilder(
-        future: getRecipeData(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done){
-            return Container(
-              color: Color.fromARGB(255, 228, 246, 243),
-              padding: EdgeInsets.all(5),
-              child: ListView(
-                children: <Widget>[
-                  Container(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: <Widget>[
-                        Text("Пациент:"),
-                        Text(data['Patient'].toString())
-                      ],
-                    ),
-                    alignment: Alignment.topRight,
-                  ),
-                  SizedBox(
-                    height: 300,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Text('Лечебное учреждение:'),
-                        Text(data['Hospital'].toString(), style: infoStyle,),
-                        Text('Ваш врач:'),
-                        Text(data['Doctor'].toString(), style: infoStyle,),
-                        //Text('Наименование МНН:'),
-                        //Text(data['Goods']["MNN"].toString(), style: infoStyle,),
-                        Text("Препарат:"),
-                        Text(data['Goods']["Purpose"].toString(), style: infoStyle,),
-                        Row(
-                          children: <Widget>[
-                            Text('Количество стандартов: '),
-                            Text(data['Goods']["Count_standarts"].toString(), style: infoStyle,),
-                          ],
-                        ),
-                        Row(
-                          children: <Widget>[
-                            Text('Дозировка: '),
-                            Text(data['Goods']["Dose"].toString(), style: infoStyle,),
-                          ],
-                        ),
-                        Row(
-                          children: <Widget>[
-                            Text('Форма выпуска: '),
-                            Text(data['Goods']["Form_release"], style: infoStyle,),
-                          ],
-                        ),
-                        Row(
-                          children: <Widget>[
-                            Text('Количество дней приёма препарата: '),
-                            Text(data['Goods']["Count_days_use_drug"].toString(), style: infoStyle,),
-                          ],
-                        ),
-                        Row(
-                          children: <Widget>[
-                            Text('Количество приёма в день: '),
-                            Text(data['Goods']["Count_per_day"].toString(), style: infoStyle,),
-                          ],
-                        ),
-                        Text('Описание приёма препарата врачем:'),
-                        Text(data['Goods']["DescriptionFromDoctor"].toString(), style: infoStyle),
-                      ],
-                    ),
-                  ),
-                  /*SizedBox(
-                    width: double.infinity,
-                    child: FlatButton(
-                      child: Text('Создать график приёма препората'),
-                      onPressed: () {},
-                      color: Colors.blue,
-                    ),
-                  ),*/
-                  SizedBox(
-                    width: double.infinity,
-                    child: FlatButton(
-                      child: Text('Найти препарат выгодно'),
-                      onPressed: () async {
-                        Navigator.of(context).pushNamed("/ChooseRecipe", arguments: widget.recipeId);
-                      },
-                      color: Colors.blue,
-                    ),
-                  ),
-                  Divider(color: Colors.black,),
-                  Container(
-                    height: 400,
-                    child: ListView.builder(
-                      shrinkWrap: true,
-                      scrollDirection: Axis.horizontal,
-                      itemCount: goodWidgets.length,
-                      itemBuilder: (context, index){
-                        return goodWidgets[index];
-                      },
-                    ),
-                  ),
-                /*Center(
-                    child: Column(
-                      children: <Widget>[
-                        Text('Покажите этот QR код в аптеке при покупке по рецепту', textAlign: TextAlign.center,),
-                        QrImage(
-                          data: data["QRCode"].toString(),
-                          version: QrVersions.auto,
-                          size: 200.0,
-                          backgroundColor: Colors.white,
-                        )
-                      ],
-                    )
-                  ),*/
-                ],
-              ),
-            );
-          }
-          else {
-            return Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-        },
-      )
     );
   }
 
@@ -168,7 +174,7 @@ class RecipeWidgetState extends State<RecipeWidget>{
         price: goodsData[i]["Price"].toString(),
         aptekaID: goodsData[i]["Apteka"]["ID"].toString(),
         cashback: "10",
-        qrCode: goodsData[i]["Apteka"] != null ? goodsData[i]["QRCode"].toString() : data["QRCode"].toString(),
+        qrCode: goodsData[i]["QRCode"].toString(),
         onClose: () async {
           await ServerRecipe.deleteGoods(widget.recipeId[0], goodsData[i]["Goods009ID"].toString(), goodsData[i]["Apteka"]["ID"].toString());
           setState(() {});

@@ -82,7 +82,7 @@ class _LoginWidgetState extends State<LoginWidget>{
               RichText(
                 textAlign: TextAlign.center,
                 text: TextSpan(
-                  text: 'Продолжая регистрация я подтверждаю, что ознакомился c ',
+                  text: 'Продолжая регистрацию я подтверждаю, что ознакомился c ',
                   style: TextStyle(color: Colors.black),
                   children: [
                     TextSpan(
