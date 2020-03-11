@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:pharmacy_app/server_wrapper.dart';
-import 'package:pharmacy_app/shared_preferences_wrapper.dart';
 
 class MedicamentCard extends StatefulWidget{
   final Function onPressed;
@@ -138,21 +137,6 @@ class _BuyGoodsState extends State<BuyGoods>{
                     padding: const EdgeInsets.all(8.0),
                     child: Text("Выбор аптеки", style: TextStyle(fontSize: 18), textAlign: TextAlign.center,),
                   ),
-                  Row(
-                    children: <Widget>[
-                      Text("  Ваш город: $city   "),
-                      SizedBox(
-                        height: 25,
-                        child: FlatButton(
-                          color: Colors.grey,
-                          child: Text("Изменить"),
-                          onPressed: () async {
-                            await ServerRecipe.getRecipeTowns();
-                          },
-                        ),
-                      )
-                    ],
-                  ),
                   Divider(),
                   Expanded(
                     child: ListView(
@@ -207,7 +191,6 @@ class _BuyGoodsState extends State<BuyGoods>{
   Future<void> getData() async {
     widgets.clear();
     var data = await ServerRecipe.getPharmacies(widget.recipeData[0]);
-    city = (await SharedPreferencesWrap.getCurrentCity())[0];
     for (int i = 0; i < data.length; i++){
       widgets.add(MedicamentCard(
         recipeId: widget.recipeData[0],

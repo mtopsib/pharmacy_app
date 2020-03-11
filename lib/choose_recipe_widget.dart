@@ -3,7 +3,7 @@ import 'package:pharmacy_app/server_wrapper.dart';
 import 'package:pharmacy_app/shared_preferences_wrapper.dart';
 
 class ChooseRecipe extends StatefulWidget{
-  final recipeData;
+  final List<String> recipeData;
 
   const ChooseRecipe(this.recipeData, {Key key,}) : super(key: key);
 
@@ -35,7 +35,7 @@ class _ChooseRecipeState extends State<ChooseRecipe>{
                       child: Text("Выберите препарат", style: TextStyle(fontSize: 16),),
                     ),
                   ),
-                  /*Row(
+                  Row(
                     children: <Widget>[
                       Text("Ваш город: $city   "),
                       SizedBox(
@@ -43,11 +43,11 @@ class _ChooseRecipeState extends State<ChooseRecipe>{
                         child: FlatButton(
                           color: Colors.grey,
                           child: Text("Изменить"),
-                          onPressed: (){},
+                          onPressed: () => changeTown(context),
                         ),
                       )
                     ],
-                  ),*/
+                  ),
                   Divider(),
                   Expanded(
                       child: ListView.builder(
@@ -70,11 +70,41 @@ class _ChooseRecipeState extends State<ChooseRecipe>{
     );
   }
 
+  void changeTown(BuildContext context) async {
+    var townsData = await ServerRecipe.getRecipeTowns();
+    List<Widget> townButtons = List();
+    for (int i = 0; i < townsData.length; i++){
+      townButtons.add(
+        FlatButton(
+          onPressed: ()  {
+            Navigator.of(context).pop();
+            Navigator.of(context).pushReplacementNamed("/ChooseRecipe", arguments: [widget.recipeData[0], widget.recipeData[1], townsData[i]["ID"].toString(), townsData[i]["Town"].toString()]);
+          },
+          child: Text(townsData[i]["Town"].toString()),
+        )
+      );
+    }
+    showDialog(
+        context: context,
+        builder: (context) {
+          return SimpleDialog(
+            title: Text("Выберите город"),
+            children: townButtons
+          );
+        }
+    );
+  }
+
   Future<void> getGoodsData(BuildContext context) async {
     goods.clear();
-    data = await ServerRecipe.getGoodsList(widget.recipeData[0]);
-    //var geoInfo = await SharedPreferencesWrap.getCurrentCity();
-    //city = geoInfo[0];
+    var geoInfo = await SharedPreferencesWrap.getCurrentCity();
+    if (widget.recipeData.length == 2){
+      data = await ServerRecipe.getGoodsList(widget.recipeData[0]);
+      city = geoInfo[0] ?? "Неизвестно";
+    } else {
+      data = await ServerRecipe.getGoodsList(widget.recipeData[0], town: widget.recipeData[2]);
+      city = widget.recipeData[3];
+    }
     for (int i = 0; i < data.length; i++){
       goods.add(PharmacyCard(
           goodsID: data[i]["GoodsID"].toString(),
@@ -83,7 +113,7 @@ class _ChooseRecipeState extends State<ChooseRecipe>{
           minPrice: data[i]['MinPrice'].toString(),
           maxPrice: data[i]['MaxPrice'].toString(),
           recipeID: widget.recipeData[0],
-          onTap: () => Navigator.of(context).pushReplacementNamed('/BuyGoods', arguments: widget.recipeData)
+          onTap: () => Navigator.of(context).pushReplacementNamed('/BuyGoods', arguments: [widget.recipeData[0], widget.recipeData[1]])
       ));
     }
   }

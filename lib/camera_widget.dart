@@ -84,6 +84,15 @@ class _CameraWidgetState extends State<CameraWidget>{
                   ),
                   Container(
                     alignment: Alignment.bottomCenter,
+                    margin: EdgeInsets.only(bottom: 80),
+                    child: Container(
+                      padding: EdgeInsets.all(8),
+                      color: Color.fromARGB(150, 180, 180, 180),
+                      child: Text("Отправить", style: TextStyle(color: Colors.red, fontSize: 20, letterSpacing: 2),)
+                    ),
+                  ),
+                  Container(
+                    alignment: Alignment.bottomCenter,
                     padding: EdgeInsets.all(10),
                     child: FloatingActionButton(
                       backgroundColor: Colors.white,

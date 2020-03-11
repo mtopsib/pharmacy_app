@@ -125,13 +125,14 @@ class ServerRecipe{
     }
   }
 
-  static Future<void> getRecipeTowns() async {
+  static Future<List<dynamic>> getRecipeTowns() async {
     var info = await SharedPreferencesWrap.getDeviceInfo();
     var url = "https://es.svodnik.pro:55443/es_test/ru_RU/hs/recipe/Towns";
 
     Response response = await get(url, headers: info);
     if (response.statusCode == 200){
-      print(response.body);
+      print(jsonDecode(response.body));
+      return jsonDecode(response.body);
     } else {
       throw "Can't get recipe towns";
     }
@@ -202,10 +203,13 @@ class ServerRecipe{
     }
   }
 
-  static Future<List<dynamic>> getGoodsList(String recipeID) async {
+  static Future<List<dynamic>> getGoodsList(String recipeID, {String town = ""}) async {
     var deviceInfo = await SharedPreferencesWrap.getDeviceInfo();
 
     var url = "https://es.svodnik.pro:55443/es_test/ru_RU/hs/recipe/ChoiceGoods?RecipeID=$recipeID";
+    if (town != ""){
+      url += "&Town=$town";
+    }
 
     Response response = await get(url, headers: deviceInfo);
     if (response.statusCode == 200){
