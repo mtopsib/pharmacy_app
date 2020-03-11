@@ -9,8 +9,9 @@ class RecipeCard extends StatelessWidget{
   final String hospital;
   final String personName;
   final String date;
+  final bool notRead;
 
-  const RecipeCard({Key key, this.recipeName, this.personName, this.date, this.id, this.goods, this.hospital}) : super(key: key);
+  const RecipeCard({Key key, this.recipeName, this.personName, this.date, this.id, this.goods, this.hospital, this.notRead}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -66,11 +67,11 @@ class RecipeCard extends StatelessWidget{
                              color: Colors.black,
                              activeColor: Colors.red[800],
                            ),*/
-                           ColoredIcon(
-                             icon: Icons.star,
-                             color: Colors.black,
-                             activeColor: Colors.yellow,
-                           )
+                           notRead ? Icon(
+                             Icons.brightness_1,
+                             color: Colors.red,
+                             size: 10,
+                           ) : SizedBox()
                          ],
                        ),
                      ),
@@ -100,7 +101,7 @@ class RecipeCard extends StatelessWidget{
 
 }
 
-class ColoredIcon extends StatefulWidget{
+/*class ColoredIcon extends StatefulWidget{
   final IconData icon;
   final Color activeColor;
   final Color color;
@@ -137,4 +138,4 @@ class ColorIconState extends State<ColoredIcon>{
       color = isActive == true ? widget.activeColor : widget.color;
     });
   }
-}
+}*/

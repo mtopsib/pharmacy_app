@@ -264,12 +264,12 @@ class MyProfileState extends State<MyProfile>{
                       mainAxisAlignment: MainAxisAlignment.end,
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: <Widget>[
-                        FlatButton(
+                        !esiaConfirm ? FlatButton(
                             color: Colors.blueAccent,
                             child: Text("Заполнить профиль"),
                             onPressed: () => Navigator.of(context).pushNamedAndRemoveUntil('/EditProfile', (Route<dynamic> route) => false,arguments: {
                               "surname": surname, "name": name, "patronymic": patronymic, "date": convertDate(date), "mail": mail})
-                        ),
+                        ) : SizedBox(),
                         snilsConfirm != "1" ? FlatButton(
                           child: Text("Отправить СНИЛС"),
                           onPressed: () => Navigator.of(context).pushNamed('/Snils'),
@@ -282,7 +282,10 @@ class MyProfileState extends State<MyProfile>{
                             Navigator.of(context).pushNamed("/Webview", arguments: url);
                           },
                           color: Colors.blueAccent,
-                        ) : SizedBox()
+                        ) : FlatButton(
+                          child: Text("Отозвать доступ к Госуслугам"),
+                          onPressed: () => showEsiaAlert(context),
+                        )
                       ],
                     ),
                   )
@@ -351,6 +354,26 @@ class MyProfileState extends State<MyProfile>{
       builder: (BuildContext context) {
         return alert;
       }
+    );
+  }
+
+  void showEsiaAlert(BuildContext context){
+    AlertDialog alert = AlertDialog(
+      content: Text("Вы действительно хотите отозвать доступ к Госуслугам?", textAlign: TextAlign.center),
+      actions: <Widget>[
+        FlatButton(child: Text("нет"), onPressed: () => Navigator.of(context).pop(),),
+        FlatButton(child: Text("Да"), onPressed: () async {
+          ServerProfile.changeUserData({"ESIAConfirm": "false"});
+          Navigator.of(context).pop();
+        },)
+      ],
+    );
+
+    showDialog(
+        context: context,
+        builder: (BuildContext context){
+          return alert;
+        }
     );
   }
 
@@ -547,7 +570,7 @@ class ProfileEditState extends State<ProfileEdit>{
                       _key.currentState.save();
 
                       Map<String, String> data = {"Surname": surname, "Name": name, "MiddleName": patronymic,
-                      "Gender": male == true ? "М" : "Ж", "Birthday": convertDate(date), "eMail": mail};
+                      "Gender": male == true ? "M" : "F", "Birthday": convertDate(date), "eMail": mail};
                       await ServerProfile.changeUserData(data);
 
                       Navigator.of(context).pushNamedAndRemoveUntil('/MyProfile', ModalRoute.withName('/'));

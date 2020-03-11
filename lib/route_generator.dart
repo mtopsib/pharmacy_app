@@ -10,6 +10,9 @@ import 'package:pharmacy_app/shared_preferences_wrapper.dart';
 import 'package:pharmacy_app/tech_support_widget.dart';
 import 'package:pharmacy_app/webview_widget.dart';
 
+import 'buy_goods_widget.dart';
+import 'choose_recipe_widget.dart';
+
 class RouteGenerator{
   static Route<dynamic> generateRoute(RouteSettings settings){
     final args = settings.arguments;

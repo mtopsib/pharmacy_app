@@ -50,7 +50,11 @@ class NewsCard extends StatelessWidget{
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 5),
-                    child: Icon(Icons.star, size: 14, color: read ? Colors.white : Colors.black,),
+                    child: read ? Icon(
+                      Icons.brightness_1,
+                      color: Colors.red,
+                      size: 10,
+                    ) : SizedBox()
                   )
                 ],
               ),

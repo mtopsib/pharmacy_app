@@ -125,10 +125,11 @@ class ServerRecipe{
     }
   }
 
-  static Future<void> getRecipeTowns(String newsID) async {
+  static Future<void> getRecipeTowns() async {
+    var info = await SharedPreferencesWrap.getDeviceInfo();
     var url = "https://es.svodnik.pro:55443/es_test/ru_RU/hs/recipe/Towns";
 
-    Response response = await get(url);
+    Response response = await get(url, headers: info);
     if (response.statusCode == 200){
       print(response.body);
     } else {
@@ -169,7 +170,6 @@ class ServerRecipe{
 
     Response response = await get(url, headers: deviceInfo);
     if (response.statusCode == 200){
-      print(jsonDecode(response.body));
       return jsonDecode(response.body);
     } else {
       throw "Cant't get recipe body";
@@ -231,7 +231,9 @@ class ServerRecipe{
   static Future<void> deleteGoods(String recipeId, String goodsId, String aptekaId) async {
     var info = await SharedPreferencesWrap.getDeviceInfo();
 
-    var url = "https://es.svodnik.pro:55443/es_test/ru_RU/hs/recipe/WhereBuy?RecipeID=$recipeId&Goods009ID=$goodsId&AptekaID=$aptekaId";
+    var url = "https://es.svodnik.pro:55443/es_test/ru_RU/hs/recipe/WhereBuy?RecipeID=$recipeId";
+    if (goodsId != "") url += "&Goods009ID=$goodsId";
+    if (aptekaId != "") url += "&AptekaID=$aptekaId";
 
     Response response = await delete(url, headers: info);
     print("delete answer ${response.body}");
@@ -366,6 +368,7 @@ class ServerNews{
             date: data['Date'].toString(),
             personName: data["PatientFIO"].toString(),
             id: content[i]["ID"].toString(),
+            notRead: content[i]["NotRead"] as bool,
           ));
         }
 
