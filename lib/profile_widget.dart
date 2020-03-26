@@ -36,14 +36,14 @@ class MainProfile extends StatelessWidget{
               onPressed: () {},
             ),
           ),*/
-          /*SizedBox(
+          SizedBox(
             width: double.infinity,
             height: 50,
             child: FlatButton(
               child: Text('Тех. поддержка', style: textStyle,),
               onPressed: () => Navigator.of(context).pushNamed('/TechSupport'),
             ),
-          ),*/
+          ),
           Expanded(
             child: Container(),
           ),
@@ -280,7 +280,11 @@ class MyProfileState extends State<MyProfile>{
                           child: Text("Авторизация через Госуслуги"),
                           onPressed: () async {
                             var url = await ServerLogin.loginEsia();
-                            Navigator.of(context).pushNamed("/Webview", arguments: url);
+                            if (url != ""){
+                              Navigator.of(context).pushNamed("/Webview", arguments: url);
+                            } else {
+                              _showSnackBar(context);
+                            }
                           },
                           color: Colors.blueAccent,
                         ) : FlatButton(
@@ -316,6 +320,14 @@ class MyProfileState extends State<MyProfile>{
     );
   }
 
+  void _showSnackBar(BuildContext context){
+    var snackBar = SnackBar(
+      content: Text("Сервер авторизации Госуслуги временно не доступен"),
+      action: SnackBarAction(label: "ок", onPressed: () {},)
+    );
+    Scaffold.of(context).showSnackBar(snackBar);
+  }
+
   _launchURL(String url) async {
     if (await canLaunch(url)) {
       await launch(url);
@@ -339,13 +351,13 @@ class MyProfileState extends State<MyProfile>{
     esiaConfirm = data["ESIAConfirm"] as bool;
     emailConfirm = data["eMailConfirmed"] as bool;
 
-    if (!esiaConfirm){
-      snilsButton = FlatButton(
-        child: Text("Отправить СНИЛС"),
-        onPressed: () => Navigator.of(context).pushNamed('/Snils'),
-        color: Colors.blueAccent,
-      );
-    }
+//    if (!esiaConfirm){
+//      snilsButton = FlatButton(
+//        child: Text("Отправить СНИЛС"),
+//        onPressed: () => Navigator.of(context).pushNamed('/Snils'),
+//        color: Colors.blueAccent,
+//      );
+//    }
 //    try{
 //      town = data["Towns"][0]["Town"].toString() ?? "";
 //    } catch (e){

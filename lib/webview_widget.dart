@@ -56,8 +56,18 @@ class _WebViewWidgetState extends State<WebViewWidget>{
   }
 
   void postEsiaAndClose(String code, String state) async {
-    await ServerLogin.postDataFromEsia(code, state);
+    var success = await ServerLogin.postDataFromEsia(code, state);
     Navigator.of(context).pushNamedAndRemoveUntil("/MyProfile", ModalRoute.withName('/'), arguments: false);
-    print("Successful posted data");
+    if (!success){
+      _showSnackBar(context);
+    }
+  }
+
+  void _showSnackBar(BuildContext context){
+    var snackBar = SnackBar(
+        content: Text("Сервер авторизации Госуслуги временно не доступен"),
+        action: SnackBarAction(label: "ок", onPressed: () {},)
+    );
+    Scaffold.of(context).showSnackBar(snackBar);
   }
 }

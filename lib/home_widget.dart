@@ -1,14 +1,12 @@
 import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
-import 'package:pharmacy_app/main.dart';
-import 'package:pharmacy_app/news_card_widget.dart';
-import 'package:pharmacy_app/recipe_widget.dart';
 import 'package:pharmacy_app/server_wrapper.dart';
 import 'package:pharmacy_app/login_widget.dart';
 import 'dart:math';
 import 'package:pharmacy_app/profile_widget.dart';
 import 'package:pharmacy_app/shared_preferences_wrapper.dart';
+import 'package:pharmacy_app/tablets/tablets_widget.dart';
 
 
 class Home extends StatefulWidget{
@@ -45,13 +43,13 @@ class HomeLogged extends StatefulWidget{
 class _HomeLoggedState extends State<HomeLogged>{
   int _selectedIndex = 0;
 
-  List<String> _titleTexts = ['Главная', 'Профиль'];
+  List<String> _titleTexts = ['Главная', "Таблеточница", "Профиль"];
   List<Widget> _homeWidgets;
 
   @override
   void initState(){
     super.initState();
-    _homeWidgets = [HomePageWidget(), MainProfile()];
+    _homeWidgets = [HomePageWidget(), TabletsMain(), MainProfile()];
   }
 
   @override
@@ -73,11 +71,11 @@ class _HomeLoggedState extends State<HomeLogged>{
             icon: Icon(Icons.home),
             title: Text('Главная'),
           ),
-          /*BottomNavigationBarItem(
-            icon: Icon(Icons.format_list_bulleted),
-            title: Text('Рецепты'),
-          ),
           BottomNavigationBarItem(
+            icon: Icon(Icons.calendar_today),
+            title: Text('Таблеточница'),
+          ),
+          /*BottomNavigationBarItem(
             icon: Icon(Icons.notifications_active),
             title: Text('Уведомления'),
           ),*/
@@ -87,6 +85,10 @@ class _HomeLoggedState extends State<HomeLogged>{
           ),
         ],
       ),
+
+      floatingActionButton: _selectedIndex == 1 ? FloatingActionButton(
+        child: Icon(Icons.add),
+      ) : null
     );
   }
 

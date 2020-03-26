@@ -462,15 +462,22 @@ class ServerLogin{
     Response response = await get(url, headers: info);
     if (response.statusCode == 200){
       return jsonDecode(response.body)['redirect_url'].toString();
+    } else if (response.statusCode == 400){
+      return "";
     }
   }
 
-  static Future<void> postDataFromEsia(String code, String state) async {
+  static Future<bool> postDataFromEsia(String code, String state) async {
     var info = await SharedPreferencesWrap.getDeviceInfo();
 
     String url = "https://es.svodnik.pro:55443/es_test/ru_RU/hs/oauth/ESIA?code=$code&state=$state";
 
     Response response = await post(url, headers: info);
+    if (response.statusCode == 200){
+      return true;
+    } else if (response.statusCode == 400){
+      return false;
+    }
   }
 }
 

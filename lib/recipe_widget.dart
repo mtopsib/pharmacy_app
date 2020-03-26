@@ -101,14 +101,6 @@ class RecipeWidgetState extends State<RecipeWidget>{
                         ],
                       ),
                     ),
-                    /*SizedBox(
-                      width: double.infinity,
-                      child: FlatButton(
-                        child: Text('Создать график приёма препората'),
-                        onPressed: () {},
-                        color: Colors.blue,
-                      ),
-                    ),*/
                     SizedBox(
                       width: double.infinity,
                       child: FlatButton(
@@ -117,6 +109,14 @@ class RecipeWidgetState extends State<RecipeWidget>{
                           Navigator.of(context).pushNamed("/ChooseRecipe", arguments: widget.recipeId);
                         },
                         color: Colors.blue,
+                      ),
+                    ),
+                    SizedBox(
+                      width: double.infinity,
+                      child: FlatButton(
+                        color: Colors.blue,
+                        child: Text("Создать курс приёма"),
+                        onPressed: () {},
                       ),
                     ),
                     Divider(color: Colors.black,),
