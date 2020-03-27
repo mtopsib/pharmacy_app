@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
+import 'package:pharmacy_app/message_card_widget.dart';
 import 'package:pharmacy_app/recipe_card_widget.dart';
 import 'package:pharmacy_app/shared_preferences_wrapper.dart';
 import 'news_card_widget.dart';
@@ -375,6 +376,16 @@ class ServerNews{
             notRead: content[i]["NotRead"] as bool,
           ));
         }
+        else if (content[i]["TypeData"] == "Message"){
+          contentWidgets.add(MessageCard(
+            messageID: content[i]["ID"],
+            read: content[i]["NotRead"] as bool,
+            titleText: data['Header'].toString(),
+            bodyText: data['Body'].toString(),
+            botSource: "Источник: " + data['SourceName'].toString(),
+            date: data['Date'].toString().replaceAll("T", ' '),
+          ));
+        }
 
       }
       return contentWidgets;
@@ -562,52 +573,55 @@ class ServerProfile{
 }
 
 class ServerMessages{
-  static Future<String> getMessage(String messageID) async {
-    String url = "https://es.svodnik.pro:55443/es_test/ru_RU/hs/Message?MessageID=$messageID";
+  static Future<List<dynamic>> getMessageList() async {
+    final deviceInfo = await SharedPreferencesWrap.getDeviceInfo();
+    String url = "https://es.svodnik.pro:55443/es_test/ru_RU/hs/recipe/MessageList";
 
-    Response response = await get(url);
+    Response response = await get(url, headers: deviceInfo);
     if (response.statusCode == 200){
-      return (jsonDecode(response.body).toString());
+//      for(var data in jsonDecode(response.body)["Records"]){
+//        print(data.toString());
+//      }
+      return (jsonDecode(response.body)["Records"]);
+    } else {
+      throw "Error while getting message List";
+    }
+  }
+
+  static Future<Map<String, dynamic>> getMessage(String messageID) async {
+    final deviceInfo = await SharedPreferencesWrap.getDeviceInfo();
+    String url = "https://es.svodnik.pro:55443/es_test/ru_RU/hs/recipe/Message?MessageID=$messageID";
+
+    Response response = await get(url, headers: deviceInfo);
+    if (response.statusCode == 200){
+      return (jsonDecode(response.body));
+    } else {
+      throw "Error while getting message List";
+    }
+  }
+
+  static Future<void> sendMessage(Map<String, String> messageData) async {
+    final deviceInfo = await SharedPreferencesWrap.getDeviceInfo();
+    String url = "https://es.svodnik.pro:55443/es_test/ru_RU/hs/recipe/Message";
+
+    Response response = await post(url, headers: deviceInfo, body: jsonEncode(messageData));
+    if (response.statusCode == 200){
+      print("Successful send message");
+    } else {
       print(response.body);
-    } else {
-      throw "Error while getting message";
     }
   }
 
-  static Future<void> readMessage(String messageID) async {
-    String url = "https://es.svodnik.pro:55443/es_test/ru_RU/hs/Message?MessageID=$messageID";
+  static Future<List<dynamic>> getMessageHeader(String messageID) async {
+    final deviceInfo = await SharedPreferencesWrap.getDeviceInfo();
+    Map<String, String> appID = {"AppID": deviceInfo["AppId"]};
+    String url = "https://es.svodnik.pro:55443/es_test/ru_RU/hs/recipe/MessageHeaders";
 
-    Response response = await get(url);
+    Response response = await get(url, headers: appID);
     if (response.statusCode == 200){
-      print("read message");
+      return (jsonDecode(response.body));
     } else {
-      throw "Error while reading message";
+      throw "Error while getting message headers";
     }
   }
-
-  static Future<void> postMessage(Map<String, String> data) async {
-    String userID = await SharedPreferencesWrap.getUserID();
-    if (userID == null) return;
-    String url = "https://es.svodnik.pro:55443/es_test/ru_RU/hs/Message?UserID=$userID";
-
-    Response response = await post(url, body: jsonEncode(data));
-    if (response.statusCode == 200){
-      print("ok");
-    } else {
-      throw "Error while posting message";
-    }
-  }
-
-  static Future<void> deleteMessage(String messageID) async {
-    String url = "https://es.svodnik.pro:55443/es_test/ru_RU/hs/Message?MessageID=$messageID";
-
-    Response response = await delete(url);
-    if (response.statusCode == 200){
-      print("delete message");
-    } else {
-      throw "Error while deleting message";
-    }
-  }
-
-
 }

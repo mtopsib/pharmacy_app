@@ -1,6 +1,7 @@
 import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
+import 'package:pharmacy_app/messages_widget.dart';
 import 'package:pharmacy_app/server_wrapper.dart';
 import 'package:pharmacy_app/login_widget.dart';
 import 'dart:math';
@@ -201,6 +202,10 @@ class _HomePageWidgetState extends State<HomePageWidget>{
             filteredContent.add(mainContent[i]);
           }
           break;
+        case "MessageCard":
+          if (chipName == "Сообщения"){
+            filteredContent.add(mainContent[i]);
+          }
       }
     }
     persistantContent = filteredContent;

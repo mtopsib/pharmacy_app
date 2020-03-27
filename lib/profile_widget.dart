@@ -28,20 +28,20 @@ class MainProfile extends StatelessWidget{
                 },
             ),
           ),
-          /*SizedBox(
+          SizedBox(
             width: double.infinity,
             height: 50,
             child: FlatButton(
               child: Text('Мои близкие', style: textStyle,),
               onPressed: () {},
             ),
-          ),*/
+          ),
           SizedBox(
             width: double.infinity,
             height: 50,
             child: FlatButton(
-              child: Text('Тех. поддержка', style: textStyle,),
-              onPressed: () => Navigator.of(context).pushNamed('/TechSupport'),
+              child: Text('Сообщения', style: textStyle,),
+              onPressed: () => Navigator.of(context).pushNamed('/Messages'),
             ),
           ),
           Expanded(

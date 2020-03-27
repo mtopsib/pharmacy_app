@@ -7,7 +7,7 @@ import 'package:pharmacy_app/profile_widget.dart';
 import 'package:pharmacy_app/main.dart';
 import 'package:pharmacy_app/recipe_widget.dart';
 import 'package:pharmacy_app/shared_preferences_wrapper.dart';
-import 'package:pharmacy_app/tech_support_widget.dart';
+import 'package:pharmacy_app/messages_widget.dart';
 import 'package:pharmacy_app/webview_widget.dart';
 
 import 'buy_goods_widget.dart';
@@ -27,8 +27,8 @@ class RouteGenerator{
           return _errorRoute();
         }
         break;
-      case '/TechSupport':
-        return MaterialPageRoute(builder: (_) => TechSupportWidget());
+      case '/Messages/Chat':
+        return MaterialPageRoute(builder: (_) => MessagesWidget(messageId: args,));
       case '/RecipeWidget':
         return MaterialPageRoute(builder: (_) => RecipeWidget(recipeId: args,));
       case '/ChooseRecipe':
@@ -37,6 +37,8 @@ class RouteGenerator{
         return MaterialPageRoute(builder: (_) => BuyGoods(args));
       case '/MyProfile':
         return MaterialPageRoute(builder: (_) => MyProfile(showSnilsAlert: args,));
+      case '/Messages':
+        return MaterialPageRoute(builder: (_) => MessagesListWidget());
       case '/EditProfile':
         return MaterialPageRoute(builder: (_) {
           return Scaffold(
