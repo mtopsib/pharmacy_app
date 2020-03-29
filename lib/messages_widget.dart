@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ffi';
 
 import 'package:flutter/material.dart';
 import 'package:pharmacy_app/server_wrapper.dart';
@@ -201,7 +202,7 @@ class MessagesListWidget extends StatelessWidget{
                     child: FlatButton(
                       child: Text("Новое обращение"),
                       color: Colors.blue,
-                      onPressed: () {},
+                      onPressed: () => Navigator.of(context).pushNamed('/Messages/New'),
                     ),
                   )
                 ],
@@ -264,10 +265,146 @@ class NewMessage extends StatefulWidget{
 }
 
 class _NewMessageState extends State<NewMessage>{
+  final formKey = GlobalKey<FormState>();
+  final _textController = TextEditingController();
+
+  List<HeaderChips> chips = List();
+  List<GlobalKey<HeaderChipsState>> chipsKeys = List();
+  String currentTheme;
+  String newMessage;
+
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
-    return null;
+    return Scaffold(
+      appBar: AppBar(title: Text("Сообщения: Новое обращение")),
+      body: FutureBuilder(
+        future: getHeaders(),
+        builder: (context, snapshot){
+          if (snapshot.connectionState == ConnectionState.done){
+            return Container(
+              child: Column(
+                children: <Widget>[
+                  Padding(
+                      padding: EdgeInsets.all(5),
+                      child: Text("Выберите тему обращения:", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold), textAlign: TextAlign.left,)
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: Wrap(
+                      direction: Axis.horizontal,
+                      spacing: 5,
+                      children: chips,
+                    ),
+                  ),
+                  Container(
+                    padding: EdgeInsets.all(10),
+                    child: Form(
+                      key: formKey,
+                      child: TextFormField(
+                        onSaved: (value) {newMessage = value;},
+                        validator: (value){
+                          if (value.isEmpty){
+                            return 'Введите сообщение';
+                          } else {
+                            return null;
+                          }
+                        },
+                        maxLines: 7,
+                        controller: _textController,
+                        decoration: InputDecoration(
+                            border: OutlineInputBorder(),
+                            labelText: 'Введите текст сообщения'
+                        ),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Container(
+                      alignment: Alignment.bottomCenter,
+                      padding: const EdgeInsets.all(10),
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: FlatButton(
+                          child: Text("Отправить сообщение"),
+                          onPressed: () => sendMessage(context),
+                          color: Colors.blue,
+                        ),
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            );
+          } else {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+        },
+      ),
+    );
+  }
+
+  void sendMessage(BuildContext context) async {
+    if (currentTheme == null){
+      Scaffold.of(context).showSnackBar(SnackBar(
+        content: Text("Выберите тему сообщения"),
+        duration: Duration(seconds: 2),
+      ));
+    } else
+    if (formKey.currentState.validate()){
+      formKey.currentState.save();
+      Map<String, String> mData = {"ParentID": "", "Header": currentTheme, "Body": newMessage};
+      await ServerMessages.sendMessage(mData);
+      Navigator.of(context).pushNamedAndRemoveUntil("/Messages", ModalRoute.withName('/'));
+    }
+  }
+
+  Future<void> getHeaders() async {
+    var headers = await ServerMessages.getMessageHeader();
+    for (int i = 0; i < headers.length; i++){
+      chipsKeys.add(GlobalKey<HeaderChipsState>());
+      chips.add(
+        HeaderChips(
+          key: chipsKeys[i],
+          label: headers[i].toString(),
+          onTap: (String label) {
+            currentTheme = label;
+            print(label);
+            for(var key in chipsKeys){
+              key.currentState.setState(() => key.currentState.selected = false);
+            }
+          },
+        )
+      );
+    }
+  }
+
+}
+
+class HeaderChips extends StatefulWidget{
+  final Function onTap;
+  final String label;
+
+  const HeaderChips({Key key, this.onTap, this.label}) : super(key: key);
+
+  HeaderChipsState createState() => HeaderChipsState();
+}
+
+class HeaderChipsState extends State<HeaderChips>{
+  bool selected = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return ChoiceChip(
+      label: Text(widget.label),
+      selected: selected,
+      onSelected: (newValue) {
+        widget.onTap(widget.label);
+        selected = true;
+        setState(() {});
+      },
+    );
   }
 
 }

@@ -39,6 +39,8 @@ class RouteGenerator{
         return MaterialPageRoute(builder: (_) => MyProfile(showSnilsAlert: args,));
       case '/Messages':
         return MaterialPageRoute(builder: (_) => MessagesListWidget());
+      case '/Messages/New':
+        return MaterialPageRoute(builder: (_) => NewMessage());
       case '/EditProfile':
         return MaterialPageRoute(builder: (_) {
           return Scaffold(

@@ -612,13 +612,13 @@ class ServerMessages{
     }
   }
 
-  static Future<List<dynamic>> getMessageHeader(String messageID) async {
+  static Future<List<dynamic>> getMessageHeader() async {
     final deviceInfo = await SharedPreferencesWrap.getDeviceInfo();
-    Map<String, String> appID = {"AppID": deviceInfo["AppId"]};
     String url = "https://es.svodnik.pro:55443/es_test/ru_RU/hs/recipe/MessageHeaders";
 
-    Response response = await get(url, headers: appID);
+    Response response = await get(url, headers: deviceInfo);
     if (response.statusCode == 200){
+      print(response.body);
       return (jsonDecode(response.body));
     } else {
       throw "Error while getting message headers";
